@@ -3,11 +3,11 @@ import { Bars3Icon, MagnifyingGlassIcon, UserIcon, XMarkIcon } from "@heroicons/
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
+
 function Header() {
     const [showSearch, setShowSearch] = useState(false);
     const [isMenuToggled, setIsMenuToggled] = useState(false);
     const isAboveMediumScreens = useMediaQuery("(min-width: 1060px)");
-    
     const textNavbar = `text-white hover:text-space-200 hover:bg-space-400 transition-colors duration-400 px-3 py-4 rounded-none text-xl font-montserrat`;
     const textTitle = `text-3xl font-bold text-space-200`;
 
@@ -18,7 +18,6 @@ function Header() {
                 <h2 className={`${textTitle}`}>TẠP CHÍ</h2>
                 <h2 className={`${textTitle}`}>KHOA HỌC VÀ CÔNG NGHỆ</h2>
             </div>
-
             {/* Navigation Bar */}
             <nav className="bg-space-300 shadow-lg">
                 <div className="container mx-auto px-4">
@@ -94,7 +93,7 @@ function Header() {
 
             {/* Mobile Menu Modal */}
             {!isAboveMediumScreens && isMenuToggled && (
-                <div className="fixed right-0 bottom-0 z-40 h-full w-[300px] bg-space-300 drop-shadow-xl">
+                <div className="fixed right-0 bottom-0 z-40 h-full w-1/2 bg-space-300 drop-shadow-xl">
                     {/* Close Icon */}
                     <div className="flex justify-end p-12">
                         <button onClick={() => setIsMenuToggled(!isMenuToggled)}>
@@ -103,7 +102,7 @@ function Header() {
                     </div>
 
                     {/* Menu Items */}
-                    <div className="ml-[30%] flex flex-col gap-8 text-2xl font-montserrat">
+                    <div className="ml-[25%] flex flex-col gap-8 text-2xl font-montserrat">
                         <Link className="text-white hover:text-space-200">Trang chủ</Link>
                         <Link className="text-white hover:text-space-200">Giới thiệu</Link>
                         <Link className="text-white hover:text-space-200">Tạp chí</Link>
@@ -111,7 +110,6 @@ function Header() {
                         <Link className="text-white hover:text-space-200">Liên hệ</Link>
                         <Link className="text-white hover:text-space-200">Hướng dẫn</Link>
                     </div>
-                    
                 </div>
             )}
         </header>
