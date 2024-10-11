@@ -1,0 +1,36 @@
+{
+    "latestIssues": [
+      {
+        "id": 1,
+        "issueNumber": "Tuần 2: Số 1",
+        "publicationDate": "11/10/2024",
+        "title": "Trí tuệ nhân tạo và tương lai của công nghệ",
+        "excerpt": "Khám phá những tiến bộ mới nhất trong lĩnh vực AI và ảnh hưởng của nó đến đời sống...",
+        "coverImage": "https://image.sggp.org.vn/w1000/Uploaded/2024/bsugpivp/2021_05_31/5a_hfmd.jpg.webp"
+      },
+      {
+        "id": 2,
+        "issueNumber": "Tuần 2: Số 2",
+        "publicationDate": "12/10/2024",
+        "title": "Công nghệ Blockchain và tiền điện tử",
+        "excerpt": "Tìm hiểu về cách blockchain đang thay đổi cách chúng ta giao dịch và xử lý dữ liệu...",
+        "coverImage": "https://elcom.com.vn/storage/uploads/images/GAuKEtyRD6vlpuA9fz0rrGmaOf1VTFSXdQ5AFTuh.jpg"
+      },
+      {
+        "id": 3,
+        "issueNumber": "Tuần 2: Số 3",
+        "publicationDate": "13/10/2024",
+        "title": "5G và tương lai của kết nối",
+        "excerpt": "Khám phá tiềm năng và ứng dụng của mạng 5G trong việc kết nối thế giới...",
+        "coverImage": "https://hiu.vn/wp-content/uploads/2022/08/5g-9.jpg"
+      },
+      {
+        "id": 4,
+        "issueNumber": "Tuần 2: Số 2",
+        "publicationDate": "12/10/2024",
+        "title": "Công nghệ Blockchain và tiền điện tử",
+        "excerpt": "Tìm hiểu về cách blockchain đang thay đổi cách chúng ta giao dịch và xử lý dữ liệu...",
+        "coverImage": "https://elcom.com.vn/storage/uploads/images/GAuKEtyRD6vlpuA9fz0rrGmaOf1VTFSXdQ5AFTuh.jpg"
+      }
+    ]
+  }

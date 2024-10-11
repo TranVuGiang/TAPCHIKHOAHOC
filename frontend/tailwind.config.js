@@ -12,8 +12,11 @@ export default {
           '200': '#0A4DA6',
           '300': '#2c7ce6',
           '400': '#79C4F2',
-          '500': '#c7e3f0'
-        }
+          '500': '#c7e3f0',
+          '600': '#000080',
+          '700': '#1E90FF'
+        },
+       
       },
       fontFamily: {
         dmsan: ["DM Sans", "san-serif"],
