@@ -1,20 +1,18 @@
+import bannerLeft from "@/assets/banner1.png";
+import bannerRight from "@/assets/banner2.png";
+import AdverLeft from "@/components/advertisement/left";
+import AdverRight from "@/components/advertisement/right";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
-
 function DefaultLayout({ children }) {
     return ( 
         <div className="min-h-screen flex flex-col">
             <Header />
             <div className="flex flex-col md:flex-row flex-grow w-full">
                 {/* Advertising sidebar - Left */}
-                <div className="hidden md:block w-full md:w-[420px] bg-slate-100">
-                    {/* Ad content */}
-                    <div className="sticky top-4 p-4">
-                        <div className="h-[600px] bg-slate-200 rounded-lg flex items-center justify-center">
-                            <span className="text-slate-600">Advertisement Space</span>
-                        </div>
-                    </div>
-                </div>
+                <AdverLeft>
+                    <img src={bannerLeft} alt="Banner Left" className="h-full rounded-lg shadow-gray-800"/>
+                </AdverLeft>
 
                 {/* Main content */}
                 <div className="flex-grow w-full min-h-screen px-4 sm:px-6 md:px-8 py-6">
@@ -26,7 +24,7 @@ function DefaultLayout({ children }) {
                     </div>
 
                     {/* Main content area */}
-                    <div className="max-w-4xl mx-auto">
+                    <div className="max-w-4xl mx-auto bg-white">
                         {children}
                     </div>
 
@@ -39,14 +37,9 @@ function DefaultLayout({ children }) {
                 </div>
 
                 {/* Advertising sidebar - Right */}
-                <div className="hidden md:block w-full md:w-[420px] bg-slate-100">
-                    {/* Ad content */}
-                    <div className="sticky top-4 p-4">
-                        <div className="h-[600px] bg-slate-200 rounded-lg flex items-center justify-center">
-                            <span className="text-slate-600">Advertisement Space</span>
-                        </div>
-                    </div>
-                </div>
+                <AdverRight>
+                    <img src={bannerRight} alt="Banner Right" className="h-full rounded-lg shadow-gray-800"/>
+                </AdverRight>
             </div>
             <Footer />
         </div>

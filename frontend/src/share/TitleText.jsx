@@ -1,6 +1,6 @@
 function TitleText({ children }) {
     return ( 
-        <h1 className="text-space-700 text-3xl font-montserrat font-bold">
+        <h1 className="text-black text-2xl font-montserrat font-bold">
             {children}
         </h1>
      );

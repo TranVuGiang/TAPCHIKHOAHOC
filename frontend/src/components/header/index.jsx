@@ -26,7 +26,7 @@ function Header() {
                         {isAboveMediumScreens ? (
                             <div className={`flex-1 flex ${!showSearch ? 'items-center justify-center' : 'items-center justify-start'}`}>
                                 <div className={`flex ${showSearch ? 'space-x-2' : 'space-x-4'}`}>
-                                    <Link className={`${textNavbar}`}>Trang chủ</Link>
+                                    <Link to="/" className={`${textNavbar}`}>Trang chủ</Link>
                                     <Link className={`${textNavbar}`}>Giới thiệu</Link>
                                     <Link className={`${textNavbar}`}>Tạp chí</Link>
                                     <Link className={`${textNavbar}`}>Tin tức</Link>

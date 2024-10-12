@@ -36,9 +36,11 @@ function Home() {
     return (
         <>
             {/* SỐ MỚI NHẤT */}
-            <section className="container mx-auto px-4 py-8">
-                <TitleText>CÁC SỐ MỚI NHẤT</TitleText>
-                <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <section className="container mx-auto px-4 py-8 relative">
+                <div  className="w-full h-[60px] bg-space-400 absolute top-0 right-0 py-4 pl-8">
+                    <TitleText>CÁC SỐ MỚI NHẤT</TitleText>
+                </div>
+                <div className="mt-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {magazineData.latestIssues.map((issue) => (
                         <MagazineCard
                             key={issue.id}
@@ -55,7 +57,9 @@ function Home() {
 
             {/* SỰ KIỆN HOT TRONG TUẦN */}
             <section className="container mx-auto px-4 py-8">
-                <TitleText>SỰ KIỆN HOT TRONG TUẦN</TitleText>
+            <div  className="w-full h-[60px] bg-space-400 right-0 py-4 pl-8">
+                    <TitleText>CÁC SỐ MỚI NHẤT</TitleText>
+                </div>
                 <div className="container mx-auto px-4 py-6">
                     {/* Main news */}
                     <div className="mb-6">
@@ -64,9 +68,7 @@ function Home() {
                                 <img
                                     src={mainNews.image}
                                     alt={mainNews.title}
-                                   
                                     className="object-cover rounded-lg w-full h-full"
-                                    
                                 />
                             </div>
                             <h1 className="text-xl md:text-2xl font-bold mb-2 group-hover:text-blue-600 transition-colors">
