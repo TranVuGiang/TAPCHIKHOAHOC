@@ -11,7 +11,7 @@ function DefaultLayout({ children }) {
             <div className="flex flex-col md:flex-row flex-grow w-full">
                 {/* Advertising sidebar - Left */}
                 <AdverLeft>
-                    <img src={bannerLeft} alt="Banner Left" className="h-full rounded-lg shadow-gray-800"/>
+                    <img src={bannerLeft} alt="Banner Left" className="h-full w-full rounded-lg shadow-gray-800"/>
                 </AdverLeft>
 
                 {/* Main content */}
