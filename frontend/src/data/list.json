@@ -1,0 +1,40 @@
+{
+    "issueNumber": "18",
+    "date": "8.2024",
+    "title": "TẠP CHÍ KHOA HỌC YERSIN",
+    "description": "Trường Đại học Yersin Đà Lạt",
+    "coverImage": "/path/to/cover/image.jpg",
+    "sections": [
+      {
+        "title": "CHUYÊN ĐỀ QUẢN LÝ KINH TẾ",
+        "articles": [
+          {
+            "title": "PHÂN TÍCH KINH TẾ TỪ ĐỘNG QUAN HỆ GIỮA THÓI QUEN CHĂM SÓC SỨC KHỎE VÀ GÁNH NẶC TRUYỀN THỐNG CỦA NGƯỜI DÂN NGHÈO CHÂU PHI: TÌM RA GIẢI PHÁP",
+            "authors": ["Hoàng Thụy Quỳnh Như"],
+            "pages": "1-11"
+          },
+          {
+            "title": "TÁC ĐỘNG CỦA ĐỔI MỚI SÁNG TẠO ĐẾN KẾT QUẢ HOẠT ĐỘNG CỦA DOANH NGHIỆP VỪA VÀ NHỎ TRONG NGÀNH DỆT MAY TPHCM – THỰC NGHIỆM VAI TRÒ TRUNG GIAN CỦA THƯƠNG HIỆU VÀ HIỆU QUẢ TỔ CHỨC",
+            "authors": ["Trần Thị Thu Hương", "Nguyễn Thị Thanh Thúy", "Hứa Đức Tuân", "Đinh Thị Hương Thảo"],
+            "pages": "12-26"
+          }
+        ]
+      },
+      {
+        "title": "CHUYÊN ĐỀ KHOA HỌC - CÔNG NGHỆ",
+        "articles": [
+          {
+            "title": "ĐÁNH GIÁ TÁC ĐỘNG NGẮN HẠN TRONG VỀ BỀN CHO KHÁNH BÊ TÔNG CƯỜNG ĐỘ CAO THEO CHỨNG CHI THIẾT KẾ BẢN LAM",
+            "authors": ["Nguyễn Hoàng Đăng", "Trần Quang Khánh", "Nguyễn Thành Đạt"],
+            "pages": "27-36"
+          },
+          {
+            "title": "ẢNH HƯỞNG CỦA QUÁ TRÌNH TIỀN XỬ LÝ KHỐI BT CACBON ĐẾN MẪU BĂNG TỬ TRƯỜNG ĐẶC TRƯNG NĂN CỦA LỚP PHỦ NANO TỪ THI HỘ",
+            "authors": ["Trần Thị Phượng"],
+            "pages": "37-48"
+          }
+        ]
+      }
+    ]
+  }
+  
