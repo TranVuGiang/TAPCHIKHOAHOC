@@ -104,9 +104,9 @@ function ListPage() {
                   </p>
                   <p style={styles.articlePages}>Trang: {article.pages}</p>
                 </div>
-                <div style={styles.pdfButtonContainer}>
+                {/* <div style={styles.pdfButtonContainer}>
                   <a href={article.pdfLink} className="btn-pdf">PDF</a>
-                </div>
+                </div> */}
               </div>
             ))}
           </div>
@@ -179,10 +179,10 @@ const styles = {
     fontSize: '12px',
     color: '#777',
   },
-  pdfButtonContainer: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-  },
+  // pdfButtonContainer: {
+  //   display: 'flex',
+  //   justifyContent: 'flex-end',
+  // },
 };
 
 export default ListPage;
