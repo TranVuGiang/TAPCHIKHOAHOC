@@ -1,9 +1,5 @@
 import React from "react";
-import image_assets from "@/assets/appsto.png";
-import gg_play from "@/assets/gg_play.png";
 import fb from "@/assets/fb.png";
-import yt from "@/assets/yt.png";
-import tt from "@/assets/tt.png";
 
 const Footer = () => {
   return (
