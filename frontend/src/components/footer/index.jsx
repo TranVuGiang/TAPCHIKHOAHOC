@@ -39,7 +39,7 @@ const Footer = () => {
 
         {/* Download theo mxh */}
         <div>
-          <div className="mt-6">
+          <div className="mt-1">
             <h3 className="text-lg leading-loose font-semibold mb-2">Theo dõi chúng tôi</h3>
             <div className="flex space-x-4">
               <a href="#" className="bg-gray-800 hover:bg-gray-700 p-2 rounded">
