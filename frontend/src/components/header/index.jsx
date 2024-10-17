@@ -1,21 +1,84 @@
 import useMediaQuery from '@/hooks/useMediaQuery';
 import { Bars3Icon, MagnifyingGlassIcon, UserIcon, XMarkIcon } from '@heroicons/react/24/solid';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Header() {
     const [showSearch, setShowSearch] = useState(false);
     const [isMenuToggled, setIsMenuToggled] = useState(false);
     const isAboveMediumScreens = useMediaQuery('(min-width: 1060px)');
     const textNavbar = `text-white transition-colors duration-400 px-3 py-4 rounded-none text-base font-montserrat relative inline-block before:absolute before:bottom-3 before:left-1/2 before:translate-x-[-50%] before:w-0 before:h-[2px] before:bg-space-800 before:transition-all before:duration-300 hover:before:w-11/12`;
-    const textTitle = `text-3xl font-bold text-space-200`;
+    const textTitle = `text-2xl font-bold text-space-300 font-montserrat`;
+
+    const navigate = useNavigate();
+    const [user, setUser] = useState(null);
+    // Hàm xử lý đăng xuất
+    const handleLogout = () => {
+        localStorage.removeItem('currentUser');
+        setUser(null);
+        navigate('/login');
+    };
+
+    // Menu items theo role
+    const getMenuItems = (role) => {
+        switch (role) {
+            case 'ADMIN':
+                return [
+                    { label: 'Quản lý người dùng', path: '/admin/users' },
+                    { label: 'Quản lý bài viết', path: '/admin/posts' },
+                    { label: 'Thống kê hệ thống', path: '/admin/statistics' },
+                    { label: 'Cài đặt hệ thống', path: '/admin/settings' },
+                ];
+            case 'AUTHOR':
+                return [
+                    { label: 'Bài viết của tôi', path: '/author/my-posts' },
+                    { label: 'Tạo bài viết mới', path: '/author/new-post' },
+                    { label: 'Thông báo phản biện', path: '/author/reviews' },
+                ];
+            case 'CENSOR':
+                return [
+                    { label: 'Bài viết cần duyệt', path: '/censor/pending' },
+                    { label: 'Bài viết đã duyệt', path: '/censor/approved' },
+                    { label: 'Viết phản biện', path: '/censor/review' },
+                ];
+            case 'KHACHHANG':
+                return [
+                    { label: 'Hồ sơ của tôi', path: '/profile' },
+                    { label: 'Bài viết đã lưu', path: '/saved-posts' },
+                    { label: 'Lịch sử đọc', path: '/reading-history' },
+                ];
+            default:
+                return [];
+        }
+    };
+    useEffect(() => {
+        const storedUser = localStorage.getItem('currentUser');
+        setUser(JSON.parse(storedUser));
+    }, [navigate]);
+
+    const handleNavigation = (path) => {
+        if (!user) {
+            alert('Vui lòng đăng nhập để tiếp tục!');
+            return;
+        }
+        navigate(path);
+    };
+    const checkLogin = (path) => {
+        if(!user) {
+            alert('Vui lòng đăng nhập để tiếp tục!');
+            return
+        }
+        else {
+            navigate
+        }
+    }
 
     return (
         <header className="relative">
             {/* Logo/Title Section */}
             <div className="py-6 text-center">
-                <h2 className={`${textTitle}`}>TẠP CHÍ</h2>
-                <h2 className={`${textTitle}`}>KHOA HỌC VÀ CÔNG NGHỆ</h2>
+                <h2 className="text-4xl font-bold font-montserrat text-space-200">TẠP CHÍ</h2>
+                <h2 className={`${textTitle}`}>KHOA HỌC & CÔNG NGHỆ</h2>
             </div>
             {/* Navigation Bar */}
             <nav className="bg-space-300 shadow-lg">
@@ -27,20 +90,23 @@ function Header() {
                                 className={`flex-1 flex ${!showSearch ? 'items-center justify-center' : 'items-center justify-center'}`}
                             >
                                 <div className={`flex ${showSearch ? 'space-x-4' : 'space-x-4'}`}>
-                                    <Link to="/" className={`${textNavbar}`}>
+                                    <Link to="/home" className={`${textNavbar}`}>
                                         Trang chủ
                                     </Link>
                                     <Link to="/gioi-thieu" className={`${textNavbar}`}>
                                         Giới thiệu
                                     </Link>
-                                    <Link to="/quy-dinh" className={`${textNavbar}`}>
-                                        Quy định - Hướng dẫn
+                                    <Link to="/list" className={`${textNavbar}`}>
+                                        Danh mục
                                     </Link>
-                                    <Link to="/hoi-dong" className={`${textNavbar}`}>
-                                        Hội đồng biên tập
-                                    </Link>
-                                    <Link to="/submitForm" className={`${textNavbar}`}>
+                                    <Link 
+                                        to={user ? ('/submitForm') : ('#')} 
+                                        className={`${textNavbar}`}  onClick={() => {handleNavigation("/submitForm")}}>
                                         Gửi bài Online
+                                    </Link>
+
+                                    <Link  to={user ? ('/advertisement') : ('#')}  className={`${textNavbar}`}  onClick={() => {handleNavigation("/advertisement")}}>
+                                        Khác
                                     </Link>
                                 </div>
                             </div>
@@ -78,10 +144,60 @@ function Header() {
                                 )}
                             </div>
 
-                            {/* User Icon */}
-                            <Link to="/login" className="text-white hover:text-space-200 transition-colors">
-                                <UserIcon className="h-6 w-6 text-white hover:text-space-200 transition duration-300" />
-                            </Link>
+                            {/* User Icon with Dropdown */}
+                            <div className="group relative">
+                                {/* User Icon */}
+                                {user ? (
+                                    <div className="flex items-center space-x-2">
+                                        <UserIcon className="h-6 w-6 text-white group-hover:text-space-200 transition duration-300" />
+                                        <span className="text-white group-hover:text-space-200 transition duration-300">
+                                            {user.username}
+                                        </span>
+                                    </div>
+                                ) : (
+                                    <Link
+                                        to="/login"
+                                        className="flex items-center space-x-2 group-hover:text-space-200 transition duration-300"
+                                    >
+                                        <UserIcon className="h-6 w-6 text-white group-hover:text-space-200 transition duration-300" />
+                                        
+                                    </Link>
+                                )}
+
+                                {/* Dropdown Menu */}
+                                {user && (
+                                    <div className="absolute right-0 w-48 py-2 mt-2 bg-white rounded-md shadow-xl z-50 opacity-0 group-hover:opacity-100 group-hover:visible transition-opacity duration-150 ease-in-out">
+                                        {/* User Info Section */}
+                                        <div className="px-4 py-2 border-b border-gray-100">
+                                            <p className="text-sm font-semibold text-gray-700">{user.username}</p>
+                                            <p className="text-xs text-gray-500">{user.role}</p>
+                                        </div>
+
+                                        {/* Menu Items Based on Role */}
+                                        <div className="py-1">
+                                            {getMenuItems(user.role).map((item, index) => (
+                                                <Link
+                                                    key={index}
+                                                    to={item.path}
+                                                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-space-200 hover:text-white transition duration-150 ease-in-out"
+                                                >
+                                                    {item.label}
+                                                </Link>
+                                            ))}
+                                        </div>
+
+                                        {/* Logout Button */}
+                                        <div className="border-t border-gray-100">
+                                            <button
+                                                onClick={handleLogout}
+                                                className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition duration-150 ease-in-out"
+                                            >
+                                                Đăng xuất
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -105,20 +221,15 @@ function Header() {
                         <Link to="/gioi-thieu" className="text-white hover:text-space-200 text-lg">
                             Giới thiệu
                         </Link>
-                        <Link to="/quy-dinh" className="text-white hover:text-space-200 text-lg">
-                            Quy định - Hướng dẫn
+                        <Link to="/list" className="text-white hover:text-space-200 text-lg">
+                            Danh mục
                         </Link>
-                        <Link to="/hoi-dong" className="text-white hover:text-space-200 text-lg">
-                            Hội đồng biên tập
-                        </Link>
-                        <Link to="/gui-bai" className="text-white hover:text-space-200 text-lg">
+                        <Link to="/submitForm" className="text-white hover:text-space-200 text-lg">
                             Gửi bài Online
                         </Link>
-                        <Link to="/tin-tuc" className="text-white hover:text-space-200 text-lg">
-                            Tin tức
-                        </Link>
-                        <Link to="/lien-he" className="text-white hover:text-space-200 text-lg">
-                            Liên hệ
+
+                        <Link to="/advertisement" className="text-white hover:text-space-200 text-lg">
+                            Khác
                         </Link>
                     </div>
                 </div>

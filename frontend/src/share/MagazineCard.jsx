@@ -3,7 +3,7 @@ import { ArrowRight, Calendar } from 'lucide-react';
 
 function MagazineCard({ issueNumber, publicationDate, title, excerpt, coverImage }) {
   return (
-    <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+    <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 ">
       {/* Image cover with issue number overlay */}
       <div className="relative">
         <img 
@@ -35,10 +35,10 @@ function MagazineCard({ issueNumber, publicationDate, title, excerpt, coverImage
         </p>
 
         {/* Read more button */}
-        <button className="group flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors duration-300">
+        <a href='/list' className="group w-[150px] flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors duration-300">
           Đọc thêm
           <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform duration-300" />
-        </button>
+        </a>
       </div>
     </div>
   );

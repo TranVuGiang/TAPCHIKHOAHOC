@@ -1,0 +1,27 @@
+[
+    {
+        "username": "tvugiang@gmail.com",
+        "password": "abc123",
+        "role": "ADMIN"
+    },
+    {
+        "username": "user3",
+        "password": "def456",
+        "role": "AUTHOR"
+    },
+    {
+        "username": "user4",
+        "password": "ghi789",
+        "role": "CENSOR"
+    },
+    {
+        "username": "user5",
+        "password": "jkl012",
+        "role": "KHACHHANG"
+    },
+    {
+        "username": "user6",
+        "password": "mno345",
+        "role": "KHACHHANG"
+    }
+]

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
 import { Check } from 'lucide-react';
+import { useState } from 'react';
 
-export default function PackageQC() {
+export default function Advertisement() {
   const [selectedPlan, setSelectedPlan] = useState('day');
 
   const plans = {

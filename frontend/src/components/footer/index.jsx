@@ -1,5 +1,5 @@
-import React from "react";
 import fb from "@/assets/fb.png";
+import React from "react";
 
 const Footer = () => {
   return (
