@@ -16,6 +16,9 @@ const publicRoutes = [
     {path: "/submitForm", component: SubmissionForm, layout: HeaderOnly},
     {path: "/list", component: ListPage},
     {path: "/advertisement", component: Advertisement},
+    // {path: "/package", component: PackageQC},
+    // {path: "/pay", component: Pay},
+    // {path: "/sign_advertising", component: SignAdvertising},
 
 ];
 
@@ -42,6 +45,7 @@ const privateRoutes = [
         component: Advertisement,
         roles: ['admin']  // Chỉ admin mới truy cập được
     }
+   
 ];
 
 export { privateRoutes, publicRoutes };
