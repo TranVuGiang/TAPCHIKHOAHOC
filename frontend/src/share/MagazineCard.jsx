@@ -35,7 +35,7 @@ function MagazineCard({ issueNumber, publicationDate, title, excerpt, coverImage
         </p>
 
         {/* Read more button */}
-        <a href='/list' className="group w-[150px] flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors duration-300">
+        <a href='/list' className="group w-[160px] flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors duration-300">
           Đọc thêm
           <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform duration-300" />
         </a>

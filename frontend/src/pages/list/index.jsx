@@ -1,109 +1,59 @@
-import list1 from '@/assets/list1.png';
+import { useEffect, useState } from 'react';
 
-const data = {
-    issueNumber: '18',
-    date: '8.2024',
-    title: 'TẠP CHÍ KHOA HỌC ',
+function ListPages() {
+    const [news, setNews] = useState([]);
+    useEffect(() => {
+        const fetchDatas = async () => {
+            const resp = await fetch('http://localhost:5173/list-baibao.json');
+            if (!resp) throw new Error('Failed to fetch');
+            const data = await resp.json();
+            setNews(data);
+        };
+        fetchDatas();
+    }, []);
 
-    // "coverImage": "/assets/list1.png", // Updated path to the image
-    sections: [
-        {
-            title: 'CHUYÊN ĐỀ QUẢN LÝ KINH TẾ',
-            articles: [
-                {
-                    title: 'PHÂN TÍCH KINH TẾ...',
-                    authors: ['Hoàng Thụy Quỳnh Như'],
-
-                    pdfLink: '#',
-                },
-                {
-                    title: 'TÁC ĐỘNG CỦA ĐỔI MỚI...',
-                    authors: ['Trần Thị Thu Hương', 'Nguyễn Thị Thanh Thúy'],
-
-                    pdfLink: '#',
-                },
-            ],
-        },
-        {
-            title: 'CHUYÊN ĐỀ KHOA HỌC - CÔNG NGHỆ',
-            articles: [
-                {
-                    title: 'ĐÁNH GIÁ TÁC ĐỘNG NGẮN HẠN...',
-                    authors: ['Nguyễn Hoàng Đăng', 'Trần Quang Khánh'],
-
-                    pdfLink: '#',
-                },
-                {
-                    title: 'ẢNH HƯỞNG CỦA QUÁ TRÌNH TIỀN...',
-                    authors: ['Trần Thị Phượng'],
-
-                    pdfLink: '#',
-                },
-            ],
-        },
-    ],
-};
-
-function ListPage() {
     return (
-        <div style={styles.container} className="font-montserrat">
-            {/* Styles in JSX */}
-            <style>{`
-        .journal-header img {
-          max-width: 100%;
-          height: auto;
-        }
-
-        .article-list .article-item {
-          display: flex;
-          align-items: center;
-        }
-
-        .btn-pdf {
-          background-color: #007bff;
-          color: white;
-          padding: 5px 10px;
-          text-decoration: none;
-          border-radius: 5px;
-        }
-
-        .btn-pdf:hover {
-          background-color: #0056b3;
-        }
-      `}</style>
-
-            <div style={styles.header} className="journal-header grid grid-cols-12 gap-4 mb-8">
-                {/* Issue details */}
-                <div className="col-span-9">
-                    <h1 style={styles.title}>{data.title}</h1>
-                    <p style={styles.description}>{data.description}</p>
-                    <p style={styles.issueDate}>
-                        Số {data.issueNumber} ({data.date})
-                    </p>
-                    <p style={styles.publishedDate}>Đã xuất bản: 22/08/2024</p>
-                </div>
-                {/* Cover image */}
-                <div style={styles.imageContainer} className="col-span-3">
-                    <img src={list1} alt="Tạp chí khoa học" style={styles.image} />
-                </div>
-            </div>
-            {/* Sections */}
-            {data.sections.map((section, sectionIndex) => (
-                <div key={sectionIndex} style={styles.section}>
-                    <h2 style={styles.sectionTitle}>{section.title}</h2>
-                    <div className="article-list">
-                        {section.articles.map((article, articleIndex) => (
-                            <div key={articleIndex} style={styles.articleItem} className="article-item">
-                                <div style={styles.articleDetails}>
-                                    <h3 style={styles.articleTitle}>{article.title}</h3>
-                                    <p style={styles.articleAuthors}>Tác giả: {article.authors.join(', ')}</p>
-                                    <p style={styles.articlePages}>Trang: {article.pages}</p>
-                                </div>
-                                {/* <div style={styles.pdfButtonContainer}>
-                  <a href={article.pdfLink} className="btn-pdf">PDF</a>
-                </div> */}
-                            </div>
-                        ))}
+        <div className="w-full max-w-3xl mx-auto p-2 sm:p-4">
+            {news.map((article) => (
+                <div 
+                    key={article.id} 
+                    className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4 sm:mb-6 cursor-pointer 
+                             hover:bg-gray-50 p-2 rounded-lg transition-colors duration-200
+                             border-b border-gray-100 last:border-b-0"
+                >
+                    {/* Thumbnail */}
+                    <div className="w-full sm:w-[150px] flex-shrink-0">
+                        <img
+                            src={article.url_anh}
+                            alt={article.tieude}
+                            className="w-full sm:w-[150px] h-[200px] sm:h-[100px] object-cover rounded
+                                     shadow-sm hover:shadow-md transition-shadow duration-200"
+                        />
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="flex flex-col flex-grow">
+                        <h2 className="text-base sm:text-lg font-semibold text-gray-800 
+                                     mb-1 sm:mb-2 line-clamp-2 hover:text-blue-600
+                                     transition-colors duration-200">
+                            {article.tieude}
+                        </h2>
+                        
+                        <p className="text-sm text-gray-600 mb-2 line-clamp-2 
+                                    hidden sm:block">
+                            {article.mota}
+                        </p>
+                        
+                        <div className="flex flex-wrap items-center gap-2 mt-auto
+                                      text-xs sm:text-sm">
+                            <span className="font-medium text-red-600 uppercase">
+                                Tác giả: {article.tacgia}
+                            </span>
+                            <span className="text-gray-500 before:content-['•'] before:mx-2 
+                                           before:text-gray-300">
+                                {article.thoigiandang}
+                            </span>
+                        </div>
                     </div>
                 </div>
             ))}
@@ -111,73 +61,4 @@ function ListPage() {
     );
 }
 
-// Style
-const styles = {
-    container: {
-        maxWidth: '1000px',
-        margin: '0 auto',
-        padding: '16px',
-    },
-    header: {
-        display: 'grid',
-        gridTemplateColumns: '1fr 3fr',
-        gap: '16px',
-        marginBottom: '32px',
-    },
-    imageContainer: {
-        width: '250px',
-    },
-    image: {
-        width: '100%',
-        height: 'auto',
-    },
-    title: {
-        fontSize: '32px',
-        fontWeight: 'bold',
-    },
-    description: {
-        fontSize: '18px',
-    },
-    issueDate: {
-        fontSize: '14px',
-        color: '#555',
-    },
-    publishedDate: {
-        fontSize: '12px',
-        color: '#999',
-    },
-    section: {
-        marginBottom: '40px',
-    },
-    sectionTitle: {
-        fontSize: '24px',
-        fontWeight: '600',
-        marginBottom: '16px',
-    },
-    articleItem: {
-        display: 'flex',
-        alignItems: 'center',
-        padding: '12px 0',
-        borderBottom: '1px solid #ddd',
-    },
-    articleDetails: {
-        flex: 1,
-    },
-    articleTitle: {
-        fontSize: '16px',
-        fontWeight: 'bold',
-    },
-    articleAuthors: {
-        fontSize: '14px',
-    },
-    articlePages: {
-        fontSize: '12px',
-        color: '#777',
-    },
-    // pdfButtonContainer: {
-    //   display: 'flex',
-    //   justifyContent: 'flex-end',
-    // },
-};
-
-export default ListPage;
+export default ListPages;

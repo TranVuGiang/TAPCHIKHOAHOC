@@ -19,20 +19,21 @@ const Footer = () => {
           <h3 className="text-2xl font-semibold mb-4">Liên hệ</h3>
           <ul>
             <li className="mb-2">
-              <strong>Email:</strong> 
+              <strong>Email: </strong> 
               <a href="mailto:info@science-news.com" className="text-green-400">
                 info@science-news.com
               </a>
             </li>
             <li className="mb-2">
-              <strong>Điện thoại:</strong> 
+              <strong>Điện thoại: </strong> 
               <a href="tel:+84247336649" className="text-green-400">
                 +84 24 7336 649
               </a>
             </li>
             <li className="mb-2">
-              <strong>Địa chỉ:</strong> 
-              123 Khoa Học Street, Quận 3, TP. HCM
+              <strong>Địa chỉ: </strong> 
+              123 Khoa Học Street, <br />
+              Quận 3, TP. HCM
             </li>
           </ul>
         </div>

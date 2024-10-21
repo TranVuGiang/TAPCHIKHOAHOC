@@ -4,7 +4,11 @@ import Home from "@/pages/home";
 import ListPage from "@/pages/list";
 import LoginPage from "@/pages/login/loginPage";
 import RegistrationForm from "@/pages/register/index";
+import ShowNew from "@/pages/showNew";
+import SignAdvertising from "@/pages/sign_advertising";
 import SubmissionForm from "@/pages/submitPost";
+import UserDashboard from "@/pages/user";
+import Pay from '../pages/pay/index';
 
 
 // Public Route
@@ -13,12 +17,12 @@ const publicRoutes = [
     {path: "/home" , component: Home},
     {path: "/login", component: LoginPage, layout: HeaderOnly},
     {path: "/register", component: RegistrationForm, layout: HeaderOnly},
-    {path: "/submitForm", component: SubmissionForm, layout: HeaderOnly},
     {path: "/list", component: ListPage},
     {path: "/advertisement", component: Advertisement},
-    // {path: "/package", component: PackageQC},
-    // {path: "/pay", component: Pay},
-    // {path: "/sign_advertising", component: SignAdvertising},
+    {path: "/pay", component: Pay},
+    {path: "/sign_advertising", component: SignAdvertising},
+    {path: "/showNew", component: ShowNew},
+    {path: "/user/dashboard", component: UserDashboard, layout: HeaderOnly},
 
 ];
 
@@ -27,13 +31,13 @@ const privateRoutes = [
     { 
         path: "/home", 
         component: Home,
-        roles: ['admin', 'user'] 
+        roles: ['ADMIN', 'KHACHHANG'] 
     },
     { 
         path: "/submitForm", 
         component: SubmissionForm, 
         layout: HeaderOnly,
-        roles: ['admin', 'user']
+        roles: ['ADMIN', 'AUTHOR']
     },
     { 
         path: "/list", 
@@ -41,7 +45,7 @@ const privateRoutes = [
         roles: ['admin', 'user']
     },
     { 
-        path: "/advertisement", 
+        path: "/pay", 
         component: Advertisement,
         roles: ['admin']  // Chỉ admin mới truy cập được
     }

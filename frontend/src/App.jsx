@@ -1,10 +1,9 @@
-
+import NoAccess from '@/components/noAcess';
 import DefaultLayout from '@/layouts/DefautLayouts';
 import { privateRoutes, publicRoutes } from '@/Routes';
 import ProtectedRoute from '@/Routes/privateRoute';
 import { Fragment } from 'react';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
-
 function App() {
     return (
         <Router>
@@ -14,14 +13,14 @@ function App() {
                     {publicRoutes.map((route, index) => {
                         const Page = route.component;
                         let Layout = DefaultLayout;
-                        
+
                         if (route.layout) {
                             Layout = route.layout;
                         }
                         if (route.layout === null) {
                             Layout = Fragment;
                         }
-                        
+
                         return (
                             <Route
                                 key={index}
@@ -39,14 +38,14 @@ function App() {
                     {privateRoutes.map((route, index) => {
                         const Page = route.component;
                         let Layout = DefaultLayout;
-                        
+
                         if (route.layout) {
                             Layout = route.layout;
                         }
                         if (route.layout === null) {
                             Layout = Fragment;
                         }
-                        
+
                         return (
                             <Route
                                 key={`private-${index}`}
@@ -64,9 +63,12 @@ function App() {
 
                     {/* Chuyển hướng trang gốc về home */}
                     <Route path="/" element={<Navigate to="/home" replace />} />
-                    
+
                     {/* Route mặc định cho trang 404 */}
                     <Route path="*" element={<Navigate to="/home" replace />} />
+
+                    {/* Trang không có quyền truy cập */}
+                    <Route path="/no-access" element={<NoAccess />} />
                 </Routes>
             </div>
         </Router>

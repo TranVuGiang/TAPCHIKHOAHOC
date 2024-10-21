@@ -25,7 +25,7 @@ function Header() {
             case 'ADMIN':
                 return [
                     { label: 'Quản lý người dùng', path: '/admin/users' },
-                    { label: 'Quản lý bài viết', path: '/admin/posts' },
+                    { label: 'Quản lý bài viết', path: 'http://localhost:5174/dashboard/home' },
                     { label: 'Thống kê hệ thống', path: '/admin/statistics' },
                     { label: 'Cài đặt hệ thống', path: '/admin/settings' },
                 ];
@@ -64,14 +64,13 @@ function Header() {
         navigate(path);
     };
     const checkLogin = (path) => {
-        if(!user) {
+        if (!user) {
             alert('Vui lòng đăng nhập để tiếp tục!');
-            return
+            return;
+        } else {
+            navigate;
         }
-        else {
-            navigate
-        }
-    }
+    };
 
     return (
         <header className="relative">
@@ -99,13 +98,23 @@ function Header() {
                                     <Link to="/list" className={`${textNavbar}`}>
                                         Danh mục
                                     </Link>
-                                    <Link 
-                                        to={user ? ('/submitForm') : ('#')} 
-                                        className={`${textNavbar}`}  onClick={() => {handleNavigation("/submitForm")}}>
+                                    <Link
+                                        to={user ? '/submitForm' : '#'}
+                                        className={`${textNavbar}`}
+                                        onClick={() => {
+                                            handleNavigation('/submitForm');
+                                        }}
+                                    >
                                         Gửi bài Online
                                     </Link>
 
-                                    <Link  to={user ? ('/advertisement') : ('#')}  className={`${textNavbar}`}  onClick={() => {handleNavigation("/advertisement")}}>
+                                    <Link
+                                        to={user ? '/advertisement' : '#'}
+                                        className={`${textNavbar}`}
+                                        onClick={() => {
+                                            handleNavigation('/advertisement');
+                                        }}
+                                    >
                                         Khác
                                     </Link>
                                 </div>
@@ -148,7 +157,7 @@ function Header() {
                             <div className="group relative">
                                 {/* User Icon */}
                                 {user ? (
-                                    <div className="flex items-center space-x-2">
+                                    <div className="flex items-center space-x-2 cursor-pointer">
                                         <UserIcon className="h-6 w-6 text-white group-hover:text-space-200 transition duration-300" />
                                         <span className="text-white group-hover:text-space-200 transition duration-300">
                                             {user.username}
@@ -160,13 +169,18 @@ function Header() {
                                         className="flex items-center space-x-2 group-hover:text-space-200 transition duration-300"
                                     >
                                         <UserIcon className="h-6 w-6 text-white group-hover:text-space-200 transition duration-300" />
-                                        
                                     </Link>
                                 )}
 
                                 {/* Dropdown Menu */}
+                                {/* Dropdown Menu */}
                                 {user && (
-                                    <div className="absolute right-0 w-48 py-2 mt-2 bg-white rounded-md shadow-xl z-50 opacity-0 group-hover:opacity-100 group-hover:visible transition-opacity duration-150 ease-in-out">
+                                    <div
+                                        className="absolute right-0 w-48 py-2 mt-2 bg-white rounded-md shadow-xl z-50 
+                      invisible transform scale-95 translate-y-2 
+                      group-hover:visible group-hover:translate-y-0 group-hover:scale-100
+                      transition-all duration-200 ease-in-out"
+                                    >
                                         {/* User Info Section */}
                                         <div className="px-4 py-2 border-b border-gray-100">
                                             <p className="text-sm font-semibold text-gray-700">{user.username}</p>
@@ -179,7 +193,9 @@ function Header() {
                                                 <Link
                                                     key={index}
                                                     to={item.path}
-                                                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-space-200 hover:text-white transition duration-150 ease-in-out"
+                                                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-space-200 
+                                 hover:text-white transition-colors duration-150 
+                                 font-montserrat"
                                                 >
                                                     {item.label}
                                                 </Link>
@@ -190,7 +206,8 @@ function Header() {
                                         <div className="border-t border-gray-100">
                                             <button
                                                 onClick={handleLogout}
-                                                className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition duration-150 ease-in-out"
+                                                className="block w-full text-left px-4 py-2 text-sm text-red-600 
+                             hover:bg-red-50 transition-colors duration-150"
                                             >
                                                 Đăng xuất
                                             </button>
