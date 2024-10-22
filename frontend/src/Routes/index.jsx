@@ -9,6 +9,10 @@ import SignAdvertising from "@/pages/sign_advertising";
 import SubmissionForm from "@/pages/submitPost";
 import UserDashboard from "@/pages/user";
 import Pay from '../pages/pay/index';
+import RestPassword from '@/pages/rest/index';
+import ForgotPassword from '@/pages/forgot_password/index';
+import Introduce from '@/pages/introduce/index';
+import RegisterUser from '@/pages/register_user/index';
 
 
 // Public Route
@@ -23,6 +27,10 @@ const publicRoutes = [
     {path: "/sign_advertising", component: SignAdvertising},
     {path: "/showNew", component: ShowNew},
     {path: "/user/dashboard", component: UserDashboard, layout: HeaderOnly},
+    {path: "/rest", component: RestPassword},
+    {path: "/forgot_password", component:ForgotPassword},
+    {path: "/introduce", component:Introduce},
+    {path: "/register_user", component:RegisterUser}
 
 ];
 
