@@ -1,7 +1,16 @@
 
+import { createUrlSlug } from '@/utils/urlUtils';
 import { ArrowRight, Calendar } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 function MagazineCard({ issueNumber, publicationDate, title, excerpt, coverImage }) {
+
+  const navigate = useNavigate();
+  const handleReadMore = () => {
+    const slug = createUrlSlug(title);
+    navigate(`/home/${slug}`)
+  }
+
   return (
     <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 ">
       {/* Image cover with issue number overlay */}
@@ -35,10 +44,10 @@ function MagazineCard({ issueNumber, publicationDate, title, excerpt, coverImage
         </p>
 
         {/* Read more button */}
-        <a href='/list' className="group w-[160px] flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors duration-300">
+        <button onClick={handleReadMore} className="group flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors duration-300">
           Đọc thêm
           <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform duration-300" />
-        </a>
+        </button>
       </div>
     </div>
   );

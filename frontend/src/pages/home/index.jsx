@@ -1,7 +1,12 @@
 import magazineData from '@/data/magazineData.json';
 import MagazineCard from '@/share/MagazineCard';
 import TitleText from '@/share/TitleText';
+
 function Home() {
+   
+
+
+
     const mainNews = {
         image: 'https://fundgo.network/wp-content/uploads/2024/02/Banner-16_9-for-press-release-2024-1.png',
         title: 'FUNDGO x Blockchain Life 2024 in Dubai - Waiting for To The Moon',
@@ -49,6 +54,7 @@ function Home() {
                             title={issue.title}
                             excerpt={issue.excerpt}
                             coverImage={issue.coverImage}
+                            
                         />
                     ))}
                 </div>

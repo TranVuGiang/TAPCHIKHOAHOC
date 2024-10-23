@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 export default function RestPassword() {
     const [password, setPassword] = useState('');
@@ -17,7 +17,7 @@ export default function RestPassword() {
     };
 
     return (
-        <div className="flex items-center justify-center h-screen bg-blue-100">
+        <div className="flex items-center justify-center h-[500px] bg-blue-100 font-montserrat">
             <div className="w-full max-w-md bg-white shadow-lg rounded-lg p-8">
                 <h2 className="text-3xl font-bold text-blue-600 mb-6 text-center">
                     Đặt Lại Mật Khẩu

@@ -43,7 +43,7 @@ function Header() {
                 ];
             case 'KHACHHANG':
                 return [
-                    { label: 'Hồ sơ của tôi', path: '/profile' },
+                    { label: 'Hồ sơ của tôi', path: '/home/profile_user' },
                     { label: 'Bài viết đã lưu', path: '/saved-posts' },
                     { label: 'Lịch sử đọc', path: '/reading-history' },
                 ];
@@ -63,14 +63,7 @@ function Header() {
         }
         navigate(path);
     };
-    const checkLogin = (path) => {
-        if (!user) {
-            alert('Vui lòng đăng nhập để tiếp tục!');
-            return;
-        } else {
-            navigate;
-        }
-    };
+
 
     return (
         <header className="relative">
@@ -92,14 +85,14 @@ function Header() {
                                     <Link to="/home" className={`${textNavbar}`}>
                                         Trang chủ
                                     </Link>
-                                    <Link to="/gioi-thieu" className={`${textNavbar}`}>
+                                    <Link to="/home/introduce" className={`${textNavbar}`}>
                                         Giới thiệu
                                     </Link>
-                                    <Link to="/list" className={`${textNavbar}`}>
+                                    <Link to="/home/list" className={`${textNavbar}`}>
                                         Danh mục
                                     </Link>
                                     <Link
-                                        to={user ? '/submitForm' : '#'}
+                                        to={user ? '/home/TacGiaDashboard' : '#'}
                                         className={`${textNavbar}`}
                                         onClick={() => {
                                             handleNavigation('/submitForm');
@@ -109,7 +102,7 @@ function Header() {
                                     </Link>
 
                                     <Link
-                                        to={user ? '/advertisement' : '#'}
+                                        to={user ? '/home/advertisement' : '#'}
                                         className={`${textNavbar}`}
                                         onClick={() => {
                                             handleNavigation('/advertisement');
@@ -165,7 +158,7 @@ function Header() {
                                     </div>
                                 ) : (
                                     <Link
-                                        to="/login"
+                                        to="/home/login"
                                         className="flex items-center space-x-2 group-hover:text-space-200 transition duration-300"
                                     >
                                         <UserIcon className="h-6 w-6 text-white group-hover:text-space-200 transition duration-300" />
@@ -177,9 +170,9 @@ function Header() {
                                 {user && (
                                     <div
                                         className="absolute right-0 w-48 py-2 mt-2 bg-white rounded-md shadow-xl z-50 
-                      invisible transform scale-95 translate-y-2 
-                      group-hover:visible group-hover:translate-y-0 group-hover:scale-100
-                      transition-all duration-200 ease-in-out"
+                                            invisible transform scale-95 translate-y-2 
+                                            group-hover:visible group-hover:translate-y-0 group-hover:scale-100
+                                            transition-all duration-200 ease-in-out"
                                     >
                                         {/* User Info Section */}
                                         <div className="px-4 py-2 border-b border-gray-100">
@@ -194,8 +187,8 @@ function Header() {
                                                     key={index}
                                                     to={item.path}
                                                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-space-200 
-                                 hover:text-white transition-colors duration-150 
-                                 font-montserrat"
+                                                                hover:text-white transition-colors duration-150 
+                                                                    font-montserrat"
                                                 >
                                                     {item.label}
                                                 </Link>

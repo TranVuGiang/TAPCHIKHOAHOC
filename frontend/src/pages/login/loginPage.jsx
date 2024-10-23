@@ -201,13 +201,14 @@ function LoginPage() {
                         Đăng nhập với Google
                     </button>
 
-                    <p className="mt-5 text-xs border-b border-gray-400 pb-4">
+                    <p className="mt-5 text-xs border-b border-gray-400 pb-4" onClick={() => (window.location.href = '/home/forgot_password')}>
                         <span className="cursor-pointer hover:text-blue-800 hover:underline">Quên mật khẩu?</span>
                     </p>
 
                     <div className="mt-3 text-xs flex justify-between items-center">
                         <p>Không có tài khoản...</p>
                         <button
+                            onClick={() => (window.location.href = '/home/register_user')}   
                             className="py-2 px-5 bg-white border rounded-xl 
                             hover:bg-gray-200 transition duration-300"
                         >

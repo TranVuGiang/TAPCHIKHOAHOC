@@ -39,6 +39,9 @@ export default function Advertisement() {
     }
   };
 
+  const handlePay = () => {
+    window.location.href = '/home/pay'
+  }
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-100 p-6">
       <h2 className="text-4xl font-bold mb-8 text-center text-indigo-800">Nâng cấp gói Quảng cáo</h2>
@@ -73,7 +76,7 @@ export default function Advertisement() {
             </li>
           ))}
         </ul>
-        <button className="w-full mt-6 bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors duration-300">
+        <button onClick={handlePay} className="w-full mt-6 bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors duration-300">
           Chọn Gói Này
         </button>
       </div>

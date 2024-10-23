@@ -6,7 +6,10 @@
         "tacgia": "Nguyễn Văn A",
         "thoigiandang": "2024-10-01",
         "url_anh": "https://photo-baomoi.bmcdn.me/w250_r3x2/2024_10_19_119_50489373/aab42acb8b8462da3b95.jpg",
-        "theloai": "Công nghệ thông tin"
+        "danhmuc": {
+            "id": 1,
+            "tieude": "Trí tuệ nhân tạo và tương lai của công nghệ"
+        }
     },
     {
         "id": 2,
@@ -15,7 +18,10 @@
         "tacgia": "Trần Thị B",
         "thoigiandang": "2024-10-05",
         "url_anh": "https://photo-baomoi.bmcdn.me/w250_r3x2/2024_10_19_119_50489373/aab42acb8b8462da3b95.jpg",
-        "theloai": "Trí tuệ nhân tạo"
+        "danhmuc": {
+            "id": 2,
+            "tieude": "Trí tuệ nhân tạo và tương lai của công nghệ"
+        }
     },
     {
         "id": 3,
@@ -24,7 +30,10 @@
         "tacgia": "Lê Văn C",
         "thoigiandang": "2024-10-10",
         "url_anh": "https://photo-baomoi.bmcdn.me/w250_r3x2/2024_10_19_119_50489373/aab42acb8b8462da3b95.jpg",
-        "theloai": "Blockchain"
+        "danhmuc": {
+            "id": 3,
+            "tieude": "Trí tuệ nhân tạo và tương lai của công nghệ"
+        }
     },
     {
         "id": 4,
@@ -33,7 +42,10 @@
         "tacgia": "Nguyễn Thị D",
         "thoigiandang": "2024-10-12",
         "url_anh": "https://photo-baomoi.bmcdn.me/w250_r3x2/2024_10_19_119_50489373/aab42acb8b8462da3b95.jpg",
-        "theloai": "Internet Vạn Vật"
+        "danhmuc": {
+            "id": 4,
+            "tieude": "Công nghệ Blockchain và tiền điện tử"
+        }
     },
     {
         "id": 5,
@@ -42,7 +54,10 @@
         "tacgia": "Phạm Văn E",
         "thoigiandang": "2024-10-15",
         "url_anh": "https://photo-baomoi.bmcdn.me/w250_r3x2/2024_10_19_119_50489373/aab42acb8b8462da3b95.jpg",
-        "theloai": "An ninh mạng"
+        "danhmuc": {
+            "id": 5,
+            "tieude": "Công nghệ Blockchain và tiền điện tử"
+        }
     },
     {
         "id": 6,
@@ -51,7 +66,10 @@
         "tacgia": "Trần Văn F",
         "thoigiandang": "2024-10-18",
         "url_anh": "https://photo-baomoi.bmcdn.me/w250_r3x2/2024_10_19_119_50489373/aab42acb8b8462da3b95.jpg",
-        "theloai": "Điện toán đám mây"
+        "danhmuc": {
+            "id": 6,
+            "tieude": "Công nghệ Blockchain và tiền điện tử"
+        }
     },
     {
         "id": 7,
@@ -60,7 +78,10 @@
         "tacgia": "Nguyễn Văn G",
         "thoigiandang": "2024-10-20",
         "url_anh": "https://photo-baomoi.bmcdn.me/w250_r3x2/2024_10_19_119_50489373/aab42acb8b8462da3b95.jpg",
-        "theloai": "Công nghệ sinh học"
+        "danhmuc": {
+            "id": 7,
+            "tieude": "Công nghệ sinh học"
+        }
     },
     {
         "id": 8,
@@ -69,7 +90,10 @@
         "tacgia": "Lê Thị H",
         "thoigiandang": "2024-10-22",
         "url_anh": "https://photo-baomoi.bmcdn.me/w250_r3x2/2024_10_19_119_50489373/aab42acb8b8462da3b95.jpg",
-        "theloai": "Thực tế ảo"
+        "danhmuc": {
+            "id": 8,
+            "tieude": "Thực tế ảo"
+        }
     },
     {
         "id": 9,
@@ -78,7 +102,10 @@
         "tacgia": "Phạm Văn I",
         "thoigiandang": "2024-10-25",
         "url_anh": "https://photo-baomoi.bmcdn.me/w250_r3x2/2024_10_19_119_50489373/aab42acb8b8462da3b95.jpg",
-        "theloai": "Robotics"
+        "danhmuc": {
+            "id": 9,
+            "tieude": "Robotics"
+        }
     },
     {
         "id": 10,
@@ -87,6 +114,10 @@
         "tacgia": "Trần Văn J",
         "thoigiandang": "2024-10-28",
         "url_anh": "https://photo-baomoi.bmcdn.me/w250_r3x2/2024_10_19_119_50489373/aab42acb8b8462da3b95.jpg",
-        "theloai": "Công nghệ 5G"
+        "danhmuc": {
+            "id": 10,
+            "tieude": "Công nghệ 5G"
+        }
     }
+    
 ]

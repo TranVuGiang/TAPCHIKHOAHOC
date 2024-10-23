@@ -1,36 +1,39 @@
 import HeaderOnly from "@/layouts/HeaderOnly";
 import Advertisement from "@/pages/advertisement/";
+import ModeratorDashboard from "@/pages/censor";
+import EditorDashboard from "@/pages/editor_dashboard";
+import ForgotPassword from '@/pages/forgot_password/index';
 import Home from "@/pages/home";
+import Introduce from '@/pages/introduce/index';
 import ListPage from "@/pages/list";
 import LoginPage from "@/pages/login/loginPage";
-import RegistrationForm from "@/pages/register/index";
+import Pay from '@/pages/pay';
+import RegisterUser from '@/pages/register_user/index';
+import RestPassword from '@/pages/rest/index';
 import ShowNew from "@/pages/showNew";
 import SignAdvertising from "@/pages/sign_advertising";
-import SubmissionForm from "@/pages/submitPost";
+import TacGiaDashboard from "@/pages/submitPost";
 import UserDashboard from "@/pages/user";
-import Pay from '../pages/pay/index';
-import RestPassword from '@/pages/rest/index';
-import ForgotPassword from '@/pages/forgot_password/index';
-import Introduce from '@/pages/introduce/index';
-import RegisterUser from '@/pages/register_user/index';
 
 
 // Public Route
 const publicRoutes = [
     {path: "/" , component: Home},
     {path: "/home" , component: Home},
-    {path: "/login", component: LoginPage, layout: HeaderOnly},
-    {path: "/register", component: RegistrationForm, layout: HeaderOnly},
-    {path: "/list", component: ListPage},
-    {path: "/advertisement", component: Advertisement},
-    {path: "/pay", component: Pay},
-    {path: "/sign_advertising", component: SignAdvertising},
-    {path: "/showNew", component: ShowNew},
-    {path: "/user/dashboard", component: UserDashboard, layout: HeaderOnly},
-    {path: "/rest", component: RestPassword},
-    {path: "/forgot_password", component:ForgotPassword},
-    {path: "/introduce", component:Introduce},
-    {path: "/register_user", component:RegisterUser}
+    {path: "/home/login", component: LoginPage, layout: HeaderOnly},
+    {path: "/home/register_user", component:RegisterUser, layout: HeaderOnly},
+    {path: "/home/:magazineSlug", component: ListPage},
+    {path: "/home/:magazineSlug/:articleSlug", component: ShowNew},
+    {path: "/home/advertisement", component: Advertisement},
+    {path: "/home/pay", component: Pay},
+    {path: "/home/sign_advertising", component: SignAdvertising},
+    {path: "/home/profile_user", component: UserDashboard, layout: HeaderOnly},
+    {path: "/home/resetPassword", component: RestPassword, layout: HeaderOnly},
+    {path: "/home/forgot_password", component:ForgotPassword, layout: HeaderOnly},
+    {path: "/home/introduce", component:Introduce},
+    {path: "/home/editor_dashboard", component:EditorDashboard, layout: HeaderOnly},
+    {path: "/home/censor_dashboard", component:ModeratorDashboard, layout: HeaderOnly},
+
 
 ];
 
@@ -42,18 +45,18 @@ const privateRoutes = [
         roles: ['ADMIN', 'KHACHHANG'] 
     },
     { 
-        path: "/submitForm", 
-        component: SubmissionForm, 
+        path: "/home/TacGiaDashboard", 
+        component: TacGiaDashboard, 
         layout: HeaderOnly,
         roles: ['ADMIN', 'AUTHOR']
     },
     { 
-        path: "/list", 
+        path: "/home/list", 
         component: ListPage,
         roles: ['admin', 'user']
     },
     { 
-        path: "/pay", 
+        path: "/home/pay", 
         component: Advertisement,
         roles: ['admin']  // Chỉ admin mới truy cập được
     }
