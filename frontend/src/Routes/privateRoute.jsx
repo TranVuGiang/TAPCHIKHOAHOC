@@ -3,7 +3,6 @@ import { Navigate, useLocation } from "react-router-dom";
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
     const location = useLocation();
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    console.log(currentUser.role);
     
     // Nếu người dùng chưa đăng nhập, chuyển hướng đến trang đăng nhập
     if (!currentUser) {
@@ -11,7 +10,7 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
     }
 
     // Nếu vai trò hiện tại không được phép truy cập, chuyển hướng về trang không có quyền truy cập
-    if (allowedRoles.length > 0 && !allowedRoles.includes(currentUser.role)) {
+    if (allowedRoles.length > 0 && !allowedRoles.includes(Number(currentUser.role))) {
         return <Navigate to="/no-access" replace />;
     }
 

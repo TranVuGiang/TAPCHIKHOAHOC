@@ -4,26 +4,21 @@ import { privateRoutes, publicRoutes } from '@/Routes';
 import ProtectedRoute from '@/Routes/privateRoute';
 import { Fragment } from 'react';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+
 function App() {
     return (
         <Router>
             <div className="App bg-blue-100">
                 <Routes>
-                    {/* Routes công khai */}
+                    {/* Public Routes */}
                     {publicRoutes.map((route, index) => {
                         const Page = route.component;
-                        let Layout = DefaultLayout;
-
-                        if (route.layout) {
-                            Layout = route.layout;
-                        }
-                        if (route.layout === null) {
-                            Layout = Fragment;
-                        }
+                        let Layout = route.layout || DefaultLayout;
+                        Layout = Layout === null ? Fragment : Layout;
 
                         return (
                             <Route
-                                key={index}
+                                key={`public-${index}`}
                                 path={route.path}
                                 element={
                                     <Layout>
@@ -34,17 +29,11 @@ function App() {
                         );
                     })}
 
-                    {/* Routes được bảo vệ */}
+                    {/* Protected Routes */}
                     {privateRoutes.map((route, index) => {
                         const Page = route.component;
-                        let Layout = DefaultLayout;
-
-                        if (route.layout) {
-                            Layout = route.layout;
-                        }
-                        if (route.layout === null) {
-                            Layout = Fragment;
-                        }
+                        let Layout = route.layout || DefaultLayout;
+                        Layout = Layout === null ? Fragment : Layout;
 
                         return (
                             <Route
@@ -61,14 +50,10 @@ function App() {
                         );
                     })}
 
-                    {/* Chuyển hướng trang gốc về home */}
+                    {/* Redirect Routes */}
                     <Route path="/" element={<Navigate to="/home" replace />} />
-
-                    {/* Route mặc định cho trang 404 */}
-                    <Route path="*" element={<Navigate to="/home" replace />} />
-
-                    {/* Trang không có quyền truy cập */}
                     <Route path="/no-access" element={<NoAccess />} />
+                    <Route path="*" element={<Navigate to="/home" replace />} />
                 </Routes>
             </div>
         </Router>

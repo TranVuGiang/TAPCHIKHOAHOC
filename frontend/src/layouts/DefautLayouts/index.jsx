@@ -8,7 +8,7 @@ import Footer from "@/components/footer";
 import Header from "@/components/header";
 function DefaultLayout({ children }) {
     return ( 
-        <div className="min-h-screen flex flex-col">
+        <div className="min-h-screen flex flex-col font-montserrat">
             <PromotionalBanner />
             <AdPopup />
             <Header />

@@ -12,37 +12,94 @@ function Header() {
 
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
-    // Hàm xử lý đăng xuất
+
+    // Role constants
+    const ROLES = {
+        ADMIN: 0,
+        EDITOR: 1,
+        CENSOR: 2,
+        CUSTOMER: 3,
+        ADVERTISER: 4,
+        AUTHOR: 5
+    };
+
+    // Function to get role name from numeric value
+    const getRoleName = (roleNum) => {
+        switch (parseInt(roleNum)) {
+            case ROLES.ADMIN:
+                return 'Quản trị viên';
+            case ROLES.EDITOR:
+                return 'Biên tập viên';
+            case ROLES.CENSOR:
+                return 'Kiểm duyệt';
+            case ROLES.CUSTOMER:
+                return 'Khách hàng';
+            case ROLES.ADVERTISER:
+                return 'Đối tác quảng cáo';
+            case ROLES.AUTHOR:
+                return 'Tác giả';
+            default:
+                return 'Không xác định';
+        }
+    };
+
     const handleLogout = () => {
         localStorage.removeItem('currentUser');
         setUser(null);
         navigate('/login');
     };
 
-    // Menu items theo role
-    const getMenuItems = (role) => {
-        switch (role) {
-            case 'ADMIN':
+    // Menu items based on numeric role
+    const getMenuItems = (roleNum) => {
+        switch (parseInt(roleNum)) {
+            case ROLES.ADMIN:
                 return [
                     { label: 'Quản lý người dùng', path: '/admin/users' },
                     { label: 'Quản lý bài viết', path: 'http://localhost:5174/dashboard/home' },
                     { label: 'Thống kê hệ thống', path: '/admin/statistics' },
                     { label: 'Cài đặt hệ thống', path: '/admin/settings' },
+                    { label: 'Hồ sơ của tôi', path: '/home/profile_user' },
+                    { label: 'Bài viết đã lưu', path: '/saved-posts' },
+                    { label: 'Lịch sử đọc', path: '/reading-history' },
                 ];
-            case 'AUTHOR':
+            case ROLES.EDITOR:
                 return [
-                    { label: 'Bài viết của tôi', path: '/author/my-posts' },
-                    { label: 'Tạo bài viết mới', path: '/author/new-post' },
-                    { label: 'Thông báo phản biện', path: '/author/reviews' },
+                    { label: 'Bài viết mới', path: '/home/editor_dashboard' },
+                    { label: 'Bài viết đang xử lý', path: '/home/editor_dashboard' },
+                    { label: 'Thông báo', path: '/home/editor_dashboard' },
+                    { label: 'Hồ sơ của tôi', path: '/home/profile_user' },
+                    { label: 'Bài viết đã lưu', path: '/saved-posts' },
+                    { label: 'Lịch sử đọc', path: '/reading-history' },
                 ];
-            case 'CENSOR':
+            case ROLES.CENSOR:
                 return [
-                    { label: 'Bài viết cần duyệt', path: '/censor/pending' },
+                    { label: 'Bài viết cần duyệt', path: '/home/censor_dashboard' },
                     { label: 'Bài viết đã duyệt', path: '/censor/approved' },
-                    { label: 'Viết phản biện', path: '/censor/review' },
+                    { label: 'Hồ sơ của tôi', path: '/home/profile_user' },
+                    { label: 'Bài viết đã lưu', path: '/saved-posts' },
+                    { label: 'Lịch sử đọc', path: '/reading-history' },
+
                 ];
-            case 'KHACHHANG':
+            case ROLES.CUSTOMER:
                 return [
+                    { label: 'Hồ sơ của tôi', path: '/home/profile_user' },
+                    { label: 'Bài viết đã lưu', path: '/saved-posts' },
+                    { label: 'Lịch sử đọc', path: '/reading-history' },
+                ];
+            case ROLES.ADVERTISER:
+                return [
+                    { label: 'Quản lý quảng cáo', path: '/advertiser/manage' },
+                    { label: 'Thống kê hiệu quả', path: '/advertiser/statistics' },
+                    { label: 'Thanh toán', path: '/advertiser/payments' },
+                    { label: 'Hồ sơ của tôi', path: '/home/profile_user' },
+                    { label: 'Bài viết đã lưu', path: '/saved-posts' },
+                    { label: 'Lịch sử đọc', path: '/reading-history' },
+                ];
+            case ROLES.AUTHOR:
+                return [
+                    { label: 'Bài viết của tôi', path: '/home/TacGiaDashboard/management' },
+                    { label: 'Tạo bài viết mới', path: '/home/TacGiaDashboard/submission' },
+                    { label: 'Thông báo phản biện', path: '/home/TacGiaDashboard/notifications' },
                     { label: 'Hồ sơ của tôi', path: '/home/profile_user' },
                     { label: 'Bài viết đã lưu', path: '/saved-posts' },
                     { label: 'Lịch sử đọc', path: '/reading-history' },
@@ -51,6 +108,7 @@ function Header() {
                 return [];
         }
     };
+
     useEffect(() => {
         const storedUser = localStorage.getItem('currentUser');
         setUser(JSON.parse(storedUser));
@@ -63,7 +121,6 @@ function Header() {
         }
         navigate(path);
     };
-
 
     return (
         <header className="relative">
@@ -88,7 +145,7 @@ function Header() {
                                     <Link to="/home/introduce" className={`${textNavbar}`}>
                                         Giới thiệu
                                     </Link>
-                                    <Link to="/home/list" className={`${textNavbar}`}>
+                                    <Link to="/home/danhmuc" className={`${textNavbar}`}>
                                         Danh mục
                                     </Link>
                                     <Link
@@ -100,7 +157,6 @@ function Header() {
                                     >
                                         Gửi bài Online
                                     </Link>
-
                                     <Link
                                         to={user ? '/home/advertisement' : '#'}
                                         className={`${textNavbar}`}
@@ -166,7 +222,6 @@ function Header() {
                                 )}
 
                                 {/* Dropdown Menu */}
-                                {/* Dropdown Menu */}
                                 {user && (
                                     <div
                                         className="absolute right-0 w-48 py-2 mt-2 bg-white rounded-md shadow-xl z-50 
@@ -177,7 +232,7 @@ function Header() {
                                         {/* User Info Section */}
                                         <div className="px-4 py-2 border-b border-gray-100">
                                             <p className="text-sm font-semibold text-gray-700">{user.username}</p>
-                                            <p className="text-xs text-gray-500">{user.role}</p>
+                                            <p className="text-xs text-gray-500">{getRoleName(user.role)}</p>
                                         </div>
 
                                         {/* Menu Items Based on Role */}
@@ -200,7 +255,7 @@ function Header() {
                                             <button
                                                 onClick={handleLogout}
                                                 className="block w-full text-left px-4 py-2 text-sm text-red-600 
-                             hover:bg-red-50 transition-colors duration-150"
+                                                    hover:bg-red-50 transition-colors duration-150"
                                             >
                                                 Đăng xuất
                                             </button>
@@ -237,7 +292,6 @@ function Header() {
                         <Link to="/submitForm" className="text-white hover:text-space-200 text-lg">
                             Gửi bài Online
                         </Link>
-
                         <Link to="/advertisement" className="text-white hover:text-space-200 text-lg">
                             Khác
                         </Link>

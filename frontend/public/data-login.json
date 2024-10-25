@@ -2,26 +2,31 @@
     {
         "username": "tvugiang@gmail.com",
         "password": "abc123",
-        "role": "ADMIN"
+        "role": "0"
     },
     {
         "username": "user3",
         "password": "def456",
-        "role": "AUTHOR"
+        "role": "1"
     },
     {
         "username": "user4",
         "password": "ghi789",
-        "role": "CENSOR"
+        "role": "2"
     },
     {
         "username": "user5",
         "password": "jkl012",
-        "role": "KHACHHANG"
+        "role": "3"
     },
     {
         "username": "user6",
         "password": "mno345",
-        "role": "KHACHHANG"
+        "role": "4"
+    },
+    {
+        "username": "user7",
+        "password": "mno345",
+        "role": "5"
     }
 ]

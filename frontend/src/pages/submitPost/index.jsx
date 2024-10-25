@@ -1,19 +1,43 @@
 import QuanLyBaiviet from '@/components/articleManagement';
+import NotificationComponent from '@/components/notification';
 import SubmissionForm from '@/components/submissionForm';
-import { useState } from 'react';
 import 'react-quill/dist/quill.snow.css';
+import { Link, useLocation } from 'react-router-dom';
 
 const TacGiaDashboard = () => {
-    const [activeTab, setActiveTab] = useState('author'); // Default tab
+    const location = useLocation();
+    
+    // Function to check if current path matches the link
+    const isActiveLink = (path) => {
+        return location.pathname === path;
+    };
+
+    // Define navigation items với đường dẫn đã điều chỉnh
+    const navigationItems = [
+        { label: 'Tác giả', path: '/home/TacGiaDashboard' },
+        { label: 'Gửi bài', path: '/home/TacGiaDashboard/submission' },
+        { label: 'Quản lý bài viết', path: '/home/TacGiaDashboard/management' },
+        { label: 'Thông báo', path: '/home/TacGiaDashboard/notifications' }
+    ];
 
     const renderContent = () => {
-        switch (activeTab) {
-            case 'submission':
-                return <SubmissionForm />;
-            case 'management':
-                return <QuanLyBaiviet />;
-            default:
-                return <div className="p-4">Chào mừng bạn đến với trang tác giả</div>;
+        const path = location.pathname;
+        
+        if (path.includes('/submission')) {
+            return <SubmissionForm />;
+        } else if (path.includes('/management')) {
+            return <QuanLyBaiviet />;
+        } else if (path.includes('/notifications')) {
+            return <NotificationComponent />;
+        } else {
+            return (
+                <div className="p-4">
+                    <h1 className="text-2xl font-bold mb-4">Chào mừng bạn đến với trang tác giả</h1>
+                    <p className="text-gray-600">
+                        Bạn có thể gửi bài viết mới, quản lý bài viết hiện có hoặc xem thông báo từ menu bên trái.
+                    </p>
+                </div>
+            );
         }
     };
 
@@ -23,43 +47,29 @@ const TacGiaDashboard = () => {
             <aside className="w-full md:w-64 bg-gray-800 text-white p-4">
                 <nav>
                     <ul>
-                        <li className="mb-2">
-                            <button
-                                onClick={() => setActiveTab('author')}
-                                className={`w-full text-left p-2 rounded ${
-                                    activeTab === 'author' ? 'bg-gray-700' : 'hover:bg-gray-700'
-                                }`}
-                            >
-                                Tác giả
-                            </button>
-                        </li>
-                        <li className="mb-2">
-                            <button
-                                onClick={() => setActiveTab('submission')}
-                                className={`w-full text-left p-2 rounded ${
-                                    activeTab === 'submission' ? 'bg-gray-700' : 'hover:bg-gray-700'
-                                }`}
-                            >
-                                Gửi bài
-                            </button>
-                        </li>
-                        <li className="mb-2">
-                            <button
-                                onClick={() => setActiveTab('management')}
-                                className={`w-full text-left p-2 rounded ${
-                                    activeTab === 'management' ? 'bg-gray-700' : 'hover:bg-gray-700'
-                                }`}
-                            >
-                                Quản lý bài viết
-                            </button>
-                        </li>
+                        {navigationItems.map((item) => (
+                            <li key={item.path} className="mb-2">
+                                <Link 
+                                    to={item.path} 
+                                    className={`block p-2 rounded transition-colors duration-200
+                                        ${isActiveLink(item.path) 
+                                            ? 'bg-gray-700 text-white'
+                                            : 'hover:bg-gray-700 hover:text-white'
+                                        }`}
+                                >
+                                    {item.label}
+                                </Link>
+                            </li>
+                        ))}
                     </ul>
                 </nav>
             </aside>
 
-            {/* Main Content */}
-            <main className="flex-1 p-4 md:p-8">
-                {renderContent()}
+            {/* Main Content với thêm transition */}
+            <main className="flex-1 p-4 md:p-8 transition-all duration-300 ease-in-out">
+                <div className="max-w-7xl mx-auto">
+                    {renderContent()}
+                </div>
             </main>
         </div>
     );
