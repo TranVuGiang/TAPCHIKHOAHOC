@@ -158,10 +158,10 @@ function Header() {
                                         Gửi bài Online
                                     </Link>
                                     <Link
-                                        to={user ? '/home/advertisement' : '#'}
+                                        to={user ? '/home/option_advertisement' : '#'}
                                         className={`${textNavbar}`}
                                         onClick={() => {
-                                            handleNavigation('/advertisement');
+                                            handleNavigation('/home/option_advertisement');
                                         }}
                                     >
                                         Khác

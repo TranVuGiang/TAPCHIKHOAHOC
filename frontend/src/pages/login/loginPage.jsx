@@ -2,6 +2,8 @@ import loginImg from '@/assets/loginbg.png';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 function LoginPage() {
     // Form state management
     const initialFormState = {
@@ -14,7 +16,6 @@ function LoginPage() {
         username: '',
         password: '',
     };
-
     const [formData, setFormData] = useState(initialFormState);
     const [errors, setErrors] = useState(initialErrorState);
     const [users, setUsers] = useState([]);
@@ -23,7 +24,7 @@ function LoginPage() {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await fetch('http://localhost:5173/data-login.json');
+                const response = await fetch(API_URL + "/data-login.json");
                 if (!response.ok) throw new Error('Failed to fetch');
                 const data = await response.json();
                 setUsers(data);

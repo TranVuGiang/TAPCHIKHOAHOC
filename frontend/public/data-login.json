@@ -5,7 +5,7 @@
         "role": "0"
     },
     {
-        "username": "user3",
+            "username": "user3",
         "password": "def456",
         "role": "1"
     },
@@ -15,7 +15,7 @@
         "role": "2"
     },
     {
-        "username": "user5",
+            "username": "user5",
         "password": "jkl012",
         "role": "3"
     },

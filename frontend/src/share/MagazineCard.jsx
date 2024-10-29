@@ -12,7 +12,7 @@ function MagazineCard({ issueNumber, publicationDate, title, excerpt, coverImage
   }
 
   return (
-    <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 ">
+    <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
       {/* Image cover with issue number overlay */}
       <div className="relative">
         <img 
