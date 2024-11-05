@@ -20,7 +20,7 @@ function Header() {
         CENSOR: 2,
         CUSTOMER: 3,
         ADVERTISER: 4,
-        AUTHOR: 5
+        AUTHOR: 5,
     };
 
     // Function to get role name from numeric value
@@ -46,7 +46,7 @@ function Header() {
     const handleLogout = () => {
         localStorage.removeItem('currentUser');
         setUser(null);
-        navigate('/login');
+        navigate('/home/login');
     };
 
     // Menu items based on numeric role
@@ -62,11 +62,11 @@ function Header() {
                     { label: 'Bài viết đã lưu', path: '/saved-posts' },
                     { label: 'Lịch sử đọc', path: '/reading-history' },
                 ];
-            case ROLES.EDITOR:
-                return [
-                    { label: 'Bài viết mới', path: '/home/editor_dashboard' },
-                    { label: 'Bài viết đang xử lý', path: '/home/editor_dashboard' },
-                    { label: 'Thông báo', path: '/home/editor_dashboard' },
+                case ROLES.EDITOR:
+                    return [
+                        { label: 'Bài viết mới', path: '/home/editor_dashboard' },
+                        { label: 'Bài viết đang xử lý', path: '/home/editor_dashboard/bai-viet-dang-xu-ly' },
+                        { label: 'Thông báo', path: '/home/editor_dashboard/thong-bao' },
                     { label: 'Hồ sơ của tôi', path: '/home/profile_user' },
                     { label: 'Bài viết đã lưu', path: '/saved-posts' },
                     { label: 'Lịch sử đọc', path: '/reading-history' },
@@ -78,7 +78,6 @@ function Header() {
                     { label: 'Hồ sơ của tôi', path: '/home/profile_user' },
                     { label: 'Bài viết đã lưu', path: '/saved-posts' },
                     { label: 'Lịch sử đọc', path: '/reading-history' },
-
                 ];
             case ROLES.CUSTOMER:
                 return [
@@ -88,9 +87,9 @@ function Header() {
                 ];
             case ROLES.ADVERTISER:
                 return [
-                    { label: 'Quản lý quảng cáo', path: '/advertiser/manage' },
-                    { label: 'Thống kê hiệu quả', path: '/advertiser/statistics' },
-                    { label: 'Thanh toán', path: '/advertiser/payments' },
+                    { label: 'Quản lý quảng cáo', path: '/home/adver_dashboard' },
+                    { label: 'Thống kê hiệu quả', path: '/home/adver_dashboard' },
+                    { label: 'Thanh toán', path: '/home/payment' },
                     { label: 'Hồ sơ của tôi', path: '/home/profile_user' },
                     { label: 'Bài viết đã lưu', path: '/saved-posts' },
                     { label: 'Lịch sử đọc', path: '/reading-history' },
@@ -139,7 +138,7 @@ function Header() {
                                 className={`flex-1 flex ${!showSearch ? 'items-center justify-center' : 'items-center justify-center'}`}
                             >
                                 <div className={`flex ${showSearch ? 'space-x-4' : 'space-x-4'}`}>
-                                    <Link to="/home" className={`${textNavbar}`}>
+                                    <Link to="/" className={`${textNavbar}`}>
                                         Trang chủ
                                     </Link>
                                     <Link to="/home/introduce" className={`${textNavbar}`}>
@@ -152,7 +151,7 @@ function Header() {
                                         to={user ? '/home/TacGiaDashboard' : '#'}
                                         className={`${textNavbar}`}
                                         onClick={() => {
-                                            handleNavigation('/submitForm');
+                                            handleNavigation('/home/TacGiaDashboard/*');
                                         }}
                                     >
                                         Gửi bài Online
@@ -283,13 +282,19 @@ function Header() {
                         <Link to="/" className="text-white hover:text-space-200 text-lg">
                             Trang chủ
                         </Link>
-                        <Link to="/gioi-thieu" className="text-white hover:text-space-200 text-lg">
+                        <Link to="/home/introduce" className="text-white hover:text-space-200 text-lg">
                             Giới thiệu
                         </Link>
-                        <Link to="/list" className="text-white hover:text-space-200 text-lg">
+                        <Link to="/home/danhmuc" className="text-white hover:text-space-200 text-lg">
                             Danh mục
                         </Link>
-                        <Link to="/submitForm" className="text-white hover:text-space-200 text-lg">
+                        <Link
+                            to={user ? '/home/TacGiaDashboard' : '#'}
+                            className="text-white hover:text-space-200 text-lg"
+                            onClick={() => {
+                                handleNavigation('/submitForm');
+                            }}
+                        >
                             Gửi bài Online
                         </Link>
                         <Link to="/advertisement" className="text-white hover:text-space-200 text-lg">

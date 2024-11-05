@@ -97,7 +97,7 @@ function LoginPage() {
             );
 
             // Chuyển hướng đến trang home với thông tin user trên URL
-            navigate(`/home?username=${encodeURIComponent(user.username)}&role=${encodeURIComponent(user.role)}`);
+            navigate('/');
         } else {
             alert('Tài khoản hoặc mật khẩu không chính xác');
         }

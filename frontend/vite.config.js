@@ -18,4 +18,5 @@ export default defineConfig({
       include: [/react-pdf/, /node_modules/],
     },
   },
+  base: 'https://congnghetoday.com/'
 });

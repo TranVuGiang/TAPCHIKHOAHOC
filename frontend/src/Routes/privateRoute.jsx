@@ -11,7 +11,7 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
 
     // Nếu vai trò hiện tại không được phép truy cập, chuyển hướng về trang không có quyền truy cập
     if (allowedRoles.length > 0 && !allowedRoles.includes(Number(currentUser.role))) {
-        return <Navigate to="/no-access" replace />;
+        return <Navigate to="/no-access" state={{ returnPath: "/" }} replace />;
     }
 
     // Nếu người dùng có quyền truy cập, hiển thị nội dung
