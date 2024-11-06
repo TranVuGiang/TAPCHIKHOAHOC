@@ -15,103 +15,97 @@ function Header() {
 
     // Role constants
     const ROLES = {
-        ADMIN: 0,
-        EDITOR: 1,
-        CENSOR: 2,
-        CUSTOMER: 3,
-        ADVERTISER: 4,
-        AUTHOR: 5,
+        USER: "USER",
+        AUTHOR: "AUTHOR",
+        ADMIN: "ADMIN",
+        EDITOR: "EDITOR",
+        CENSOR: "CENSOR",
+        ADVERTISER: "ADVERTISER"
     };
 
-    // Function to get role name from numeric value
-    const getRoleName = (roleNum) => {
-        switch (parseInt(roleNum)) {
-            case ROLES.ADMIN:
-                return 'Quản trị viên';
-            case ROLES.EDITOR:
-                return 'Biên tập viên';
-            case ROLES.CENSOR:
-                return 'Kiểm duyệt';
-            case ROLES.CUSTOMER:
-                return 'Khách hàng';
-            case ROLES.ADVERTISER:
-                return 'Đối tác quảng cáo';
-            case ROLES.AUTHOR:
-                return 'Tác giả';
-            default:
-                return 'Không xác định';
+    const getRoleName = (roles) => {
+        if (!roles || !Array.isArray(roles)) return 'Không xác định';
+        
+        // Ưu tiên hiển thị role cao nhất
+        const roleNames = {
+            ADMIN: 'Quản trị viên',
+            EDITOR: 'Biên tập viên',
+            CENSOR: 'Kiểm duyệt',
+            ADVERTISER: 'Đối tác quảng cáo',
+            AUTHOR: 'Tác giả',
+            USER: 'Người dùng'
+        };
+
+        // Tìm role cao nhất trong array roles
+        for (const roleKey of Object.keys(roleNames)) {
+            if (roles.includes(roleKey)) {
+                return roleNames[roleKey];
+            }
         }
+        return 'Khong xac dinh';
     };
+
+    const getMenuItems = (roles) => {
+        if (!roles || !Array.isArray(roles)) return [];
+
+        // Kiểm tra role cao nhất
+        if (roles.includes(ROLES.ADMIN)) {
+            return [
+                { label: 'Quản lý người dùng', path: '/admin/users' },
+                { label: 'Quản lý bài viết', path: 'http://localhost:5174/dashboard/home' },
+                { label: 'Thống kê hệ thống', path: '/admin/statistics' },
+                { label: 'Cài đặt hệ thống', path: '/admin/settings' },
+                { label: 'Hồ sơ của tôi', path: '/home/profile_user' },
+                { label: 'Bài viết đã lưu', path: '/saved-posts' },
+                { label: 'Lịch sử đọc', path: '/reading-history' },
+            ];
+        }
+        if (roles.includes(ROLES.EDITOR)) {
+            return [
+                { label: 'Bài viết mới', path: '/home/editor_dashboard' },
+                { label: 'Bài viết đang xử lý', path: '/home/editor_dashboard/bai-viet-dang-xu-ly' },
+                { label: 'Thông báo', path: '/home/editor_dashboard/thong-bao' },
+                { label: 'Hồ sơ của tôi', path: '/home/profile_user' },
+                { label: 'Bài viết đã lưu', path: '/saved-posts' },
+                { label: 'Lịch sử đọc', path: '/reading-history' },
+            ];
+        }
+        if (roles.includes(ROLES.AUTHOR)) {
+            return [
+                { label: 'Bài viết của tôi', path: '/home/TacGiaDashboard/management' },
+                { label: 'Tạo bài viết mới', path: '/home/TacGiaDashboard/submission' },
+                { label: 'Thông báo phản biện', path: '/home/TacGiaDashboard/notifications' },
+                { label: 'Hồ sơ của tôi', path: '/home/profile_user' },
+                { label: 'Bài viết đã lưu', path: '/saved-posts' },
+                { label: 'Lịch sử đọc', path: '/reading-history' },
+            ];
+        }
+        // Default menu for USER role
+        return [
+            { label: 'Hồ sơ của tôi', path: '/home/profile_user' },
+            { label: 'Bài viết đã lưu', path: '/saved-posts' },
+            { label: 'Lịch sử đọc', path: '/reading-history' },
+        ];
+    };
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem('currentUser');
+        if (storedUser) {
+            const parsedUser = JSON.parse(storedUser);
+            // Chuyển đổi roles object thành array
+            const rolesArray = Object.values(parsedUser.roles);
+            setUser({
+                ...parsedUser,
+                roles: rolesArray // Lưu roles dưới dạng array
+            });
+        }
+    }, [navigate]);
 
     const handleLogout = () => {
         localStorage.removeItem('currentUser');
         setUser(null);
         navigate('/home/login');
     };
-
-    // Menu items based on numeric role
-    const getMenuItems = (roleNum) => {
-        switch (parseInt(roleNum)) {
-            case ROLES.ADMIN:
-                return [
-                    { label: 'Quản lý người dùng', path: '/admin/users' },
-                    { label: 'Quản lý bài viết', path: 'http://localhost:5174/dashboard/home' },
-                    { label: 'Thống kê hệ thống', path: '/admin/statistics' },
-                    { label: 'Cài đặt hệ thống', path: '/admin/settings' },
-                    { label: 'Hồ sơ của tôi', path: '/home/profile_user' },
-                    { label: 'Bài viết đã lưu', path: '/saved-posts' },
-                    { label: 'Lịch sử đọc', path: '/reading-history' },
-                ];
-                case ROLES.EDITOR:
-                    return [
-                        { label: 'Bài viết mới', path: '/home/editor_dashboard' },
-                        { label: 'Bài viết đang xử lý', path: '/home/editor_dashboard/bai-viet-dang-xu-ly' },
-                        { label: 'Thông báo', path: '/home/editor_dashboard/thong-bao' },
-                    { label: 'Hồ sơ của tôi', path: '/home/profile_user' },
-                    { label: 'Bài viết đã lưu', path: '/saved-posts' },
-                    { label: 'Lịch sử đọc', path: '/reading-history' },
-                ];
-            case ROLES.CENSOR:
-                return [
-                    { label: 'Bài viết cần duyệt', path: '/home/censor_dashboard' },
-                    { label: 'Bài viết đã duyệt', path: '/censor/approved' },
-                    { label: 'Hồ sơ của tôi', path: '/home/profile_user' },
-                    { label: 'Bài viết đã lưu', path: '/saved-posts' },
-                    { label: 'Lịch sử đọc', path: '/reading-history' },
-                ];
-            case ROLES.CUSTOMER:
-                return [
-                    { label: 'Hồ sơ của tôi', path: '/home/profile_user' },
-                    { label: 'Bài viết đã lưu', path: '/saved-posts' },
-                    { label: 'Lịch sử đọc', path: '/reading-history' },
-                ];
-            case ROLES.ADVERTISER:
-                return [
-                    { label: 'Quản lý quảng cáo', path: '/home/adver_dashboard' },
-                    { label: 'Thống kê hiệu quả', path: '/home/adver_dashboard' },
-                    { label: 'Thanh toán', path: '/home/payment' },
-                    { label: 'Hồ sơ của tôi', path: '/home/profile_user' },
-                    { label: 'Bài viết đã lưu', path: '/saved-posts' },
-                    { label: 'Lịch sử đọc', path: '/reading-history' },
-                ];
-            case ROLES.AUTHOR:
-                return [
-                    { label: 'Bài viết của tôi', path: '/home/TacGiaDashboard/management' },
-                    { label: 'Tạo bài viết mới', path: '/home/TacGiaDashboard/submission' },
-                    { label: 'Thông báo phản biện', path: '/home/TacGiaDashboard/notifications' },
-                    { label: 'Hồ sơ của tôi', path: '/home/profile_user' },
-                    { label: 'Bài viết đã lưu', path: '/saved-posts' },
-                    { label: 'Lịch sử đọc', path: '/reading-history' },
-                ];
-            default:
-                return [];
-        }
-    };
-
-    useEffect(() => {
-        const storedUser = localStorage.getItem('currentUser');
-        setUser(JSON.parse(storedUser));
-    }, [navigate]);
 
     const handleNavigation = (path) => {
         if (!user) {
@@ -120,7 +114,6 @@ function Header() {
         }
         navigate(path);
     };
-
     return (
         <header className="relative">
             {/* Logo/Title Section */}
@@ -231,12 +224,12 @@ function Header() {
                                         {/* User Info Section */}
                                         <div className="px-4 py-2 border-b border-gray-100">
                                             <p className="text-sm font-semibold text-gray-700">{user.username}</p>
-                                            <p className="text-xs text-gray-500">{getRoleName(user.role)}</p>
+                                            <p className="text-xs text-gray-500">{getRoleName(user.roles)}</p>
                                         </div>
 
                                         {/* Menu Items Based on Role */}
                                         <div className="py-1">
-                                            {getMenuItems(user.role).map((item, index) => (
+                                            {getMenuItems(user.roles).map((item, index) => (
                                                 <Link
                                                     key={index}
                                                     to={item.path}

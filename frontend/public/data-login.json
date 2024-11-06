@@ -2,10 +2,13 @@
     {
         "username": "tvugiang@gmail.com",
         "password": "abc123",
-        "role": "0"
+        "roles": {
+            "1": "USER",
+            "2": "AUTHOR"
+        }
     },
     {
-            "username": "user3",
+        "username": "user3",
         "password": "def456",
         "role": "1"
     },

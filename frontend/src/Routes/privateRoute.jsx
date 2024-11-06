@@ -10,7 +10,7 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
     }
 
     // Nếu vai trò hiện tại không được phép truy cập, chuyển hướng về trang không có quyền truy cập
-    if (allowedRoles.length > 0 && !allowedRoles.includes(Number(currentUser.role))) {
+    if (allowedRoles.length > 0 && !allowedRoles.includes(currentUser.role)) {
         return <Navigate to="/no-access" state={{ returnPath: "/" }} replace />;
     }
 

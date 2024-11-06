@@ -1,14 +1,29 @@
-import React from 'react';
+import { authService } from '@/utils/authService';
 import { Mail } from 'lucide-react';
+import { useState } from 'react';
 
-const ForgotPassword = () => {
-  const handleSubmit = (e) => {
+function ForgotPassword() {
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Xử lý logic gửi email ở đây
+    setLoading(true); // Bắt đầu quá trình tải
+
+    try {
+      // Gọi API
+      await authService.forgot_pass(email);
+      alert('Link đặt lại mật khẩu đã được gửi!');
+    } catch (err) {
+      setError(err.message || 'Có lỗi xảy ra khi gửi email đặt lại mật khẩu');
+    } finally {
+      setLoading(false); // Kết thúc quá trình tải
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 font-montserrat">
       <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
         <div className="text-center mb-8">
           <h2 className="text-2xl font-bold text-cyan-700 mb-2">
@@ -27,6 +42,8 @@ const ForgotPassword = () => {
               </div>
               <input 
                 type="email" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email của bạn"
                 className="w-full pl-10 pr-4 py-2 border border-cyan-200 rounded-lg focus:outline-none focus:border-cyan-500 bg-gray-50"
                 required
@@ -34,11 +51,14 @@ const ForgotPassword = () => {
             </div>
           </div>
 
+          {error && <p className="text-red-500 mb-4">{error}</p>}
+
           <button 
             type="submit"
             className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 ease-in-out transform hover:scale-105"
+            disabled={loading}
           >
-            Gửi mail
+            {loading ? 'Đang gửi...' : 'Gửi mail'}
           </button>
         </form>
       </div>
