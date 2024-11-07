@@ -33,7 +33,11 @@ function ForgotPassword() {
             Nhập email của bạn để nhận link đặt lại mật khẩu
           </p>
         </div>
-
+        {error.general && (
+            <div className="mb-4 text-sm text-red-600 bg-red-50 p-3 rounded-md">
+              {error.general} 
+            </div>
+          )}
         <form onSubmit={handleSubmit}>
           <div className="mb-6">
             <div className="relative">
@@ -51,7 +55,6 @@ function ForgotPassword() {
             </div>
           </div>
 
-          {error && <p className="text-red-500 mb-4">{error}</p>}
 
           <button 
             type="submit"

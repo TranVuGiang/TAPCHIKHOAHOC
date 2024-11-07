@@ -1,10 +1,31 @@
+import { authService } from '@/utils/authService';
 import { BookmarkPlus, ChevronRight, Eye, History, Lock, User } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const UserDashboard = () => {
     const [activeTab, setActiveTab] = useState('profile');
+    const [userDetail, setUserDetail] = useState([]);
 
+    useEffect(() => {
+        loadDataUser();
+    }, []);
+    useEffect(() => {
+        console.log(userDetail);
+    }, [userDetail]);
+    const loadDataUser = async () => {
+        try {
+            const current = JSON.parse(localStorage.getItem('currentUser'));
+            const token = current.token;
+            console.log(token);
+            
+            const fetchData = await authService.getUserDetails(token);
+            const informationUser = fetchData.data.user;
+            setUserDetail(informationUser);
+        } catch (error) {
+            console.log(error.message || 'Lỗi nớ');
+        }
+    };
     const menuItems = [
         { id: 'profile', title: 'Hồ sơ của tôi', icon: User },
         { id: 'saved', title: 'Bài viết đã lưu', icon: BookmarkPlus },
@@ -23,8 +44,8 @@ const UserDashboard = () => {
                                 <img src="/api/placeholder/96/96" alt="Avatar" className="w-full h-full object-cover" />
                             </div>
                             <div>
-                                <h3 className="text-xl font-bold">Nguyễn Văn A</h3>
-                                <p className="text-gray-500">nguyenvana@example.com</p>
+                                <h3 className="text-xl font-bold">{userDetail.fullname}</h3>
+                                <p className="text-gray-500">{userDetail.email}</p>
                             </div>
                         </div>
                         <div className="bg-white rounded-lg shadow-md p-6 border border-gray-100">
@@ -32,7 +53,7 @@ const UserDashboard = () => {
                             <div className="space-y-3 text-gray-600">
                                 <div className="flex justify-between pb-3 border-b">
                                     <span className="font-medium">Số điện thoại:</span>
-                                    <span>0123456789</span>
+                                    <span>{userDetail.phone}</span>
                                 </div>
                                 <div className="flex justify-between pb-3 border-b">
                                     <span className="font-medium">Địa chỉ:</span>
@@ -40,7 +61,7 @@ const UserDashboard = () => {
                                 </div>
                                 <div className="flex justify-between pb-3 border-b">
                                     <span className="font-medium">Ngày tham gia:</span>
-                                    <span>01/01/2024</span>
+                                    <span>{userDetail.date}</span>
                                 </div>
                             </div>
                         </div>

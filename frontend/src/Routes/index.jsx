@@ -32,24 +32,24 @@ const privateRoutes = [
         path: "/home/editor_dashboard", 
         component: Components.EditorDashboard, 
         layout: HeaderOnly,
-        roles: [1] //Biên tập viên
+        roles: ["EDITOR"] //Biên tập viên
     },
     { 
         path: "/home/censor_dashboard", 
         component: Components.CensorDashboard, 
         layout: HeaderOnly,
-        roles:[2]  //Kiểm duyệt
+        roles:["CENSOR"]  //Kiểm duyệt
     },
     { 
         path: "/home/option_advertisement",
         component: Components.Advertisement,
-        roles: [4]  // Chỉ admin và đối tác quảng cáo mới truy cập được
+        roles: ["PARTNER"]  // Chỉ admin và đối tác quảng cáo mới truy cập được
     },
     { 
         path: "/home/profile_user", 
         component: Components.UserDashboard, 
         layout: NoneLayouts,
-        roles: [0,1,2,3,4,5] //Khách hàng
+        roles: ["USER", "ADMIN", "AUTHOR", "EDITOR","CENSOR","ADVERTISER"] //READER
     },
     { 
         path: "/home/payment",
@@ -60,7 +60,7 @@ const privateRoutes = [
         path: "/home/TacGiaDashboard/*", 
         component: Components.TacGiaDashboard, 
         layout: HeaderOnly,
-        roles: [5]
+        roles: ["AUTHOR"]
     },
 
    

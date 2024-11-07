@@ -27,8 +27,9 @@ export const authService = {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
             },
+            body: JSON.stringify({token: token})
+
         });
 
         if (!response.ok) {
@@ -45,7 +46,7 @@ export const authService = {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({username, password, email, sdt, hovaten, url}),
+            body: JSON.stringify({ username, password, email, sdt, hovaten, url }),
         });
         if (!response.ok) {
             const error = await response.json();
@@ -62,11 +63,26 @@ export const authService = {
             },
         });
 
-        if (!response.ok) {
+        if (!response.ok) { 
             const error = await response.json();
             throw new Error(error.message || 'Không thể gửi email đặt lại mật khẩu');
         }
 
         return response.json();
+    },
+    //Change Password
+    change_pass: async (username, password, confirmPassword) => {
+        const response = await fetch(`${API_URL}/api/user/changepassword`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({username, password, confirmPassword})
+        });
+        if(!response.ok){
+            const error = await response.json();
+            throw new Error(error.message || 'Không thể thay đổi');
+        }
+        return response.json()
     },
 };

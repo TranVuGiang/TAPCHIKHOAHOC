@@ -12,7 +12,7 @@ export default function RegisterUser() {
     hovaten: ''
   });
 
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -20,34 +20,63 @@ export default function RegisterUser() {
       ...formData,
       [e.target.name]: e.target.value
     });
-    // Clear error when user starts typing
-    if (error) setError('');
+    if (errors[e.target.name]) setErrors({ ...errors, [e.target.name]: '' });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Validate password match
+    const newErrors = {};
+
+    // Validate username
+    if (formData.username.trim() === '') {
+      newErrors.username = 'Vui lòng nhập tên đăng nhập';
+    }
+
+    // Validate password
+    if (formData.password.trim() === '') {
+      newErrors.password = 'Vui lòng nhập mật khẩu';
+    }
     if (formData.password !== formData.confirmPassword) {
-      setError('Mật khẩu xác nhận không khớp!');
+      newErrors.confirmPassword = 'Mật khẩu xác nhận không khớp!';
+    }
+
+    // Validate email
+    if (formData.email.trim() === '') {
+      newErrors.email = 'Vui lòng nhập email';
+    } else if (!isValidEmail(formData.email)) {
+      newErrors.email = 'Email không hợp lệ';
+    }
+
+    // Validate phone number
+    if (formData.sdt.trim() === '') {
+      newErrors.sdt = 'Vui lòng nhập số điện thoại';
+    } else if (!isValidPhoneNumber(formData.sdt)) {
+      newErrors.sdt = 'Số điện thoại không hợp lệ';
+    }
+
+    // Validate full name
+    if (formData.hovaten.trim() === '') {
+      newErrors.hovaten = 'Vui lòng nhập họ và tên';
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
 
     try {
       setLoading(true);
-      setError('');
-      
-      // Gọi API đăng ký từ authService
+      setErrors({});
+
       await authService.register(
         formData.username,
         formData.password,
         formData.email,
         formData.sdt,
         formData.hovaten,
-        '' // Gửi chuỗi rỗng cho url vì không sử dụng
+        ''
       );
-      
-      // Reset form sau khi đăng ký thành công
+      alert('Đăng ký thành công!');
       setFormData({
         username: '',
         password: '',
@@ -56,19 +85,25 @@ export default function RegisterUser() {
         sdt: '',
         hovaten: ''
       });
-
-      alert('Đăng ký thành công!');
-      // Có thể thêm navigation để chuyển hướng người dùng sau khi đăng ký thành công
-      
     } catch (err) {
-      setError(err.message || 'Có lỗi xảy ra khi đăng ký');
+      setErrors({ general: err.message || 'Có lỗi xảy ra khi đăng ký' });
     } finally {
       setLoading(false);
     }
   };
 
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const isValidPhoneNumber = (phoneNumber) => {
+    const phoneRegex = /^[0-9]{10,11}$/;
+    return phoneRegex.test(phoneNumber);
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-montserrat">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h2 className="text-center text-3xl font-extrabold text-blue-800">
           Đăng ký tài khoản
@@ -80,9 +115,9 @@ export default function RegisterUser() {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow-lg sm:rounded-lg sm:px-10">
-          {error && (
+          {errors.general && (
             <div className="mb-4 text-sm text-red-600 bg-red-50 p-3 rounded-md">
-              {error}
+              {errors.general}
             </div>
           )}
 
@@ -101,11 +136,11 @@ export default function RegisterUser() {
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
-                  required
                   className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   placeholder="Nhập tên đăng nhập"
                 />
               </div>
+              {errors.username && <p className="text-red-600 text-sm mt-1">{errors.username}</p>}
             </div>
 
             {/* Mật khẩu */}
@@ -122,11 +157,11 @@ export default function RegisterUser() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  required
                   className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   placeholder="********"
                 />
               </div>
+              {errors.password && <p className="text-red-600 text-sm mt-1">{errors.password}</p>}
             </div>
 
             {/* Xác nhận mật khẩu */}
@@ -143,11 +178,11 @@ export default function RegisterUser() {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  required
                   className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   placeholder="********"
                 />
               </div>
+              {errors.confirmPassword && <p className="text-red-600 text-sm mt-1">{errors.confirmPassword}</p>}
             </div>
 
             {/* Email */}
@@ -160,15 +195,15 @@ export default function RegisterUser() {
                   <Mail className="h-5 w-5 text-blue-500" />
                 </div>
                 <input
-                  type="email"
+                  type="input"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  required
                   className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   placeholder="example@email.com"
                 />
               </div>
+              {errors.email && <p className="text-red-600 text-sm mt-1">{errors.email}</p>}
             </div>
 
             {/* Số điện thoại */}
@@ -185,11 +220,11 @@ export default function RegisterUser() {
                   name="sdt"
                   value={formData.sdt}
                   onChange={handleChange}
-                  required
                   className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   placeholder="0123456789"
                 />
               </div>
+              {errors.sdt && <p className="text-red-600 text-sm mt-1">{errors.sdt}</p>}
             </div>
 
             {/* Họ và tên */}
@@ -206,22 +241,20 @@ export default function RegisterUser() {
                   name="hovaten"
                   value={formData.hovaten}
                   onChange={handleChange}
-                  required
                   className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  placeholder="Nguyễn Văn A"
+                  placeholder="Họ và tên của bạn"
                 />
               </div>
+              {errors.hovaten && <p className="text-red-600 text-sm mt-1">{errors.hovaten}</p>}
             </div>
 
             <div>
               <button
                 type="submit"
                 disabled={loading}
-                className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out ${
-                  loading ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
+                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
-                {loading ? 'Đang xử lý...' : 'Đăng ký'}
+                {loading ? 'Đang đăng ký...' : 'Đăng ký'}
               </button>
             </div>
           </form>

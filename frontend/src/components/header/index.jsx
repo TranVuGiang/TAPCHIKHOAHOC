@@ -20,7 +20,7 @@ function Header() {
         ADMIN: "ADMIN",
         EDITOR: "EDITOR",
         CENSOR: "CENSOR",
-        ADVERTISER: "ADVERTISER"
+        PARTNER: "PARTNER"
     };
 
     const getRoleName = (roles) => {
@@ -31,7 +31,7 @@ function Header() {
             ADMIN: 'Quản trị viên',
             EDITOR: 'Biên tập viên',
             CENSOR: 'Kiểm duyệt',
-            ADVERTISER: 'Đối tác quảng cáo',
+            PARTNER: 'Đối tác quảng cáo', 
             AUTHOR: 'Tác giả',
             USER: 'Người dùng'
         };
@@ -83,8 +83,8 @@ function Header() {
         // Default menu for USER role
         return [
             { label: 'Hồ sơ của tôi', path: '/home/profile_user' },
-            { label: 'Bài viết đã lưu', path: '/saved-posts' },
-            { label: 'Lịch sử đọc', path: '/reading-history' },
+            { label: 'Bài viết đã lưu', path: '/home/profile_user' },
+            { label: 'Lịch sử đọc', path: '/home/profile_user' },
         ];
     };
 
