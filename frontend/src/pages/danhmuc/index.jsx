@@ -1,240 +1,222 @@
-import img2 from "@/assets/blockchend.png";
-import img4 from "@/assets/hanhtinh.png";
-import img3 from "@/assets/nl.png";
+import React, { useState } from 'react';
+import { Calendar, Search, ChevronLeft, ChevronRight, ChevronDown, Filter, Tag } from 'lucide-react';
 import img1 from "@/assets/ttnt.png";
-import { Calendar, ChevronDown, ChevronLeft, ChevronRight, Filter, Search } from 'lucide-react';
-import { useState } from 'react';
+import img2 from "@/assets/blockchend.png";
+import img3 from "@/assets/nl.png";
+import img4 from "@/assets/hanhtinh.png";
+import img5 from "@/assets/img5.png";
+import img6 from "@/assets/img6.png";
+import img7 from "@/assets/img7.png";
+import img8 from "@/assets/img8.png";
 
-export default function Category() {
-  // Sample data for articles
+const Category = () => {
   const [articles] = useState([
-    {
-      id: 1,
-      title: "Trí tuệ nhân tạo và tương lai của công nghệ",
-      excerpt: "Khám phá những tiến bộ mới nhất trong lĩnh vực AI và ảnh hưởng của nó đến đời sống...",
-      date: "11/10/2024",
-      category: "Công nghệ",
-      image: img1,
-      week: 2,
-      number: 1
-    },
-    {
-      id: 2,
-      title: "Blockchain và ứng dụng trong công nghiệp",
-      excerpt: "Không chỉ hoạt động hiệu quả với Bitcoin và các loại tiền điện tử, công nghệ Blockchain còn được ứng dụng trong nhiều ngành công nghiệp...",
-      date: "10/10/2024",
-      category: "Công nghệ",
-      image: img2,
-      week: 2,
-      number: 2
-    },
-    {
-      id: 3,
-      title: "Năng lượng tái tạo: Giải pháp cho tương lai",
-      excerpt: "Các nguồn năng lượng tái tạo đang ngày càng phát triển và trở thành xu hướng của tương lai...",
-      date: "09/10/2024",
-      category: "Môi trường",
-      image: img3,
-      week: 1,
-      number: 3
-    },
-    {
-      id: 4,
-      title: "Khám phá mới về sự sống ngoài hành tinh",
-      excerpt: "Các nhà khoa học NASA tìm thấy dấu hiệu mới về sự tồn tại của nước trên sao Hỏa...",
-      date: "08/10/2024",
-      category: "Vũ trụ",
-      image: img4,
-      week: 1,
-      number: 4
-    }
+    { id: 1, title: 'Trí tuệ nhân tạo và tương lai của công nghệ', excerpt: 'Khám phá những tiến bộ mới nhất...', date: '11/10/2024', image: img1, week: 2, number: 1, type: 'Technology' },
+    { id: 2, title: 'Công nghệ Blockchain và tiền điện tử', excerpt: 'Tìm hiểu về cách blockchain...', date: '12/10/2024', image: img2, week: 2, number: 2, type: 'Finance' },
+    { id: 3, title: 'Năng lượng tái tạo: Giải pháp cho tương lai', excerpt: 'Khám phá tiềm năng...', date: '13/10/2024', image: img3, week: 2, number: 3, type: 'Energy' },
+    { id: 4, title: 'Khám phá vũ trụ với kính viễn vọng Webb', excerpt: 'Những phát hiện mới nhất...', date: '14/10/2024', image: img4, week: 2, number: 4, type: 'Science' },
+    { id: 5, title: 'Công nghệ Quantum Computing và tương lai', excerpt: 'Tìm hiểu về máy tính lượng tử...', date: '15/10/2024', image: img5, week: 3, number: 1, type: 'Technology' },
+    { id: 6, title: 'Sinh học tổng hợp: Cuộc cách mạng mới', excerpt: 'Khám phá cách các nhà khoa học...', date: '16/10/2024', image: img6, week: 3, number: 2, type: 'Biology' },
+    { id: 7, title: 'Internet vạn vật (IoT) trong đời sống', excerpt: 'Cách IoT đang thay đổi cách...', date: '17/10/2024', image: img7, week: 3, number: 3, type: 'Technology' },
+    { id: 8, title: 'Khoa học thần kinh và trí nhớ con người', excerpt: 'Những khám phá mới...', date: '18/10/2024', image: img8, week: 3, number: 4, type: 'Science' }
   ]);
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [showTimeFilter, setShowTimeFilter] = useState(false);
-  const [showMainFilter, setShowMainFilter] = useState(false);
-  
-  const itemsPerPage = 5;
-
-  // States for filters
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedType, setSelectedType] = useState('');
+  const [selectedTime, setSelectedTime] = useState('');
   const [selectedWeek, setSelectedWeek] = useState('');
-  
-  // Filter categories
-  const categories = ["Tất cả", "Công nghệ", "Vũ trụ", "Môi trường", "Y học", "Sinh học"];
-  const weeks = ["Tất cả", "Tuần 1", "Tuần 2", "Tuần 3", "Tuần 4"];
+  const [currentPage, setCurrentPage] = useState(1);
+  const articlesPerPage = 4;
 
-  // Filter articles based on all criteria
-  const filteredArticles = articles.filter(article => {
-    const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         article.category.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === '' || selectedCategory === 'Tất cả' || 
-                           article.category === selectedCategory;
-    const matchesWeek = selectedWeek === '' || selectedWeek === 'Tất cả' || 
-                       `Tuần ${article.week}` === selectedWeek;
-    return matchesSearch && matchesCategory && matchesWeek;
-  });
+  const filteredArticles = articles
+    .filter(article => {
+      const matchesSearch = article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          article.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesType = selectedType ? article.type === selectedType : true;
+      const matchesTime = selectedTime ? article.date === selectedTime : true;
+      const matchesWeek = selectedWeek ? `Tuần ${article.week}` === selectedWeek : true;
+      return matchesSearch && matchesType && matchesTime && matchesWeek;
+    });
 
-  // Calculate pagination
-const totalPages = Math.ceil(filteredArticles.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const displayedArticles = filteredArticles.slice(startIndex, startIndex + itemsPerPage);
+  const currentArticles = filteredArticles.slice(
+    (currentPage - 1) * articlesPerPage,
+    currentPage * articlesPerPage
+  );
+
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const getTypeColor = (type) => {
+    const colors = {
+      Technology: 'bg-blue-100 text-blue-800',
+      Finance: 'bg-green-100 text-green-800',
+      Energy: 'bg-yellow-100 text-yellow-800',
+      Science: 'bg-purple-100 text-purple-800',
+      Biology: 'bg-pink-100 text-pink-800'
+    };
+    return colors[type] || 'bg-gray-100 text-gray-800';
+  };
 
   return (
-    <div className="max-w-5xl mx-auto p-6">
-      {/* Header */}
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-cyan-800 mb-2">Các Số Mới Nhất</h2>
-        <div className="h-1 w-32 bg-cyan-600"></div>
-      </div>
-
-      {/* Search and Filter Bar */}
-      <div className="mb-6 flex flex-wrap gap-4 items-center">
-        <div className="relative flex-grow max-w-md">
-          <input
-            type="text"
-            placeholder="Tìm kiếm bài viết..."
-            className="w-full pl-10 pr-4 py-2 border border-cyan-300 rounded-lg focus:outline-none focus:border-cyan-500"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <Search className="absolute left-3 top-2.5 text-cyan-500 w-5 h-5" />
+    <div className="max-w-7xl mx-auto px-4 py-8 bg-gray-50 min-h-screen">
+      <div className="space-y-8">
+        {/* Header Section */}
+        <div className="text-center">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">CÁC SỐ MỚI NHẤT</h1>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Khám phá những bài viết mới nhất về công nghệ, khoa học và nhiều chủ đề thú vị khác
+          </p>
         </div>
-        
-        <div className="flex gap-2 relative">
-          {/* Week Filter Dropdown */}
-          <div className="relative">
-            <button 
-              className="flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors"
-              onClick={() => setShowTimeFilter(!showTimeFilter)}
-            >
-              <Calendar className="w-4 h-4" />
-              Số báo
-              <ChevronDown className="w-4 h-4" />
-            </button>
-            
-            {showTimeFilter && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-10">
-                {weeks.map((week) => (
-                  <button 
-                    key={week}
-                    className="w-full text-left px-4 py-2 hover:bg-cyan-50 text-gray-700"
-                    onClick={() => {
-                      setSelectedWeek(week);
-                      setShowTimeFilter(false);
-                    }}
-                  >
-                    {week}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
 
-          {/* Category Filter */}
-          <div className="relative">
-            <button 
-              className="flex items-center gap-2 px-4 py-2 bg-cyan-100 text-cyan-800 rounded-lg hover:bg-cyan-200 transition-colors"
-              onClick={() => setShowMainFilter(!showMainFilter)}
-            >
-              <Filter className="w-4 h-4" />
-              Chủ đề
-              <ChevronDown className="w-4 h-4" />
-            </button>
-            
-            {showMainFilter && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-10">
-                {categories.map((category) => (
-                  <button 
-                    key={category}
-                    className="w-full text-left px-4 py-2 hover:bg-cyan-50 text-gray-700"
-onClick={() => {
-                      setSelectedCategory(category);
-                      setShowMainFilter(false);
-                    }}
-                  >
-                    {category}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Articles List */}
-      <div className="space-y-6">
-        {displayedArticles.map(article => (
-          <div key={article.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+        {/* Search and Filter Section */}
+        <div className="bg-white p-6 rounded-lg shadow-sm">
+          <div className="space-y-4">
+            {/* Search Bar */}
             <div className="relative">
-              <img
-                src={article.image}
-                alt={article.title}
-                className="w-full h-64 object-cover"
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Tìm kiếm bài viết..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />
-              <div className="absolute top-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-full font-semibold">
-                Tuần {article.week}: Số {article.number}
+            </div>
+
+            {/* Filters */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="relative">
+                <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <select
+                  value={selectedType}
+                  onChange={(e) => setSelectedType(e.target.value)}
+                  className="w-full pl-10 p-3 rounded-lg border border-gray-200 appearance-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                >
+                  <option value="">Tất cả chủ đề</option>
+                  <option value="Technology">Công nghệ</option>
+                  <option value="Finance">Tài chính</option>
+                  <option value="Energy">Năng lượng</option>
+                  <option value="Science">Khoa học</option>
+                  <option value="Biology">Sinh học</option>
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              </div>
+
+              <div className="relative">
+                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <select
+                  value={selectedTime}
+                  onChange={(e) => setSelectedTime(e.target.value)}
+                  className="w-full pl-10 p-3 rounded-lg border border-gray-200 appearance-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                >
+                  <option value="">Tất cả thời gian</option>
+                  {Array.from(new Set(articles.map(article => article.date))).map(date => (
+                    <option key={date} value={date}>{date}</option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              </div>
+
+              <div className="relative">
+                <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <select
+                  value={selectedWeek}
+                  onChange={(e) => setSelectedWeek(e.target.value)}
+                  className="w-full pl-10 p-3 rounded-lg border border-gray-200 appearance-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                >
+                  <option value="">Tất cả số báo</option>
+                  <option value="Tuần 2">Báo mới (Tuần 2)</option>
+                  <option value="Tuần 3">Báo cũ (Tuần 3)</option>
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               </div>
             </div>
-            
-            <div className="p-6">
-              <div className="flex justify-between items-start mb-4">
-                <h3 className="text-2xl font-bold text-gray-900 hover:text-cyan-600 cursor-pointer">
-                  {article.title}
-                </h3>
-                <span className="text-sm text-cyan-600 bg-cyan-50 px-3 py-1 rounded-full">
-                  {article.category}
-                </span>
+          </div>
+        </div>
+
+        {/* Articles Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {currentArticles.map(article => (
+            <div key={article.id} className="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition-shadow duration-300">
+              <div className="relative h-64">
+                <img
+                  src={article.image}
+                  alt={article.title}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm text-gray-900 px-4 py-2 rounded-full font-medium">
+                  Tuần {article.week}: Số {article.number}
+                </div>
               </div>
-              
-              <p className="text-gray-600 mb-4 text-lg">
-                {article.excerpt}
-              </p>
-              
-              <div className="flex justify-between items-center">
-                <span className="text-gray-500">{article.date}</span>
-                <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              <div className="p-6 space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${getTypeColor(article.type)}`}>
+                    {article.type}
+                  </span>
+                  <div className="flex items-center gap-2 text-gray-500">
+                    <Calendar className="w-4 h-4" />
+                    <span className="text-sm">{article.date}</span>
+                  </div>
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors duration-200">
+                    {article.title}
+                  </h2>
+                  <p className="mt-2 text-gray-600">{article.excerpt}</p>
+                </div>
+                <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors duration-200">
                   Đọc thêm →
                 </button>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      {/* Pagination */}
-      <div className="mt-8 flex justify-center items-center gap-2">
-        <button
-          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-          className="p-2 rounded-lg bg-cyan-100 text-cyan-800 disabled:opacity-50 hover:bg-cyan-200"
-        >
-          <ChevronLeft className="w-5 h-5" />
-        </button>
-        
-        {[...Array(totalPages)].map((_, i) => (
-          <button
-            key={i}
-            onClick={() => setCurrentPage(i + 1)}
-            className={`w-10 h-10 rounded-lg ${
-              currentPage === i + 1
-                ? 'bg-cyan-600 text-white'
-                : 'bg-cyan-100 text-cyan-800 hover:bg-cyan-200'
-            }`}
-          >
-            {i + 1}
-          </button>
-        ))}
-        
-        <button
-          onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-          disabled={currentPage === totalPages}
-className="p-2 rounded-lg bg-cyan-100 text-cyan-800 disabled:opacity-50 hover:bg-cyan-200"
-        >
-          <ChevronRight className="w-5 h-5" />
-        </button>
+        {/* Pagination */}
+        {filteredArticles.length > articlesPerPage && (
+          <div className="flex justify-center items-center gap-2">
+            <button
+              onClick={() => paginate(currentPage - 1)}
+              disabled={currentPage === 1}
+              className={`p-2 rounded-lg border ${
+                currentPage === 1
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  : 'bg-white hover:bg-gray-50 text-gray-700'
+              }`}
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            {Array.from({ length: Math.ceil(filteredArticles.length / articlesPerPage) }).map((_, i) => (
+              <button
+                key={i + 1}
+                onClick={() => paginate(i + 1)}
+                className={`min-w-[40px] h-10 rounded-lg ${
+                  currentPage === i + 1
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white hover:bg-gray-50 text-gray-700'
+                }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+            <button
+              onClick={() => paginate(currentPage + 1)}
+              disabled={currentPage === Math.ceil(filteredArticles.length / articlesPerPage)}
+              className={`p-2 rounded-lg border ${
+                currentPage === Math.ceil(filteredArticles.length / articlesPerPage)
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  : 'bg-white hover:bg-gray-50 text-gray-700'
+              }`}
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
-}
+};
+
+export default Category;
