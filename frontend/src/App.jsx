@@ -1,75 +1,68 @@
+import LoadingSpinner from '@/components/LoadingSpinner';
 import NoAccess from '@/components/noAcess';
-import DefaultLayout from '@/layouts/DefautLayouts';
-import { privateRoutes, publicRoutes } from '@/Routes';
+import { privateRoutes, publicRoutes } from '@/Routes/index';
 import ProtectedRoute from '@/Routes/privateRoute';
-import { Fragment } from 'react';
+import { Fragment, Suspense } from 'react';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import DefaultLayout from './layouts/DefautLayouts';
+
+
+
 function App() {
+    
     return (
         <Router>
             <div className="App bg-blue-100">
-                <Routes>
-                    {/* Routes công khai */}
-                    {publicRoutes.map((route, index) => {
-                        const Page = route.component;
-                        let Layout = DefaultLayout;
-
-                        if (route.layout) {
-                            Layout = route.layout;
-                        }
-                        if (route.layout === null) {
-                            Layout = Fragment;
-                        }
-
-                        return (
-                            <Route
-                                key={index}
-                                path={route.path}
-                                element={
-                                    <Layout>
-                                        <Page />
-                                    </Layout>
-                                }
-                            />
-                        );
-                    })}
-
-                    {/* Routes được bảo vệ */}
-                    {privateRoutes.map((route, index) => {
-                        const Page = route.component;
-                        let Layout = DefaultLayout;
-
-                        if (route.layout) {
-                            Layout = route.layout;
-                        }
-                        if (route.layout === null) {
-                            Layout = Fragment;
-                        }
-
-                        return (
-                            <Route
-                                key={`private-${index}`}
-                                path={route.path}
-                                element={
-                                    <ProtectedRoute allowedRoles={route.roles}>
+                <Suspense fallback={<LoadingSpinner />}>
+                    <Routes>
+                        {/* Public Routes */}
+                        {publicRoutes.map((route, index) => {
+                            const Page = route.component;
+                            let Layout = route.layout || DefaultLayout;
+                            Layout = Layout === null ? Fragment : Layout;
+                            return (
+                                <Route
+                                    key={`public-${index}`}
+                                    path={route.path}
+                                    element={
                                         <Layout>
-                                            <Page />
+                                            <Suspense fallback={<LoadingSpinner />}>
+                                                <Page />
+                                            </Suspense>
                                         </Layout>
-                                    </ProtectedRoute>
-                                }
-                            />
-                        );
-                    })}
+                                    }
+                                />
+                            );
+                        })}
 
-                    {/* Chuyển hướng trang gốc về home */}
-                    <Route path="/" element={<Navigate to="/home" replace />} />
+                        {/* Protected Routes */}
+                        {privateRoutes.map((route, index) => {
+                            const Page = route.component;
+                            let Layout = route.layout || DefaultLayout;
+                            Layout = Layout === null ? Fragment : Layout;
+                            return (
+                                <Route
+                                    key={`private-${index}`}
+                                    path={route.path}
+                                    element={
+                                        <ProtectedRoute allowedRoles={route.roles}>
+                                            <Layout>
+                                                <Suspense fallback={<LoadingSpinner />}>
+                                                    <Page />
+                                                </Suspense>
+                                            </Layout>
+                                        </ProtectedRoute>
+                                    }
+                                />
+                            );
+                        })}
 
-                    {/* Route mặc định cho trang 404 */}
-                    <Route path="*" element={<Navigate to="/home" replace />} />
-
-                    {/* Trang không có quyền truy cập */}
-                    <Route path="/no-access" element={<NoAccess />} />
-                </Routes>
+                        {/* Redirect Routes */}
+                        <Route path="/" element={<Navigate to="/home" replace />} />
+                        <Route path="/no-access" element={<NoAccess />} />
+                        <Route path="*" element={<Navigate to="/home" replace />} />
+                    </Routes>
+                </Suspense>
             </div>
         </Router>
     );

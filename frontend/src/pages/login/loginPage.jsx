@@ -1,9 +1,9 @@
 import loginImg from '@/assets/loginbg.png';
-import { useEffect, useState } from 'react';
+import { authService } from '@/utils/authService';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function LoginPage() {
-    // Form state management
     const initialFormState = {
         username: '',
         password: '',
@@ -13,26 +13,13 @@ function LoginPage() {
     const initialErrorState = {
         username: '',
         password: '',
+        server: '',
     };
 
     const [formData, setFormData] = useState(initialFormState);
     const [errors, setErrors] = useState(initialErrorState);
-    const [users, setUsers] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
-    // Fetch users data
-    useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const response = await fetch('http://localhost:5173/data-login.json');
-                if (!response.ok) throw new Error('Failed to fetch');
-                const data = await response.json();
-                setUsers(data);
-            } catch (error) {
-                console.error('Error fetching users:', error);
-            }
-        };
-        fetchUsers();
-    }, []);
 
     // Form validation
     const validateForm = () => {
@@ -58,11 +45,11 @@ function LoginPage() {
             [name]: value,
         }));
 
-        // Clear error when user types
         if (errors[name]) {
             setErrors((prev) => ({
                 ...prev,
                 [name]: '',
+                server: '',
             }));
         }
     };
@@ -75,37 +62,63 @@ function LoginPage() {
         }));
     };
 
+    // Format date to dd-MM-yyyy
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('vi-VN', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        }).split('/').join('-');
+    };
+
     // Handle login
     const handleLogin = async (e) => {
         e.preventDefault();
 
         if (!validateForm()) return;
 
-        const user = users.find(
-            (user) => user.username === formData.username.trim() && user.password === formData.password,
-        );
+        setIsLoading(true);
+        try {
+            const loginResponse = await authService.login(
+                formData.username.trim(),
+                formData.password
+            );
 
-        if (user) {
-            // Lưu thông tin user vào localStorage để duy trì session
+            if (!loginResponse?.data?.token) {
+                throw new Error('Token không hợp lệ');
+            }
+
+            const token = loginResponse.data.token;
+            const roles = loginResponse.data.roles;
+            const username = loginResponse.data.username;
+       
             localStorage.setItem(
                 'currentUser',
                 JSON.stringify({
-                    username: user.username,
-                    role: user.role,
-                }),
-            );
+                    username: username,
+                    roles: roles,
+                    token: token
+                })
+            )
+            
+            localStorage.setItem('token', [token, roles]);
 
-            // Chuyển hướng đến trang home với thông tin user trên URL
-            navigate(`/home?username=${encodeURIComponent(user.username)}&role=${encodeURIComponent(user.role)}`);
-        } else {
-            alert('Tài khoản hoặc mật khẩu không chính xác');
+            const userRole = loginResponse.data.role;
+            if (userRole && userRole.includes('ADMIN')) {
+                navigate('/admin');
+            } else {
+                navigate('/');
+            }
+
+        } catch (error) {
+            setErrors((prev) => ({
+                ...prev,
+                server: error.message || 'Đã có lỗi xảy ra. Vui lòng thử lại.',
+            }));
+        } finally {
+            setIsLoading(false);
         }
-    };
-
-    // Handle Google login
-    const handleGoogleLogin = () => {
-        // Implement Google login logic here
-        console.log('Google login clicked');
     };
 
     return (
@@ -114,6 +127,12 @@ function LoginPage() {
                 <div className="md:w-1/2 px-10 pt-7">
                     <h2 className="font-bold text-2xl text-sky-700 text-center">Đăng nhập</h2>
                     <p className="text-sm mt-4 text-sky-700 text-center">Nếu đã có tài khoản, hãy đăng nhập</p>
+
+                    {errors.server && (
+                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4" role="alert">
+                            <span className="block sm:inline">{errors.server}</span>
+                        </div>
+                    )}
 
                     <form onSubmit={handleLogin} className="flex flex-col justify-center">
                         <div className="mb-4">
@@ -126,6 +145,7 @@ function LoginPage() {
                                 placeholder="Nhập tên đăng nhập..."
                                 value={formData.username}
                                 onChange={handleInputChange}
+                                disabled={isLoading}
                             />
                             {errors.username && <small className="text-red-600 ml-2">{errors.username}</small>}
                         </div>
@@ -140,6 +160,7 @@ function LoginPage() {
                                 placeholder="Nhập mật khẩu..."
                                 value={formData.password}
                                 onChange={handleInputChange}
+                                disabled={isLoading}
                             />
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -162,20 +183,17 @@ function LoginPage() {
                         <button
                             type="submit"
                             className="bg-sky-800 rounded-xl text-white py-2 
-                                hover:bg-sky-700 transition duration-300"
+                                hover:bg-sky-700 transition duration-300 disabled:opacity-50"
+                            disabled={isLoading}
                         >
-                            Đăng nhập
+                            {isLoading ? 'Đang đăng nhập...' : 'Đăng nhập'}
                         </button>
                     </form>
 
-                    <div className="mt-6 grid grid-cols-3 items-center text-gray-500">
-                        <hr className="text-gray-500" />
-                        <p className="text-center">OR</p>
-                        <hr className="text-gray-500" />
-                    </div>
-
+                    <p className="mt-5 text-xs border-b border-gray-400 pb-4" onClick={() => (window.location.href = '/home/forgot_password')}>
+                        <span className="cursor-pointer hover:text-blue-800 hover:underline">Quên mật khẩu?</span>
+                    </p>
                     <button
-                        onClick={handleGoogleLogin}
                         className="bg-white border py-2 w-full rounded-xl mt-5 
                             flex justify-center items-center text-sm 
                             hover:bg-gray-200 transition duration-300"
@@ -200,14 +218,10 @@ function LoginPage() {
                         </svg>
                         Đăng nhập với Google
                     </button>
-
-                    <p className="mt-5 text-xs border-b border-gray-400 pb-4">
-                        <span className="cursor-pointer hover:text-blue-800 hover:underline">Quên mật khẩu?</span>
-                    </p>
-
                     <div className="mt-3 text-xs flex justify-between items-center">
                         <p>Không có tài khoản...</p>
                         <button
+                            onClick={() => (window.location.href = '/home/register_user')}   
                             className="py-2 px-5 bg-white border rounded-xl 
                             hover:bg-gray-200 transition duration-300"
                         >

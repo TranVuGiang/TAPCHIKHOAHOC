@@ -1,130 +1,217 @@
-import React, { useState } from 'react';
-import { CreditCard, Book, Beaker, Award, CheckCircle } from 'lucide-react';
+// src/App.jsx
+import { useState } from 'react'
 
-export default function ScientificJournalAdPayment() {
-  const [selectedPackage, setSelectedPackage] = useState('standard');
-  const [paymentMethod, setPaymentMethod] = useState('credit');
+export default function PaymentPage() {
+    const [formData, setFormData] = useState({
+        cardNumber: '',
+        cardHolder: '',
+        expiryDate: '',
+        cvv: '',
+        amount: ''
+    })
 
-  const adPackages = {
-    basic: { name: 'Cơ bản', price: '1,000,000', features: ['1 bài đăng', '30 ngày hiển thị', 'Tiếp cận độc giả cơ bản'] },
-    standard: { name: 'Tiêu chuẩn', price: '2,500,000', features: ['3 bài đăng', '60 ngày hiển thị', 'Phân tích độc giả', 'Ưu tiên hiển thị'] },
-    premium: { name: 'Cao cấp', price: '5,000,000', features: ['Không giới hạn bài đăng', '90 ngày hiển thị', 'Báo cáo chi tiết', 'Vị trí quảng cáo đặc biệt', 'Hỗ trợ biên tập'] }
-  };
+    const [errors, setErrors] = useState({})
+    const [loading, setLoading] = useState(false)
+    const [success, setSuccess] = useState(false)
 
-  return (
-    <div className="max-w-4xl mx-auto mt-10 p-8 bg-white rounded-xl shadow-2xl">
-      <h1 className="text-3xl font-bold mb-6 text-center text-indigo-800">Đăng Ký Gói Quảng Cáo Tạp Chí Khoa Học</h1>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {Object.entries(adPackages).map(([key, pack]) => (
-          <div 
-            key={key}
-            className={`p-6 rounded-lg border-2 transition-all duration-300 ${
-              selectedPackage === key 
-                ? 'border-indigo-500 bg-indigo-50 shadow-lg' 
-                : 'border-gray-200 hover:border-indigo-300'
-            }`}
-            onClick={() => setSelectedPackage(key)}
-          >
-            <h3 className="text-xl font-semibold mb-2 text-indigo-700">{pack.name}</h3>
-            <p className="text-2xl font-bold mb-4 text-gray-800">{pack.price} VNĐ</p>
-            <ul className="space-y-2">
-              {pack.features.map((feature, index) => (
-                <li key={index} className="flex items-center text-sm text-gray-600">
-                  <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                  {feature}
-                </li>
-              ))}
-            </ul>
-            <button 
-              className={`mt-4 w-full py-2 px-4 rounded-md transition-colors ${
-                selectedPackage === key 
-                  ? 'bg-indigo-600 text-white hover:bg-indigo-700' 
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-            >
-              {selectedPackage === key ? 'Đã chọn' : 'Chọn gói'}
-            </button>
-          </div>
-        ))}
-      </div>
+    const validateForm = () => {
+        const newErrors = {}
 
-      <div className="bg-gray-50 p-6 rounded-lg mb-8">
-        <h2 className="text-2xl font-semibold mb-4 text-indigo-800">Phương thức thanh toán</h2>
-        <div className="space-y-4">
-          <label className="flex items-center space-x-3 p-3 bg-white rounded-md border border-gray-200 cursor-pointer hover:border-indigo-300">
-            <input
-              type="radio"
-              name="paymentMethod"
-              value="credit"
-              checked={paymentMethod === 'credit'}
-              onChange={() => setPaymentMethod('credit')}
-              className="form-radio text-indigo-600"
-            />
-            <CreditCard className="w-6 h-6 text-indigo-500" />
-            <span className="text-gray-700">Thẻ tín dụng/ghi nợ</span>
-          </label>
-          <label className="flex items-center space-x-3 p-3 bg-white rounded-md border border-gray-200 cursor-pointer hover:border-indigo-300">
-            <input
-              type="radio"
-              name="paymentMethod"
-              value="bank"
-              checked={paymentMethod === 'bank'}
-              onChange={() => setPaymentMethod('bank')}
-              className="form-radio text-indigo-600"
-            />
-            <Award className="w-6 h-6 text-indigo-500" />
-            <span className="text-gray-700">Chuyển khoản ngân hàng</span>
-          </label>
-        </div>
-      </div>
+        if (!formData.cardNumber.match(/^\d{16}$/)) {
+            newErrors.cardNumber = 'Số thẻ phải có 16 chữ số'
+        }
 
-      {paymentMethod === 'credit' && (
-        <div className="bg-white p-6 rounded-lg border border-gray-200 mb-8">
-          <h3 className="text-xl font-semibold mb-4 text-indigo-800">Thông tin thẻ</h3>
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="cardNumber" className="block text-sm font-medium text-gray-700 mb-1">Số thẻ</label>
-              <input
-                type="text"
-                id="cardNumber"
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="1234 5678 9012 3456"
-              />
+        if (!formData.cardHolder.trim()) {
+            newErrors.cardHolder = 'Vui lòng nhập tên chủ thẻ'
+        }
+
+        if (!formData.expiryDate.match(/^\d{2}\/\d{2}$/)) {
+            newErrors.expiryDate = 'Định dạng phải là MM/YY'
+        }
+
+        if (!formData.cvv.match(/^\d{3}$/)) {
+            newErrors.cvv = 'CVV phải có 3 chữ số'
+        }
+
+        if (!formData.amount || parseFloat(formData.amount) <= 0) {
+            newErrors.amount = 'Vui lòng nhập số tiền hợp lệ'
+        }
+
+        setErrors(newErrors)
+        return Object.keys(newErrors).length === 0
+    }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+
+        if (!validateForm()) return
+
+        setLoading(true)
+
+        try {
+            // Giả lập API call
+            await new Promise(resolve => setTimeout(resolve, 2000))
+            setSuccess(true)
+        } catch (error) {
+            alert('Có lỗi xảy ra khi xử lý thanh toán')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }))
+    }
+
+    if (success) {
+        return (
+            <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+                <div className="bg-white p-8 rounded-lg shadow-md text-center">
+                    <div className="text-green-500 text-5xl mb-4">✓</div>
+                    <h2 className="text-2xl font-bold text-gray-800 mb-4">Thanh toán thành công!</h2>
+                    <p className="text-gray-600 mb-6">Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi</p>
+                    <button
+                        onClick={() => window.location.reload()}
+                        className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600"
+                    >
+                        Quay lại
+                    </button>
+                </div>
             </div>
-            <div className="flex space-x-4">
-              <div className="w-1/2">
-                <label htmlFor="expDate" className="block text-sm font-medium text-gray-700 mb-1">Ngày hết hạn</label>
-                <input
-                  type="text"
-                  id="expDate"
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="MM / YY"
-                />
-              </div>
-              <div className="w-1/2">
-                <label htmlFor="cvv" className="block text-sm font-medium text-gray-700 mb-1">Mã bảo mật</label>
-                <input
-                  type="text"
-                  id="cvv"
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="123"
-                />
-              </div>
+        )
+    }
+
+    return (
+        <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-md mx-auto">
+                <div className="bg-white shadow-md rounded-lg p-8">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+                        Thông tin thanh toán
+                    </h2>
+
+                    <form onSubmit={handleSubmit}>
+                        <div className="space-y-6">
+                            {/* Số thẻ */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Số thẻ
+                                </label>
+                                <input
+                                    type="text"
+                                    name="cardNumber"
+                                    value={formData.cardNumber}
+                                    onChange={handleInputChange}
+                                    placeholder="1234 5678 9012 3456"
+                                    className={`w-full px-3 py-2 border rounded-md ${
+                                        errors.cardNumber ? 'border-red-500' : 'border-gray-300'
+                                    }`}
+                                />
+                                {errors.cardNumber && (
+                                    <p className="mt-1 text-sm text-red-500">{errors.cardNumber}</p>
+                                )}
+                            </div>
+
+                            {/* Tên chủ thẻ */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Tên chủ thẻ
+                                </label>
+                                <input
+                                    type="text"
+                                    name="cardHolder"
+                                    value={formData.cardHolder}
+                                    onChange={handleInputChange}
+                                    placeholder="NGUYEN VAN A"
+                                    className={`w-full px-3 py-2 border rounded-md ${
+                                        errors.cardHolder ? 'border-red-500' : 'border-gray-300'
+                                    }`}
+                                />
+                                {errors.cardHolder && (
+                                    <p className="mt-1 text-sm text-red-500">{errors.cardHolder}</p>
+                                )}
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                {/* Ngày hết hạn */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Ngày hết hạn
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="expiryDate"
+                                        value={formData.expiryDate}
+                                        onChange={handleInputChange}
+                                        placeholder="MM/YY"
+                                        className={`w-full px-3 py-2 border rounded-md ${
+                                            errors.expiryDate ? 'border-red-500' : 'border-gray-300'
+                                        }`}
+                                    />
+                                    {errors.expiryDate && (
+                                        <p className="mt-1 text-sm text-red-500">{errors.expiryDate}</p>
+                                    )}
+                                </div>
+
+                                {/* CVV */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        CVV
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="cvv"
+                                        value={formData.cvv}
+                                        onChange={handleInputChange}
+                                        placeholder="123"
+                                        className={`w-full px-3 py-2 border rounded-md ${
+                                            errors.cvv ? 'border-red-500' : 'border-gray-300'
+                                        }`}
+                                    />
+                                    {errors.cvv && (
+                                        <p className="mt-1 text-sm text-red-500">{errors.cvv}</p>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Số tiền */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Số tiền
+                                </label>
+                                <input
+                                    type="number"
+                                    name="amount"
+                                    value={formData.amount}
+                                    onChange={handleInputChange}
+                                    placeholder="0"
+                                    className={`w-full px-3 py-2 border rounded-md ${
+                                        errors.amount ? 'border-red-500' : 'border-gray-300'
+                                    }`}
+                                />
+                                {errors.amount && (
+                                    <p className="mt-1 text-sm text-red-500">{errors.amount}</p>
+                                )}
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className={`w-full py-3 px-4 text-white rounded-md ${
+                                    loading
+                                        ? 'bg-gray-400 cursor-not-allowed'
+                                        : 'bg-blue-500 hover:bg-blue-600'
+                                }`}
+                            >
+                                {loading ? 'Đang xử lý...' : 'Thanh toán'}
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-          </div>
         </div>
-      )}
-
-      <button className="w-full bg-indigo-600 text-white py-3 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors duration-300">
-        Xác nhận đăng ký và thanh toán
-      </button>
-
-      <div className="mt-8 flex items-center justify-center space-x-4 text-gray-600">
-        <Book className="w-6 h-6" />
-        <Beaker className="w-6 h-6" />
-        <p className="text-sm">Quảng cáo của bạn sẽ được hiển thị trên các tạp chí khoa học hàng đầu</p>
-      </div>
-    </div>
-  );
+    )
 }

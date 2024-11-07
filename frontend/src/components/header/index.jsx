@@ -12,49 +12,100 @@ function Header() {
 
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
-    // Hàm xử lý đăng xuất
+
+    // Role constants
+    const ROLES = {
+        USER: "USER",
+        AUTHOR: "AUTHOR",
+        ADMIN: "ADMIN",
+        EDITOR: "EDITOR",
+        CENSOR: "CENSOR",
+        PARTNER: "PARTNER"
+    };
+
+    const getRoleName = (roles) => {
+        if (!roles || !Array.isArray(roles)) return 'Không xác định';
+        
+        // Ưu tiên hiển thị role cao nhất
+        const roleNames = {
+            ADMIN: 'Quản trị viên',
+            EDITOR: 'Biên tập viên',
+            CENSOR: 'Kiểm duyệt',
+            PARTNER: 'Đối tác quảng cáo', 
+            AUTHOR: 'Tác giả',
+            USER: 'Người dùng'
+        };
+
+        // Tìm role cao nhất trong array roles
+        for (const roleKey of Object.keys(roleNames)) {
+            if (roles.includes(roleKey)) {
+                return roleNames[roleKey];
+            }
+        }
+        return 'Khong xac dinh';
+    };
+
+    const getMenuItems = (roles) => {
+        if (!roles || !Array.isArray(roles)) return [];
+
+        // Kiểm tra role cao nhất
+        if (roles.includes(ROLES.ADMIN)) {
+            return [
+                { label: 'Quản lý người dùng', path: '/admin/users' },
+                { label: 'Quản lý bài viết', path: 'http://localhost:5174/dashboard/home' },
+                { label: 'Thống kê hệ thống', path: '/admin/statistics' },
+                { label: 'Cài đặt hệ thống', path: '/admin/settings' },
+                { label: 'Hồ sơ của tôi', path: '/home/profile_user' },
+                { label: 'Bài viết đã lưu', path: '/saved-posts' },
+                { label: 'Lịch sử đọc', path: '/reading-history' },
+            ];
+        }
+        if (roles.includes(ROLES.EDITOR)) {
+            return [
+                { label: 'Bài viết mới', path: '/home/editor_dashboard' },
+                { label: 'Bài viết đang xử lý', path: '/home/editor_dashboard/bai-viet-dang-xu-ly' },
+                { label: 'Thông báo', path: '/home/editor_dashboard/thong-bao' },
+                { label: 'Hồ sơ của tôi', path: '/home/profile_user' },
+                { label: 'Bài viết đã lưu', path: '/saved-posts' },
+                { label: 'Lịch sử đọc', path: '/reading-history' },
+            ];
+        }
+        if (roles.includes(ROLES.AUTHOR)) {
+            return [
+                { label: 'Bài viết của tôi', path: '/home/TacGiaDashboard/management' },
+                { label: 'Tạo bài viết mới', path: '/home/TacGiaDashboard/submission' },
+                { label: 'Thông báo phản biện', path: '/home/TacGiaDashboard/notifications' },
+                { label: 'Hồ sơ của tôi', path: '/home/profile_user' },
+                { label: 'Bài viết đã lưu', path: '/saved-posts' },
+                { label: 'Lịch sử đọc', path: '/reading-history' },
+            ];
+        }
+        // Default menu for USER role
+        return [
+            { label: 'Hồ sơ của tôi', path: '/home/profile_user' },
+            { label: 'Bài viết đã lưu', path: '/home/profile_user' },
+            { label: 'Lịch sử đọc', path: '/home/profile_user' },
+        ];
+    };
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem('currentUser');
+        if (storedUser) {
+            const parsedUser = JSON.parse(storedUser);
+            // Chuyển đổi roles object thành array
+            const rolesArray = Object.values(parsedUser.roles);
+            setUser({
+                ...parsedUser,
+                roles: rolesArray // Lưu roles dưới dạng array
+            });
+        }
+    }, [navigate]);
+
     const handleLogout = () => {
         localStorage.removeItem('currentUser');
         setUser(null);
-        navigate('/login');
+        navigate('/home/login');
     };
-
-    // Menu items theo role
-    const getMenuItems = (role) => {
-        switch (role) {
-            case 'ADMIN':
-                return [
-                    { label: 'Quản lý người dùng', path: '/admin/users' },
-                    { label: 'Quản lý bài viết', path: 'http://localhost:5174/dashboard/home' },
-                    { label: 'Thống kê hệ thống', path: '/admin/statistics' },
-                    { label: 'Cài đặt hệ thống', path: '/admin/settings' },
-                ];
-            case 'AUTHOR':
-                return [
-                    { label: 'Bài viết của tôi', path: '/author/my-posts' },
-                    { label: 'Tạo bài viết mới', path: '/author/new-post' },
-                    { label: 'Thông báo phản biện', path: '/author/reviews' },
-                ];
-            case 'CENSOR':
-                return [
-                    { label: 'Bài viết cần duyệt', path: '/censor/pending' },
-                    { label: 'Bài viết đã duyệt', path: '/censor/approved' },
-                    { label: 'Viết phản biện', path: '/censor/review' },
-                ];
-            case 'KHACHHANG':
-                return [
-                    { label: 'Hồ sơ của tôi', path: '/profile' },
-                    { label: 'Bài viết đã lưu', path: '/saved-posts' },
-                    { label: 'Lịch sử đọc', path: '/reading-history' },
-                ];
-            default:
-                return [];
-        }
-    };
-    useEffect(() => {
-        const storedUser = localStorage.getItem('currentUser');
-        setUser(JSON.parse(storedUser));
-    }, [navigate]);
 
     const handleNavigation = (path) => {
         if (!user) {
@@ -63,15 +114,6 @@ function Header() {
         }
         navigate(path);
     };
-    const checkLogin = (path) => {
-        if (!user) {
-            alert('Vui lòng đăng nhập để tiếp tục!');
-            return;
-        } else {
-            navigate;
-        }
-    };
-
     return (
         <header className="relative">
             {/* Logo/Title Section */}
@@ -89,30 +131,29 @@ function Header() {
                                 className={`flex-1 flex ${!showSearch ? 'items-center justify-center' : 'items-center justify-center'}`}
                             >
                                 <div className={`flex ${showSearch ? 'space-x-4' : 'space-x-4'}`}>
-                                    <Link to="/home" className={`${textNavbar}`}>
+                                    <Link to="/" className={`${textNavbar}`}>
                                         Trang chủ
                                     </Link>
-                                    <Link to="/gioi-thieu" className={`${textNavbar}`}>
+                                    <Link to="/home/introduce" className={`${textNavbar}`}>
                                         Giới thiệu
                                     </Link>
-                                    <Link to="/list" className={`${textNavbar}`}>
+                                    <Link to="/home/danhmuc" className={`${textNavbar}`}>
                                         Danh mục
                                     </Link>
                                     <Link
-                                        to={user ? '/submitForm' : '#'}
+                                        to={user ? '/home/TacGiaDashboard' : '#'}
                                         className={`${textNavbar}`}
                                         onClick={() => {
-                                            handleNavigation('/submitForm');
+                                            handleNavigation('/home/TacGiaDashboard/*');
                                         }}
                                     >
                                         Gửi bài Online
                                     </Link>
-
                                     <Link
-                                        to={user ? '/advertisement' : '#'}
+                                        to={user ? '/home/option_advertisement' : '#'}
                                         className={`${textNavbar}`}
                                         onClick={() => {
-                                            handleNavigation('/advertisement');
+                                            handleNavigation('/home/option_advertisement');
                                         }}
                                     >
                                         Khác
@@ -165,7 +206,7 @@ function Header() {
                                     </div>
                                 ) : (
                                     <Link
-                                        to="/login"
+                                        to="/home/login"
                                         className="flex items-center space-x-2 group-hover:text-space-200 transition duration-300"
                                     >
                                         <UserIcon className="h-6 w-6 text-white group-hover:text-space-200 transition duration-300" />
@@ -173,29 +214,28 @@ function Header() {
                                 )}
 
                                 {/* Dropdown Menu */}
-                                {/* Dropdown Menu */}
                                 {user && (
                                     <div
                                         className="absolute right-0 w-48 py-2 mt-2 bg-white rounded-md shadow-xl z-50 
-                      invisible transform scale-95 translate-y-2 
-                      group-hover:visible group-hover:translate-y-0 group-hover:scale-100
-                      transition-all duration-200 ease-in-out"
+                                            invisible transform scale-95 translate-y-2 
+                                            group-hover:visible group-hover:translate-y-0 group-hover:scale-100
+                                            transition-all duration-200 ease-in-out"
                                     >
                                         {/* User Info Section */}
                                         <div className="px-4 py-2 border-b border-gray-100">
                                             <p className="text-sm font-semibold text-gray-700">{user.username}</p>
-                                            <p className="text-xs text-gray-500">{user.role}</p>
+                                            <p className="text-xs text-gray-500">{getRoleName(user.roles)}</p>
                                         </div>
 
                                         {/* Menu Items Based on Role */}
                                         <div className="py-1">
-                                            {getMenuItems(user.role).map((item, index) => (
+                                            {getMenuItems(user.roles).map((item, index) => (
                                                 <Link
                                                     key={index}
                                                     to={item.path}
                                                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-space-200 
-                                 hover:text-white transition-colors duration-150 
-                                 font-montserrat"
+                                                                hover:text-white transition-colors duration-150 
+                                                                    font-montserrat"
                                                 >
                                                     {item.label}
                                                 </Link>
@@ -207,7 +247,7 @@ function Header() {
                                             <button
                                                 onClick={handleLogout}
                                                 className="block w-full text-left px-4 py-2 text-sm text-red-600 
-                             hover:bg-red-50 transition-colors duration-150"
+                                                    hover:bg-red-50 transition-colors duration-150"
                                             >
                                                 Đăng xuất
                                             </button>
@@ -235,16 +275,21 @@ function Header() {
                         <Link to="/" className="text-white hover:text-space-200 text-lg">
                             Trang chủ
                         </Link>
-                        <Link to="/gioi-thieu" className="text-white hover:text-space-200 text-lg">
+                        <Link to="/home/introduce" className="text-white hover:text-space-200 text-lg">
                             Giới thiệu
                         </Link>
-                        <Link to="/list" className="text-white hover:text-space-200 text-lg">
+                        <Link to="/home/danhmuc" className="text-white hover:text-space-200 text-lg">
                             Danh mục
                         </Link>
-                        <Link to="/submitForm" className="text-white hover:text-space-200 text-lg">
+                        <Link
+                            to={user ? '/home/TacGiaDashboard' : '#'}
+                            className="text-white hover:text-space-200 text-lg"
+                            onClick={() => {
+                                handleNavigation('/submitForm');
+                            }}
+                        >
                             Gửi bài Online
                         </Link>
-
                         <Link to="/advertisement" className="text-white hover:text-space-200 text-lg">
                             Khác
                         </Link>

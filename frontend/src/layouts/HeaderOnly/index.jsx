@@ -3,7 +3,7 @@ import Header from "@/components/header";
 
 function HeaderOnly({ children }) {
     return ( 
-        <>
+        <div className="font-montserrat">
         {/* HEADER */}
             <Header />
 
@@ -15,7 +15,7 @@ function HeaderOnly({ children }) {
                 
         {/* FOOTER */}
             <Footer />
-        </>
+        </div>
      );
 }
 
