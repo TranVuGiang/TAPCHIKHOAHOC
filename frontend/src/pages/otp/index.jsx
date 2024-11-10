@@ -1,88 +1,78 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { authService } from '@/utils/authService';
+import { useState } from 'react';
 
-export default function OTP() {
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
-  const inputRefs = useRef([]);
+const OTPVerification = () => {
+  const [otp, setOtp] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  useEffect(() => {
-    if (inputRefs.current[0]) {
-      inputRefs.current[0].focus();
-    }
-  }, []);
-
-  const handleChange = (element, index) => {
-    if (isNaN(element.value)) return false;
-
-    setOtp([...otp.map((d, idx) => (idx === index ? element.value : d))]);
-
-    // Focus next input
-    if (element.value !== '') {
-      if (index < 5) {
-        inputRefs.current[index + 1].focus();
-      }
-    }
+  const handleOTPChange = (e) => {
+    setOtp(e.target.value);
+    setError(''); // Clear error when user types
   };
 
-  const handleBackspace = (e, index) => {
-    if (e.key === 'Backspace') {
-      if (index > 0 && otp[index] === '') {
-        inputRefs.current[index - 1].focus();
-      }
-    }
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const otpValue = otp.join('');
-    console.log('OTP submitted:', otpValue);
-    // Xử lý logic gửi OTP ở đây
+
+    if (otp.length !== 6) {
+      setError('Vui lòng nhập đủ 6 số');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await authService.verify(otp);
+      if (response === 'Xác thực thành công') {
+        // Xác thực thành công, chuyển hướng hoặc hiển thị thông báo
+        alert(response);
+      } else {
+        setError(response);
+      }
+    } catch (err) {
+      setError(err.message || 'Có lỗi xảy ra. Vui lòng thử lại.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4">
-      <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
+    <div className="bg-gray-50 min-h-screen flex items-center justify-center font-montserrat">
+      <div className="max-w-md w-full mx-auto p-8 bg-white rounded-lg shadow-md">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-cyan-600 mb-2">Xác thực OTP</h2>
-          <p className="text-gray-500">
-            Vui lòng nhập mã OTP đã được gửi đến thiết bị của bạn
-          </p>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Xác thực OTP</h2>
+          <p className="text-gray-600">Vui lòng nhập mã OTP đã được gửi đến thiết bị của bạn</p>
         </div>
+
+        {error && (
+          <div className="text-red-500 text-center mb-4 p-2 bg-red-50 rounded">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
-          <div className="flex justify-center gap-2 mb-8">
-            {otp.map((data, index) => (
-              <input
-                key={index}
-                type="text"
-                maxLength="1"
-                ref={(ref) => (inputRefs.current[index] = ref)}
-                value={data}
-                onChange={(e) => handleChange(e.target, index)}
-                onKeyDown={(e) => handleBackspace(e, index)}
-                className="w-12 h-12 border-2 rounded bg-white focus:border-cyan-500 focus:outline-none text-center text-xl font-semibold text-gray-700 transition-all border-gray-200 hover:border-cyan-400"
-              />
-            ))}
-          </div>
+          <input
+            type="text"
+            inputMode="numeric"
+            maxLength={6}
+            value={otp}
+            onChange={handleOTPChange}
+            className="w-full px-4 py-3 border-2 rounded bg-white focus:border-cyan-500 focus:outline-none text-center text-xl font-semibold text-gray-700 transition-all border-gray-200 hover:border-cyan-400 disabled:bg-gray-100"
+            placeholder="Nhập mã OTP"
+            disabled={isLoading}
+          />
 
-          <div className="text-center">
-            <button
-              type="submit"
-              className="w-full bg-cyan-600 text-white rounded-lg px-4 py-3 font-semibold hover:bg-cyan-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
-            >
-              Xác nhận
-            </button>
-          </div>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-cyan-600 text-white py-3 rounded-lg hover:bg-cyan-700 transition-colors disabled:bg-cyan-300 font-medium mt-4"
+          >
+            {isLoading ? 'Đang xử lý...' : 'Xác nhận'}
+          </button>
         </form>
-
-        <div className="text-center mt-6">
-          <p className="text-gray-500">
-            Không nhận được mã?{' '}
-            <button className="text-cyan-600 hover:text-cyan-700 font-semibold">
-              Gửi lại
-            </button>
-          </p>
-        </div>
       </div>
     </div>
   );
-}
+};
+
+export default OTPVerification;

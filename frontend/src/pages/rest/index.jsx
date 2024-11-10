@@ -3,48 +3,29 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const RestPassword = () => {
-    const [password, setPassword] = useState('');
+    const [newpassword, setNewpassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
-    const [userData, setUserData] = useState(null);
     const [errors, setErrors] = useState('');
     const navigate = useNavigate();
+    const [token, setToken] = useState('')
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
         const token = urlParams.get('token');
-        console.log(token);
-        
-        if (token) {
-            getUserDetails(token);
-        } else {
-            navigate('/login'); // Redirect to login page if no token is found
-        }
+        setToken(token)
     }, [navigate]);
 
-    useEffect(() => {
-        console.log(userData);
-    }, [userData]);
-
-    const getUserDetails = async (token) => {
-        try {
-            const userData = await authService.getUserDetails(token);
-            setUserData(userData);
-            localStorage.setItem('userData', JSON.stringify(userData));
-        } catch (error) {
-            setErrors({ general: error.message || 'Không thể lấy thông tin người dùng' });
-        }
-    };
+   
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (password !== confirmPassword) {
+        if (newpassword !== confirmPassword) {
             setError('Passwords do not match!');
         } else {
             setError('');
-            const token = JSON.parse(localStorage.getItem('resetPasswordToken'));
             try {
-                await authService.change_pass(userData.username, password, confirmPassword, token);
+                await authService.resetPass(token, newpassword);
                 console.log('Password reset successfully!');
                 navigate('/login');
             } catch (error) {
@@ -66,8 +47,8 @@ const RestPassword = () => {
                         <input
                             type="password"
                             placeholder="Nhập mật khẩu mới"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            value={newpassword}
+                            onChange={(e) => setNewpassword(e.target.value)}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
                         />

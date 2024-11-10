@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Users, FileText, BarChart2, DollarSign, LogOut, Settings, Radio } from 'lucide-react';
+import { BarChart2, DollarSign, FileText, LogOut, Radio, Settings, Users } from 'lucide-react';
+import { useState } from 'react';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -198,9 +198,9 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gray-100 font-montserrat">
       {/* Sidebar */}
-      <div className="w-64 bg-gray-800">
+      <div className="w-65 bg-gray-800">
         <div className="flex items-center justify-center h-16 bg-gray-900">
           <span className="text-white text-xl font-semibold">Quản trị viên BC & KH</span>
         </div>

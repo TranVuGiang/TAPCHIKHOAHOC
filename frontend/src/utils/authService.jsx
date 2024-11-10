@@ -85,4 +85,36 @@ export const authService = {
         }
         return response.json()
     },
+    //Reset Pass
+    resetPass: async (token, newpassword) => {
+        const response = await fetch(`${API_URL}/api/user/reset`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({token, newpassword})
+        });
+        if(!response.ok){
+            const error = await response.json();
+            throw new Error(error.message || 'Không thể thay đổi');
+        }
+        return response.json()
+    },
+
+    //Verify
+    verify: async (code) => {
+        const response = await fetch(`${API_URL}/api/user/verify?code=${code}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if(!response.ok){
+            const error = await response.json();
+            throw new Error(error.message || 'Không thể thay đổi');
+        }
+
+        return response.json()
+    }
 };

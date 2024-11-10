@@ -20,8 +20,7 @@ export const AdDashboard = lazy(() => import("@/pages/adver_dashboard/index.jsx"
 export const AdRegistrationForm = lazy(() => import("@/pages/formadvertisement/index.jsx"));
 export const Category = lazy(() => import("@/pages/danhmuc/index.jsx"));
 export const AdminDashboard = lazy(() => import("@/pages/admin/index.jsx"));
-export const OTP = lazy(() => import("@/pages/otp/index.jsx"))
-
+export const ConfirmOTP = lazy(() => import("@/pages/otp/index.jsx"))
 // Protected Pages
 export const TacGiaDashboard = lazy(() => import("@/pages/submitPost"));
 export const EditorDashboard = lazy(() => import("@/pages/editor_dashboard"));

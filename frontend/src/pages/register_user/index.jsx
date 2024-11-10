@@ -1,8 +1,10 @@
+import { ErrorDialog, SuccessDialog } from '@/components/modalDialog';
 import { authService } from '@/utils/authService';
 import { Key, Mail, Phone, User, UserCircle } from 'lucide-react';
 import { useState } from 'react';
-
+import { useNavigate } from 'react-router-dom';
 export default function RegisterUser() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -14,7 +16,7 @@ export default function RegisterUser() {
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-
+  const [success, setSuccess] = useState(false)
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -76,7 +78,9 @@ export default function RegisterUser() {
         formData.hovaten,
         ''
       );
-      alert('Đăng ký thành công!');
+      // localStorage.setItem('data-register', formData);
+      setSuccess(true)
+      // alert('Đăng ký thành công!');
       setFormData({
         username: '',
         password: '',
@@ -85,13 +89,18 @@ export default function RegisterUser() {
         sdt: '',
         hovaten: ''
       });
+      navigate("/home/otp")
     } catch (err) {
       setErrors({ general: err.message || 'Có lỗi xảy ra khi đăng ký' });
     } finally {
       setLoading(false);
     }
-  };
+  }; 
 
+  const handleContinue = () => {
+    navigate("/")
+    setSuccess(false)
+  }
   const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -116,11 +125,15 @@ export default function RegisterUser() {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow-lg sm:rounded-lg sm:px-10">
           {errors.general && (
-            <div className="mb-4 text-sm text-red-600 bg-red-50 p-3 rounded-md">
-              {errors.general}
-            </div>
+           <ErrorDialog title={errors.general}/>
           )}
-
+          {success && (
+            <SuccessDialog 
+              title={"Đăng ký thành công"}
+              isOpen={success}
+              onDeactivate={handleContinue}
+            />
+          )}
           <form className="space-y-6" onSubmit={handleSubmit}>
             {/* Tên đăng nhập */}
             <div>
