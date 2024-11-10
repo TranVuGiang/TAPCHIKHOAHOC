@@ -1,8 +1,11 @@
+import { ErrorDialog, SuccessDialog } from '@/components/modalDialog';
 import { authService } from '@/utils/authService';
 import { Key, Mail, Phone, User, UserCircle } from 'lucide-react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function RegisterUser() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -14,6 +17,7 @@ export default function RegisterUser() {
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -27,34 +31,25 @@ export default function RegisterUser() {
     e.preventDefault();
     const newErrors = {};
 
-    // Validate username
     if (formData.username.trim() === '') {
       newErrors.username = 'Vui lòng nhập tên đăng nhập';
     }
-
-    // Validate password
     if (formData.password.trim() === '') {
       newErrors.password = 'Vui lòng nhập mật khẩu';
     }
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Mật khẩu xác nhận không khớp!';
     }
-
-    // Validate email
     if (formData.email.trim() === '') {
       newErrors.email = 'Vui lòng nhập email';
     } else if (!isValidEmail(formData.email)) {
       newErrors.email = 'Email không hợp lệ';
     }
-
-    // Validate phone number
     if (formData.sdt.trim() === '') {
       newErrors.sdt = 'Vui lòng nhập số điện thoại';
     } else if (!isValidPhoneNumber(formData.sdt)) {
       newErrors.sdt = 'Số điện thoại không hợp lệ';
     }
-
-    // Validate full name
     if (formData.hovaten.trim() === '') {
       newErrors.hovaten = 'Vui lòng nhập họ và tên';
     }
@@ -76,7 +71,7 @@ export default function RegisterUser() {
         formData.hovaten,
         ''
       );
-      alert('Đăng ký thành công!');
+      setSuccess(true);
       setFormData({
         username: '',
         password: '',
@@ -85,11 +80,17 @@ export default function RegisterUser() {
         sdt: '',
         hovaten: ''
       });
+      navigate("/home/otp");
     } catch (err) {
       setErrors({ general: err.message || 'Có lỗi xảy ra khi đăng ký' });
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleContinue = () => {
+    navigate("/");
+    setSuccess(false);
   };
 
   const isValidEmail = (email) => {
@@ -102,9 +103,31 @@ export default function RegisterUser() {
     return phoneRegex.test(phoneNumber);
   };
 
+  const InputField = ({ label, icon: Icon, type, name, value, placeholder, error }) => (
+    <div>
+      <label className="block text-sm font-medium text-gray-700">
+        {label}
+      </label>
+      <div className="mt-1 relative rounded-md shadow-sm">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <Icon className="h-5 w-5 text-blue-500" />
+        </div>
+        <input
+          type={type}
+          name={name}
+          value={value}
+          onChange={handleChange}
+          className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          placeholder={placeholder}
+        />
+      </div>
+      {error && <p className="text-red-600 text-sm mt-1">{error}</p>}
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-montserrat">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+      <div className="sm:mx-auto sm:w-full sm:max-w-2xl">
         <h2 className="text-center text-3xl font-extrabold text-blue-800">
           Đăng ký tài khoản
         </h2>
@@ -113,139 +136,83 @@ export default function RegisterUser() {
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-2xl">
         <div className="bg-white py-8 px-4 shadow-lg sm:rounded-lg sm:px-10">
-          {errors.general && (
-            <div className="mb-4 text-sm text-red-600 bg-red-50 p-3 rounded-md">
-              {errors.general}
-            </div>
+          {errors.general && <ErrorDialog title={errors.general} />}
+          {success && (
+            <SuccessDialog
+              title={"Đăng ký thành công"}
+              isOpen={success}
+              onDeactivate={handleContinue}
+            />
           )}
-
           <form className="space-y-6" onSubmit={handleSubmit}>
-            {/* Tên đăng nhập */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Tên đăng nhập
-              </label>
-              <div className="mt-1 relative rounded-md shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <UserCircle className="h-5 w-5 text-blue-500" />
-                </div>
-                <input
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Column 1 */}
+              <div className="space-y-6">
+                <InputField
+                  label="Tên đăng nhập"
+                  icon={UserCircle}
                   type="text"
                   name="username"
                   value={formData.username}
-                  onChange={handleChange}
-                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   placeholder="Nhập tên đăng nhập"
+                  error={errors.username}
                 />
-              </div>
-              {errors.username && <p className="text-red-600 text-sm mt-1">{errors.username}</p>}
-            </div>
 
-            {/* Mật khẩu */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Mật khẩu
-              </label>
-              <div className="mt-1 relative rounded-md shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Key className="h-5 w-5 text-blue-500" />
-                </div>
-                <input
+                <InputField
+                  label="Mật khẩu"
+                  icon={Key}
                   type="password"
                   name="password"
                   value={formData.password}
-                  onChange={handleChange}
-                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   placeholder="********"
+                  error={errors.password}
                 />
-              </div>
-              {errors.password && <p className="text-red-600 text-sm mt-1">{errors.password}</p>}
-            </div>
 
-            {/* Xác nhận mật khẩu */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Xác nhận mật khẩu
-              </label>
-              <div className="mt-1 relative rounded-md shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Key className="h-5 w-5 text-blue-500" />
-                </div>
-                <input
+                <InputField
+                  label="Xác nhận mật khẩu"
+                  icon={Key}
                   type="password"
                   name="confirmPassword"
                   value={formData.confirmPassword}
-                  onChange={handleChange}
-                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   placeholder="********"
+                  error={errors.confirmPassword}
                 />
               </div>
-              {errors.confirmPassword && <p className="text-red-600 text-sm mt-1">{errors.confirmPassword}</p>}
-            </div>
 
-            {/* Email */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Email
-              </label>
-              <div className="mt-1 relative rounded-md shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-blue-500" />
-                </div>
-                <input
-                  type="input"
+              {/* Column 2 */}
+              <div className="space-y-6">
+                <InputField
+                  label="Email"
+                  icon={Mail}
+                  type="email"
                   name="email"
                   value={formData.email}
-                  onChange={handleChange}
-                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   placeholder="example@email.com"
+                  error={errors.email}
                 />
-              </div>
-              {errors.email && <p className="text-red-600 text-sm mt-1">{errors.email}</p>}
-            </div>
 
-            {/* Số điện thoại */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Số điện thoại
-              </label>
-              <div className="mt-1 relative rounded-md shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Phone className="h-5 w-5 text-blue-500" />
-                </div>
-                <input
+                <InputField
+                  label="Số điện thoại"
+                  icon={Phone}
                   type="tel"
                   name="sdt"
                   value={formData.sdt}
-                  onChange={handleChange}
-                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   placeholder="0123456789"
+                  error={errors.sdt}
                 />
-              </div>
-              {errors.sdt && <p className="text-red-600 text-sm mt-1">{errors.sdt}</p>}
-            </div>
 
-            {/* Họ và tên */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Họ và tên
-              </label>
-              <div className="mt-1 relative rounded-md shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-blue-500" />
-                </div>
-                <input
+                <InputField
+                  label="Họ và tên"
+                  icon={User}
                   type="text"
                   name="hovaten"
                   value={formData.hovaten}
-                  onChange={handleChange}
-                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   placeholder="Họ và tên của bạn"
+                  error={errors.hovaten}
                 />
               </div>
-              {errors.hovaten && <p className="text-red-600 text-sm mt-1">{errors.hovaten}</p>}
             </div>
 
             <div>

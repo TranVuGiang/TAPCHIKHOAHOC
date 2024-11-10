@@ -1,4 +1,6 @@
 import loginImg from '@/assets/loginbg.png';
+import GoogleLoginButtons from '@/components/googleLogin';
+import { ErrorDialog, SuccessDialog } from '@/components/modalDialog';
 import { authService } from '@/utils/authService';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -19,6 +21,7 @@ function LoginPage() {
     const [formData, setFormData] = useState(initialFormState);
     const [errors, setErrors] = useState(initialErrorState);
     const [isLoading, setIsLoading] = useState(false);
+    const [showSuccessDialog, setShowSuccessDialog] = useState(false);
     const navigate = useNavigate();
 
     // Form validation
@@ -62,16 +65,6 @@ function LoginPage() {
         }));
     };
 
-    // Format date to dd-MM-yyyy
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('vi-VN', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric'
-        }).split('/').join('-');
-    };
-
     // Handle login
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -84,33 +77,39 @@ function LoginPage() {
                 formData.username.trim(),
                 formData.password
             );
-
+            
             if (!loginResponse?.data?.token) {
                 throw new Error('Token không hợp lệ');
             }
 
             const token = loginResponse.data.token;
             const roles = loginResponse.data.roles;
-            const username = loginResponse.data.username;
-       
+            const fullname = loginResponse.data.fullname;
+            
             localStorage.setItem(
                 'currentUser',
                 JSON.stringify({
-                    username: username,
+                    fullname: fullname,
                     roles: roles,
                     token: token
                 })
-            )
+            );
             
             localStorage.setItem('token', [token, roles]);
-
-            const userRole = loginResponse.data.role;
-            if (userRole && userRole.includes('ADMIN')) {
-                navigate('/admin');
-            } else {
-                navigate('/');
-            }
-
+            
+            // Show success dialog
+            setShowSuccessDialog(true);
+            
+            // Navigate after a short delay
+            setTimeout(() => {
+                const userRole = loginResponse.data.role;
+                if (userRole && userRole.includes('ADMIN')) {
+                    navigate('/admin');
+                } else {
+                    navigate('/');
+                }
+            }, 1500); // 1.5 second delay to show success message
+            
         } catch (error) {
             setErrors((prev) => ({
                 ...prev,
@@ -129,10 +128,15 @@ function LoginPage() {
                     <p className="text-sm mt-4 text-sky-700 text-center">Nếu đã có tài khoản, hãy đăng nhập</p>
 
                     {errors.server && (
-                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4" role="alert">
-                            <span className="block sm:inline">{errors.server}</span>
-                        </div>
+                        <ErrorDialog title="Email hoặc mật khẩu không hợp lệ"/>
                     )}
+                    
+                    <SuccessDialog 
+                        isOpen={showSuccessDialog}
+                        onClose={() => setShowSuccessDialog(false)}
+                        title="Đăng nhập thành công"
+                       
+                    />
 
                     <form onSubmit={handleLogin} className="flex flex-col justify-center">
                         <div className="mb-4">
@@ -193,31 +197,7 @@ function LoginPage() {
                     <p className="mt-5 text-xs border-b border-gray-400 pb-4" onClick={() => (window.location.href = '/home/forgot_password')}>
                         <span className="cursor-pointer hover:text-blue-800 hover:underline">Quên mật khẩu?</span>
                     </p>
-                    <button
-                        className="bg-white border py-2 w-full rounded-xl mt-5 
-                            flex justify-center items-center text-sm 
-                            hover:bg-gray-200 transition duration-300"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 mr-3" viewBox="0 0 48 48">
-                            <path
-                                fill="#FFC107"
-                                d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"
-                            ></path>
-                            <path
-                                fill="#FF3D00"
-                                d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"
-                            ></path>
-                            <path
-                                fill="#4CAF50"
-                                d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"
-                            ></path>
-                            <path
-                                fill="#1976D2"
-                                d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"
-                            ></path>
-                        </svg>
-                        Đăng nhập với Google
-                    </button>
+                    <GoogleLoginButtons />
                     <div className="mt-3 text-xs flex justify-between items-center">
                         <p>Không có tài khoản...</p>
                         <button
