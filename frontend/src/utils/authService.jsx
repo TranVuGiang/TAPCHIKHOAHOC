@@ -1,6 +1,6 @@
 // src/services/authService.js
 
-const API_URL = 'https://anime404.click';
+const API_URL = 'https://congnghetoday.click';
 
 export const authService = {
     // Login user
