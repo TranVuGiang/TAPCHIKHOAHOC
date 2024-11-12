@@ -52,12 +52,12 @@ const privateRoutes = [
         path: "/home/profile_user", 
         component: Components.UserDashboard, 
         layout: NoneLayouts,
-        roles: ["CUSTOMER", "ADMIN", "AUTHOR", "EDITOR","CENSOR","ADVERTISER"] //READER
+        roles: ["CUSTOMER", "ADMIN", "AUTHOR", "EDITOR","CENSOR","PARTNER"] //READER
     },
     { 
         path: "/home/payment",
         component: Components.PaymentPage,
-        roles: [4]  // Chỉ admin và đối tác quảng cáo mới truy cập được
+        roles: ["PARTNER"]  // Chỉ admin và đối tác quảng cáo mới truy cập được
     },
     { 
         path: "/home/TacGiaDashboard/*", 
