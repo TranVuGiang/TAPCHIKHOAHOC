@@ -133,8 +133,8 @@ export const authService = {
         return response.json();
     },
     //List Bài Báo
-    getAllBaiBao: async (page) => {
-        const response = await fetch(`${API_URL}/api/baibao/all?page=${page}`, {
+    getAllBaiBao: async () => {
+        const response = await fetch(`${API_URL}/api/baibao/all`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -147,10 +147,10 @@ export const authService = {
         return response.json();
     },
     
-    //Danh mục
+    //Danh mục theo tuần
     getAllDanhMuc: async () => {
-        const response = await fetch(`${API_URL}/api/danhmuc/all`, {
-            method: "GET",
+        const response = await fetch(`${API_URL}/api/danhmuc/get/week`, {
+            method: "POST",
             headers: {
                 "Content-Type": "application"
             }

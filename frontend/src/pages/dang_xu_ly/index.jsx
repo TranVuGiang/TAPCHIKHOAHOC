@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 function DangXuLy() {
     const [activeTab, setActiveTab] = useState("Thông báo");
@@ -22,10 +22,10 @@ function DangXuLy() {
     const tabs = ["Thông báo", "Đang biên tập", "Thêm danh mục", "Đăng bài báo", "Bài viết đã đăng"];
 
     return (
-        <div className="flex h-screen bg-gray-100">
+        <div className="flex h-screen bg-gray-100 font-montserrat">
             {/* Sidebar */}
             <aside className="w-1/5 bg-indigo-800 text-white p-6">
-                <h2 className="text-xl font-bold mb-8">Tạp chí</h2>
+                <h2 className="text-xl font-bold mb-8">Biên Tập Viên</h2>
                 <nav className="space-y-4">
                     {tabs.map(tab => (
                         <button

@@ -1,11 +1,29 @@
-import magazineData from '@/data/magazineData.json';
 import MagazineCard from '@/share/MagazineCard';
 import TitleText from '@/share/TitleText';
+import { authService } from '@/utils/authService';
+import { useEffect, useState } from 'react';
 
 function Home() {
-   
+    const [danhmucs, setDanhmucs] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                // Sửa lại cách gọi API - thêm dấu ()
+                const response = await authService.getAllDanhMuc();
+                setDanhmucs(response.data.data); // Giả sử response có dạng { data: [...] }
+            } catch (error) {
+                setError(error.message);
+            } finally {
+                setLoading(false);
+            }
+        };
 
+        fetchData();
+    }, []);
 
     const mainNews = {
         image: 'https://fundgo.network/wp-content/uploads/2024/02/Banner-16_9-for-press-release-2024-1.png',
@@ -42,20 +60,21 @@ function Home() {
         <>
             {/* SỐ MỚI NHẤT */}
             <section className="container mx-auto px-4 py-8 relative">
-                <div  className="w-full h-[60px] bg-space-400 absolute top-0 right-0 py-4 pl-8">
+                <div className="w-full h-[60px] bg-space-400 absolute top-0 right-0 py-4 pl-8">
                     <TitleText>CÁC SỐ MỚI NHẤT</TitleText>
                 </div>
                 <div className="mt-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {magazineData.latestIssues.map((issue) => (
-                        <MagazineCard
-                            key={issue.id}
-                            issueNumber={issue.issueNumber}
-                            publicationDate={issue.publicationDate}
-                            title={issue.title}
-                            excerpt={issue.excerpt}
-                            coverImage={issue.coverImage}
-                            
-                        />
+                    {danhmucs.map((issue) => (
+                        <div key={issue.danhmucId}>
+                            <MagazineCard
+                                weekNumber={issue.tuan}
+                                issueNumber={issue.so}
+                                publicationDate={issue.ngayTao}
+                                title={issue.tieuDe}
+                                excerpt={issue.moTa}
+                                coverImage={issue.url}
+                            />
+                        </div>
                     ))}
                 </div>
             </section>
@@ -63,7 +82,7 @@ function Home() {
 
             {/* SỰ KIỆN HOT TRONG TUẦN */}
             <section className="container mx-auto px-4 py-8">
-            <div  className="w-full h-[60px] bg-space-400 right-0 py-4 pl-8">
+                <div className="w-full h-[60px] bg-space-400 right-0 py-4 pl-8">
                     <TitleText>CÁC SỐ MỚI NHẤT</TitleText>
                 </div>
                 <div className="container mx-auto px-4 py-6">
@@ -118,4 +137,3 @@ function Home() {
 }
 
 export default Home;
-    
