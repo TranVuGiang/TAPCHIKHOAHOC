@@ -15,7 +15,7 @@ function Header() {
 
     // Role constants
     const ROLES = {
-        USER: "USER",
+        CUSTOMER: "CUSTOMER",
         AUTHOR: "AUTHOR",
         ADMIN: "ADMIN",
         EDITOR: "EDITOR",
@@ -33,7 +33,7 @@ function Header() {
             CENSOR: 'Kiểm duyệt',
             PARTNER: 'Đối tác quảng cáo', 
             AUTHOR: 'Tác giả',
-            USER: 'Người dùng'
+            CUSTOMER: 'Người dùng'
         };
 
         // Tìm role cao nhất trong array roles

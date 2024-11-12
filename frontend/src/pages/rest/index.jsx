@@ -1,7 +1,7 @@
+import { ErrorDialog, SuccessDialog } from '@/components/modalDialog';
 import { authService } from '@/utils/authService';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ErrorDialog, SuccessDialog } from '@/components/modalDialog';
 
 const ResetPassword = () => {
     const initialFormState = {
@@ -99,7 +99,7 @@ const ResetPassword = () => {
             
             // Navigate after showing success message
             setTimeout(() => {
-                navigate('/login');
+                navigate('/home/login');
             }, 1500);
         } catch (error) {
             setErrors(prev => ({
@@ -129,6 +129,7 @@ const ResetPassword = () => {
                     isOpen={showSuccessDialog}
                     onClose={() => setShowSuccessDialog(false)}
                     title="Đặt lại mật khẩu thành công"
+                    titleButton={"Đi đến trang đăng nhập"}
                 />
 
                 <form onSubmit={handleSubmit} className="mt-8">

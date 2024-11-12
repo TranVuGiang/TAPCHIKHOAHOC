@@ -1,4 +1,5 @@
 import magazineData from '@/data/magazineData.json';
+import { authService } from '@/utils/authService';
 import { createUrlSlug } from '@/utils/urlUtils';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -10,7 +11,21 @@ function ListPages() {
     const navigate = useNavigate();
     const [news, setNews] = useState([]);
     const [filteredNews, setFilteredNews] = useState([]);
+    const [data, setData] = useState([])
 
+    useEffect(() => {
+        const fetchData = async () => {
+            const baibaos = await authService.getAllBaiBao(2);
+            setData(baibaos.data)
+        }
+        fetchData() 
+    }, [])
+
+
+    useEffect(() => {
+        console.log(data);
+        
+    }, [data])
     useEffect(() => {
         const fetchDatas = async () => {
             const resp = await fetch(`${API_URL}/list-baibao.json`);

@@ -28,7 +28,17 @@ export function ErrorDialog({ title }) {
                                     <DialogTitle as="h3" className="text-base font-semibold text-gray-900">
                                         Thông báo
                                     </DialogTitle>
-                                    <div className="mt-2">{title}</div>
+                                    <div className="mt-2">
+                                        {Array.isArray(title) ? (
+                                            title.map((item) => (
+                                                <span key={item} className="block">
+                                                    {item}
+                                                </span>
+                                            ))
+                                        ) : (
+                                            <span>{title}</span>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -56,7 +66,7 @@ export function ErrorDialog({ title }) {
     );
 }
 
-export const SuccessDialog = ({ title, isOpen, onClose }) => {
+export const SuccessDialog = ({ title, isOpen, onClose, titleButton }) => {
     return (
         <Dialog as="div" className="relative z-50 font-montserrat" open={isOpen} onClose={onClose}>
             {/* Backdrop */}
@@ -103,7 +113,7 @@ export const SuccessDialog = ({ title, isOpen, onClose }) => {
                         transition-all duration-200 ease-out
                         text-base font-medium"
                     >
-                        Go back to dashboard
+                        {titleButton}
                     </button>
                 </DialogPanel>
             </div>

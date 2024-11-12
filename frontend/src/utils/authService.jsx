@@ -28,11 +28,10 @@ export const authService = {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({token: token})
-
+            body: JSON.stringify({ token: token }),
         });
 
-        if (!response.ok) {
+        if (!response.ok) { // Success 202
             const error = await response.json();
             throw new Error(error.message || 'Không thể lấy thông tin người dùng');
         }
@@ -50,7 +49,7 @@ export const authService = {
         });
         if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.message || 'Không thể đăng ký');
+            throw { data: error || 'Không thể đăng ký', status: response.status };
         }
         return response.json();
     },
@@ -63,8 +62,9 @@ export const authService = {
             },
         });
 
-        if (!response.ok) { 
+        if (!response.ok) {
             const error = await response.json();
+            console.log(error);
             throw new Error(error.message || 'Không thể gửi email đặt lại mật khẩu');
         }
 
@@ -77,13 +77,13 @@ export const authService = {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({username, password, confirmPassword})
+            body: JSON.stringify({ username, password, confirmPassword }),
         });
-        if(!response.ok){
+        if (!response.ok) {
             const error = await response.json();
             throw new Error(error.message || 'Không thể thay đổi');
         }
-        return response.json()
+        return response.json();
     },
     //Reset Pass
     resetPass: async (token, newpassword) => {
@@ -92,13 +92,13 @@ export const authService = {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({token, newpassword})
+            body: JSON.stringify({ token, newpassword }),
         });
-        if(!response.ok){
+        if (!response.ok) {
             const error = await response.json();
             throw new Error(error.message || 'Không thể thay đổi');
         }
-        return response.json()
+        return response.json();
     },
 
     //Verify
@@ -110,11 +110,57 @@ export const authService = {
             },
         });
 
-        if(!response.ok){
+        if (!response.ok) {
             const error = await response.json();
             throw new Error(error.message || 'Không thể thay đổi');
         }
 
-        return response.json()
-    }
+        return response.json();
+    },
+    //Google Login
+    googleLogin: async (name, sub, email, picture, verified_email) => {
+        const response = await fetch(`${API_URL}/api/user/login/google`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name, sub, email, picture, verified_email }),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Lỗi không thể lưu');
+        }
+        return response.json();
+    },
+    //List Bài Báo
+    getAllBaiBao: async (page) => {
+        const response = await fetch(`${API_URL}/api/baibao/all?page=${page}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Lỗi khi load bài báo');
+        }
+        return response.json();
+    },
+    
+    //Danh mục
+    getAllDanhMuc: async () => {
+        const response = await fetch(`${API_URL}/api/danhmuc/all`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application"
+            }
+        })
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Không thể load danh mục');
+        }
+        return response.json();
+    },
+    
+
 };

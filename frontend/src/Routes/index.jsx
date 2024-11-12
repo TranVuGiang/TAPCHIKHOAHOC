@@ -51,7 +51,7 @@ const privateRoutes = [
         path: "/home/profile_user", 
         component: Components.UserDashboard, 
         layout: NoneLayouts,
-        roles: ["USER", "ADMIN", "AUTHOR", "EDITOR","CENSOR","ADVERTISER"] //READER
+        roles: ["CUSTOMER", "ADMIN", "AUTHOR", "EDITOR","CENSOR","ADVERTISER"] //READER
     },
     { 
         path: "/home/payment",
