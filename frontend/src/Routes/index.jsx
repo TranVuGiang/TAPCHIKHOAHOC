@@ -19,6 +19,9 @@ const publicRoutes = [
     {path: "/home/admin", component: Components.AdminDashboard, layout: NoneLayouts},
     {path: "/home/otp", component: Components.ConfirmOTP, layout: NoneLayouts},
     {path: "/home/adver_dashboard", component: Components.AdDashboard, layout: HeaderOnly},
+    {path: "/home/editor_dashboard", component: Components.EditorDashboard, layout: HeaderOnly},
+    {path: "/home/bientapvien", component: Components.Editor, layout: HeaderOnly},
+    {path: "/home/dangxuly", component: Components.DangXuLy, layout: HeaderOnly},
     {path: "/home/dang-ky-quang-cao", component: Components.AdRegistrationForm, layout: HeaderOnly},
 ];
 
