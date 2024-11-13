@@ -33,7 +33,7 @@ function ListPages() {
         const fetchArticles = async () => {
             try {
                 setLoading(true);
-                const response = await authService.getAllBaiBao();
+                const response = await authService.getBaiBaoById(0, 12);
                 const allArticles = Array.from(response.data.content);
 
                 if (magazineSlug && categories.length > 0) {
@@ -47,6 +47,7 @@ function ListPages() {
                                 category => category.tieuDe === selectedCategory.tieuDe
                             )
                         );
+                        
                         setArticles(filteredArticles);
                     } else {
                         setArticles([]);

@@ -31,7 +31,8 @@ export const authService = {
             body: JSON.stringify({ token: token }),
         });
 
-        if (!response.ok) { // Success 202
+        if (!response.ok) {
+            // Success 202
             const error = await response.json();
             throw new Error(error.message || 'Không thể lấy thông tin người dùng');
         }
@@ -146,15 +147,15 @@ export const authService = {
         }
         return response.json();
     },
-    
+
     //Danh mục theo tuần
     getAllDanhMuc: async () => {
         const response = await fetch(`${API_URL}/api/danhmuc/get/week`, {
-            method: "POST",
+            method: 'POST',
             headers: {
-                "Content-Type": "application"
-            }
-        })
+                'Content-Type': 'application/json',
+            },
+        });
         if (!response.ok) {
             const error = await response.json();
             throw new Error(error.message || 'Không thể load danh mục');
@@ -162,19 +163,17 @@ export const authService = {
         return response.json();
     },
 
-    getBaiBaoById: async (id) => {
-        const response = await fetch(`${API_URL}/api/baibao/${id}`, {
-            method: "GET",
+    getBaiBaoById: async (page, size) => {
+        const response = await fetch(`${API_URL}/api/baibao/all?page=${page}&size=${size}`, {
+            method: 'GET',
             headers: {
-                "Content-Type": "application"
-            }
-        })
+                'Content-Type': 'application/json',
+            },
+        });
         if (!response.ok) {
             const error = await response.json();
             throw new Error(error.message || 'Không thể load bài báo');
         }
         return response.json();
     },
-    
-
 };

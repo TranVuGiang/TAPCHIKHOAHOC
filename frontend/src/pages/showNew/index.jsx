@@ -5,6 +5,8 @@ import '@react-pdf-viewer/core/lib/styles/index.css';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
+
+
 const App = () => {
     const magazineSlug = useParams();
     const [dataBaiBao, setDataBaiBao] = useState([]);
@@ -13,18 +15,20 @@ const App = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+
     useEffect(() => {
         const fetchArticles = async () => {
             try {
                 setLoading(true);
-                const response = await authService.getAllBaiBao();
+                const response = await authService.getBaiBaoById(0,12);
                 const allArticles = Array.from(response.data.content);
-
                 if (magazineSlug.articleSlug) {
                     const selectedCategory = allArticles.find(
                         (category) => createUrlSlug(category.tieude) === magazineSlug.articleSlug,
                     );
                     setDataBaiBao(selectedCategory);
+
+                    
                     // Set PDF file từ dataBaiBao
                     if (selectedCategory?.file) {
                         setPdfFile(selectedCategory.file);
@@ -43,6 +47,11 @@ const App = () => {
 
         fetchArticles();
     }, [magazineSlug.articleSlug]);
+
+    useEffect(() => {
+        console.log(dataBaiBao);
+        
+    }, [dataBaiBao])
 
     return (
         <div className="max-w-6xl mx-auto p-6">
