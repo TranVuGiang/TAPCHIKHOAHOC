@@ -161,6 +161,20 @@ export const authService = {
         }
         return response.json();
     },
+
+    getBaiBaoById: async (id) => {
+        const response = await fetch(`${API_URL}/api/baibao/${id}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application"
+            }
+        })
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Không thể load bài báo');
+        }
+        return response.json();
+    },
     
 
 };
