@@ -3,10 +3,12 @@ import { BookmarkPlus, ChevronRight, Eye, History, Lock, User } from 'lucide-rea
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
+const url_avatar = import.meta.env.VITE_URL_AVATAR;
+
 const UserDashboard = () => {
     const [activeTab, setActiveTab] = useState('profile');
     const [userDetail, setUserDetail] = useState([]);
-
+    
     useEffect(() => {
         loadDataUser();
     }, []);
@@ -17,7 +19,7 @@ const UserDashboard = () => {
         try {
             const current = JSON.parse(localStorage.getItem('currentUser'));
             const token = current.token;
-            console.log(token);
+            //console.log(token);
             
             const fetchData = await authService.getUserDetails(token);
             const informationUser = fetchData.data.user;
@@ -41,7 +43,7 @@ const UserDashboard = () => {
                     <div className="space-y-6">
                         <div className="flex items-center space-x-4">
                             <div className="w-24 h-24 rounded-full bg-gray-200 overflow-hidden shadow-lg">
-                                <img src="/api/placeholder/96/96" alt="Avatar" className="w-full h-full object-cover" />
+                                <img onError={(e) => e.target.src = url_avatar} src={userDetail.url == null || userDetail.url.trim().length == 0 ? url_avatar : (userDetail.url.trim())} alt="Avatar" className="w-full h-full object-cover" />
                             </div>
                             <div>
                                 <h3 className="text-xl font-bold">{userDetail.fullname}</h3>
@@ -52,12 +54,17 @@ const UserDashboard = () => {
                             <h3 className="text-lg font-semibold mb-4 text-gray-800">Thông tin cá nhân</h3>
                             <div className="space-y-3 text-gray-600">
                                 <div className="flex justify-between pb-3 border-b">
-                                    <span className="font-medium">Số điện thoại:</span>
-                                    <span>{userDetail.phone}</span>
+                                    <span className="font-medium">Tài khoản:</span>
+                                    <span>{userDetail.username}</span>
                                 </div>
                                 <div className="flex justify-between pb-3 border-b">
-                                    <span className="font-medium">Địa chỉ:</span>
-                                    <span>Hà Nội, Việt Nam</span>
+                                    <span className="font-medium">Số điện thoại:</span>
+                                    <span>{userDetail.phone == null || userDetail.phone.trim().length == 0 ? 'Vui lòng cập nhật số điện thoại' : userDetail.phone}</span>
+                                </div>
+                                <div className="flex justify-between pb-3 border-b">
+                                <span className="font-medium">Vai trò của bạn: </span>
+                                    {userDetail.roles != null ? Object.values(userDetail.roles).join(', ') : 'Không có vai trò'}
+                                   
                                 </div>
                                 <div className="flex justify-between pb-3 border-b">
                                     <span className="font-medium">Ngày tham gia:</span>
