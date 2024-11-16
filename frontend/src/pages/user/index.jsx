@@ -3,12 +3,14 @@ import { authService } from '@/utils/authService';
 import { BookmarkPlus, ChevronRight, Eye, History, Lock, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import LoadingComponent from '@/components/loading/Loading';
 
 const url_avatar = import.meta.env.VITE_URL_AVATAR;
 
 const UserDashboard = () => {
     const [activeTab, setActiveTab] = useState('profile');
     const [userDetail, setUserDetail] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     
     useEffect(() => {
         loadDataUser();
@@ -27,8 +29,10 @@ const UserDashboard = () => {
             
             const informationUser = fetchData.data.user;
             setUserDetail(informationUser);
+            setIsLoading(false);
         } catch (error) {
             console.log(error.message || 'Lỗi nớ');
+            setIsLoading(false);
         }
     };
     const menuItems = [
@@ -41,6 +45,7 @@ const UserDashboard = () => {
 
     const renderContent = () => {
         switch (activeTab) {
+          
             case 'profile':
                 return (
                     <div className="space-y-6">
@@ -144,7 +149,8 @@ const UserDashboard = () => {
                         </Link>
                     </nav>
                 </header>
-                <div className="bg-white rounded-lg shadow-md p-6">{renderContent()}</div>
+                {isLoading ? (LoadingComponent) : (<div className="bg-white rounded-lg shadow-md p-6">{renderContent()}</div>)}
+                
             </div>
         </div>
     );
