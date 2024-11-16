@@ -1,3 +1,4 @@
+import FromBaoMatTaiKhoan from '@/components/user_components/security';
 import { authService } from '@/utils/authService';
 import { BookmarkPlus, ChevronRight, Eye, History, Lock, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -19,9 +20,11 @@ const UserDashboard = () => {
         try {
             const current = JSON.parse(localStorage.getItem('currentUser'));
             const token = current.token;
-            //console.log(token);
+            console.log(token);
             
             const fetchData = await authService.getUserDetails(token);
+            console.log(fetchData);
+            
             const informationUser = fetchData.data.user;
             setUserDetail(informationUser);
         } catch (error) {
@@ -93,13 +96,17 @@ const UserDashboard = () => {
                         ))}
                     </div>
                 );
+            case 'security': 
+                return (
+                    <FromBaoMatTaiKhoan />
+                )
             default:
                 return null;
         }
     };
 
     return (
-        <div className="min-h-screen flex bg-gray-100">
+        <div className="min-h-screen flex bg-gray-100 font-montserrat">
             {/* Sidebar */}
             <aside className="w-64 bg-gray-900 text-white p-4 space-y-4 shadow-md">
                 <div className="space-y-2">

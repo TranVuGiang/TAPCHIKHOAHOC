@@ -1,6 +1,7 @@
 import HeaderOnly from "@/layouts/HeaderOnly";
 import NoneLayouts from "@/layouts/NoneLayouts";
 import * as Components from "@/Routes/lazyComponents";
+import FileUpload from "@/utils/testUploadFile";
 
 
 // Public Route
@@ -16,11 +17,13 @@ const publicRoutes = [
     {path: "/home/forgot_password", component: Components.ForgotPassword, layout: NoneLayouts},
     {path: "/home/introduce", component: Components.Introduce},
     {path: "/home/danhmuc", component: Components.Category},
+    {path: "/home/testUpload", component: FileUpload},
     {path: "/home/admin", component: Components.AdminDashboard, layout: NoneLayouts},
     {path: "/home/otp", component: Components.ConfirmOTP, layout: NoneLayouts},
     {path: "/home/adver_dashboard", component: Components.AdDashboard, layout: HeaderOnly},
     {path: "/home/editor_dashboard", component: Components.DangXuLy, layout: NoneLayouts},
     {path: "/home/dang-ky-quang-cao", component: Components.AdRegistrationForm, layout: HeaderOnly},
+
 ];
 
 // Routes được bảo vệ (cần xác thực)

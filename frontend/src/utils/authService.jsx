@@ -1,7 +1,7 @@
 // src/services/authService.js
 
 const API_URL = 'https://congnghetoday.click';
-
+const API_UPLOAD_FILE = 'https://anime404.click';
 export const authService = {
     // Login user
     login: async (username, password) => {
@@ -162,7 +162,7 @@ export const authService = {
         }
         return response.json();
     },
-
+    // Lấy bài báo theo Id
     getBaiBaoById: async (page, size) => {
         const response = await fetch(`${API_URL}/api/baibao/all?page=${page}&size=${size}`, {
             method: 'GET',
@@ -175,5 +175,71 @@ export const authService = {
             throw new Error(error.message || 'Không thể load bài báo');
         }
         return response.json();
+    },
+    // Thể loại
+    getAllTheLoai: async () => {
+        const response = await fetch(`${API_URL}/api/theloai/all`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Không thể load thể loại');
+        }
+        return response.json();
+    },
+    // Gửi bài
+    createBaiBao: async (theloai_id, tenbaibao, noidung, tukhoa, url_file) => {
+        const response = await fetch(`${API_URL}/api/baibao/create`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ theloai_id, tenbaibao, noidung, tukhoa, url_file }),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Không thể gửi bài');
+        }
+        return response.json();
+    },
+    // Tải tệp lên máy chủ
+    uploadFile: async (formData) => {
+        try {
+            const response = await fetch(`https://anime404.click/api/files/upload`, {
+                method: 'POST',
+                body: formData,
+            });
+
+            // Kiểm tra mã trạng thái HTTP của phản hồi
+            if (!response.ok) {
+                // Kiểm tra loại phản hồi và trả về lỗi phù hợp
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Upload failed');
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(errorText || 'Upload failed');
+                }
+            }
+
+            // Xử lý phản hồi thành công
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                // Nếu là JSON, chuyển đổi sang object
+                const data = await response.json();
+                return data;
+            } else {
+                // Nếu là text, trả về text
+                const textData = await response.text();
+                return textData;
+            }
+        } catch (error) {
+            console.error('Error uploading file:', error);
+            throw error;
+        }
     },
 };
