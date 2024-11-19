@@ -35,8 +35,8 @@ const privateRoutes = [
         roles: [0] //Quản trị viên
     },
     { 
-        path: "/home/editor_dashboard", 
-        component: Components.EditorDashboard, 
+        path: "/home/editor_dashboard/*", 
+        component: Components.DangXuLy, 
         layout: HeaderOnly,
         roles: ["EDITOR"] //Biên tập viên
     },

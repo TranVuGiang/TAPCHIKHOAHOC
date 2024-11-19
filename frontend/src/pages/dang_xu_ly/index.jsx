@@ -5,33 +5,47 @@ import Editor_Editing from '@/components/editor_form/editing';
 import Editor_Notification from '@/components/editor_form/notification';
 import { Bell, BookOpen, Check, FileText, Plus, Search } from 'lucide-react';
 import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 function DangXuLy() {
-    const [activeTab, setActiveTab] = useState("Thông báo");
-
-    // Dummy data for each section
-    const thongBaoData = [
-        { id: 1, message: "Bài báo của bạn A đã được đăng.", time: "2024-11-01", type: "success" },
-        { id: 2, message: "Bài báo của bạn B đã hết hạn.", time: "2024-11-05", type: "warning" },
-    ];
-
-    const dangBienTapData = [
-        { id: 1, title: "Bài báo về Công nghệ A", author: "Nguyễn Văn A", status: "Đang xử lý", time: "2024-10-30" },
-        { id: 2, title: "Bài báo về Khoa học B", author: "Trần Thị B", status: "Đang biên tập", time: "2024-11-01" },
-    ];
-
-    const baiVietDaDangData = [
-        { id: 1, title: "Bài báo Công nghệ mới", author: "Nguyễn Văn A", status: "Đã đăng", time: "2024-10-25" },
-        { id: 2, title: "Khám phá vũ trụ", author: "Trần Thị B", status: "Đã đăng", time: "2024-10-29" },
-    ];
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const tabs = [
-        { name: "Thông báo", icon: Bell },
-        { name: "Đang biên tập", icon: FileText },
-        { name: "Thêm danh mục", icon: Plus },
-        { name: "Đăng bài báo", icon: BookOpen },
-        { name: "Bài viết đã đăng", icon: Check }
+        { name: "Thông báo", icon: Bell, path: '/home/editor_dashboard/notifications', component: Editor_Notification },
+        { name: "Đang biên tập", icon: FileText, path: '/home/editor_dashboard/editing', component: Editor_Editing },
+        { name: "Thêm danh mục", icon: Plus, path: '/home/editor_dashboard/add-category', component: Editor_AddDanhMuc },
+        { name: "Đăng bài báo", icon: BookOpen, path: '/home/editor_dashboard/publish-article', component: Editor_DangBaiBao },
+        { name: "Bài viết đã đăng", icon: Check, path: '/home/editor_dashboard/published-articles', component: Editor_BaiVietDaDang }
     ];
+
+    const [activeTab, setActiveTab] = useState(tabs.find(tab => location.pathname.includes(tab.path))?.name || "Thông báo");
+
+    const renderContent = () => {
+        const currentTab = tabs.find(tab => location.pathname.includes(tab.path));
+        
+        if (currentTab) {
+            const Component = currentTab.component;
+            return <Component />;
+        }
+        
+        return (
+            <div className="p-4">
+                <h1 className="text-2xl font-bold mb-4">Chào mừng bạn đến với trang tác giả</h1>
+                <p className="text-gray-600">
+                    Bạn có thể gửi bài viết mới, quản lý bài viết hiện có hoặc xem thông báo từ menu bên trái.
+                </p>
+            </div>
+        );
+    };
+   
+    const handleTabClick = (tabName) => {
+        const selectedTab = tabs.find(tab => tab.name === tabName);
+        if (selectedTab) {
+            setActiveTab(tabName);
+            navigate(selectedTab.path);
+        }
+    };
 
     return (
         <div className="flex h-screen bg-gray-50 font-montserrat">
@@ -51,7 +65,7 @@ function DangXuLy() {
                                     ? "bg-indigo-600 text-white" 
                                     : "text-indigo-100 hover:bg-indigo-700"
                                 }`}
-                                onClick={() => setActiveTab(tab.name)}
+                                onClick={() => handleTabClick(tab.name)}
                             >
                                 <tab.icon className="w-5 h-5 mr-3" />
                                 {tab.name}
@@ -78,26 +92,7 @@ function DangXuLy() {
                         </div>
                     </header>
 
-                    {/* Content Display */}
-                    {activeTab === "Thông báo" && (
-                       <Editor_Notification thongBaoData={thongBaoData}/>
-                    )}
-
-                    {activeTab === "Đang biên tập" && (
-                       <Editor_Editing dangBienTapData={dangBienTapData} />
-                    )}
-
-                    {activeTab === "Thêm danh mục" && (
-                        <Editor_AddDanhMuc />
-                    )}
-
-                    {activeTab === "Đăng bài báo" && (
-                       <Editor_DangBaiBao />
-                    )}
-
-                    {activeTab === "Bài viết đã đăng" && (
-                       <Editor_BaiVietDaDang baiVietDaDangData={baiVietDaDangData} />
-                    )}
+                    {renderContent()}
                 </div>
             </main>
         </div>

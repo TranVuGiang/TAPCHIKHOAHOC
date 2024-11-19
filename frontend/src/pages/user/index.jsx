@@ -1,9 +1,9 @@
+import LoadingComponent from '@/components/loading/Loading';
 import FromBaoMatTaiKhoan from '@/components/user_components/security';
 import { authService } from '@/utils/authService';
 import { BookmarkPlus, ChevronRight, Eye, History, Lock, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import LoadingComponent from '@/components/loading/Loading';
 
 const url_avatar = import.meta.env.VITE_URL_AVATAR;
 
@@ -15,17 +15,13 @@ const UserDashboard = () => {
     useEffect(() => {
         loadDataUser();
     }, []);
-    useEffect(() => {
-        console.log(userDetail);
-    }, [userDetail]);
+
     const loadDataUser = async () => {
         try {
             const current = JSON.parse(localStorage.getItem('currentUser'));
             const token = current.token;
-            console.log(token);
             
             const fetchData = await authService.getUserDetails(token);
-            console.log(fetchData);
             
             const informationUser = fetchData.data.user;
             setUserDetail(informationUser);
@@ -35,6 +31,7 @@ const UserDashboard = () => {
             setIsLoading(false);
         }
     };
+
     const menuItems = [
         { id: 'profile', title: 'Hồ sơ của tôi', icon: User },
         { id: 'saved', title: 'Bài viết đã lưu', icon: BookmarkPlus },
@@ -103,7 +100,7 @@ const UserDashboard = () => {
                 );
             case 'security': 
                 return (
-                    <FromBaoMatTaiKhoan />
+                    <FromBaoMatTaiKhoan userDetail={userDetail}/>
                 )
             default:
                 return null;

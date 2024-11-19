@@ -2,6 +2,7 @@ import { authService } from '@/utils/authService';
 import { CloudArrowUpIcon } from '@heroicons/react/24/solid';
 import { useEffect, useState } from 'react';
 import ReactQuill from 'react-quill';
+import { SuccessDialog } from '../modalDialog';
 
 const SubmissionForm = () => {
     const modules = {
@@ -19,17 +20,24 @@ const SubmissionForm = () => {
     };
 
     const [theloai, setTheloai] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [userDetail, setUserDetail] = useState([]);
+
+    const [isSuccess, setIsSuccess] = useState(false)
     const [formData, setFormData] = useState({
         theloaiId: '',
         tieude: '',
         noidung: '',
         tukhoa: '',
-        file: null,
+        file: '',
+        url: '',
+        token: '',
     });
     const [fileName, setFileName] = useState(''); // State để hiển thị tên file
+    const [imageFileName, setImageFileName] = useState('');
 
     const handleFileUpload = async (e) => {
-        e.preventDefault()
+        e.preventDefault();
         const fileInput = e.target.files[0];
         if (fileInput) {
             setFileName(fileInput.name);
@@ -40,7 +48,11 @@ const SubmissionForm = () => {
             try {
                 console.log(formData);
                 const response = await authService.uploadFile(formData);
-                console.log('File uploaded successfully:', response);
+                setFormData((prev) => ({
+                    ...prev,
+                    file: response.file,
+                }));
+                console.log(response);
                 // Có thể thêm xử lý response ở đây nếu cần
             } catch (error) {
                 console.error('Error uploading file:', error);
@@ -48,6 +60,56 @@ const SubmissionForm = () => {
             }
         }
     };
+
+    // Thêm hàm xử lý upload ảnh
+    const handleImageUpload = async (e) => {
+        e.preventDefault();
+        const imageFile = e.target.files[0];
+        if (imageFile) {
+            setImageFileName(imageFile.name);
+            const formDataImage = new FormData();
+            formDataImage.append('files', imageFile);
+
+            try {
+                const response = await authService.uploadFile(formDataImage);
+                setFormData((prev) => ({
+                    ...prev,
+                    url: response.file,
+                }));
+                console.log(response);
+            } catch (error) {
+                console.error('Error uploading image:', error);
+            }
+        }
+    };
+
+    useEffect(() => {
+        loadDataUser();
+    }, []);
+
+    useEffect(() => {
+        console.log(userDetail);
+    }, [userDetail]);
+
+    const loadDataUser = async () => {
+        try {
+            const current = JSON.parse(localStorage.getItem('currentUser'));
+            const token = current.token;
+            setFormData((prev) => ({
+                ...prev,
+                token: token,
+            }));
+
+            setIsLoading(false);
+        } catch (error) {
+            console.log(error.message || 'Lỗi nớ');
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        console.log(formData);
+    }, [formData]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -61,9 +123,28 @@ const SubmissionForm = () => {
         fetchData();
     }, []);
 
-    const handleTest = async () => {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         try {
-            alert(JSON.stringify(formData));
+            const response = await authService.createBaiBao({
+                theloaiId: formData.theloaiId,
+                tieude: formData.tieude,
+                noidung: formData.noidung,
+                tukhoa: formData.tukhoa,
+                url: formData.url,
+                file: formData.file,
+                token: formData.token
+            });
+            setIsSuccess(true)
+            setFormData(() => ({
+                theloaiId: '',
+                tieude: '',
+                noidung: '',
+                tukhoa: '',
+                file: '',
+                url: '',
+            }))
+            console.log(response);
         } catch (error) {
             console.log(error);
         }
@@ -96,15 +177,16 @@ const SubmissionForm = () => {
             noidung: e,
         }));
     };
-
-    useEffect(() => {
-        console.log(formData);
-    }, [formData]);
-
     return (
         <>
             <h2 className="text-2xl md:text-3xl font-bold mb-6">Nộp Bài Viết</h2>
-            <form encType="multipart/form-data">
+            <SuccessDialog 
+                isOpen={isSuccess}
+                onClose={() => setIsSuccess(false)}
+                title={"Gửi bài thành công"}
+                titleButton={"Tiếp tục"}
+            />
+            <form onSubmit={handleSubmit} encType="multipart/form-data">
                 {/* Article type selection */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-6">
                     <div>
@@ -172,6 +254,29 @@ const SubmissionForm = () => {
                     />
                 </div>
 
+                {/* Image upload */}
+                <div className="mb-6">
+                    <div className="relative border-2 border-dashed border-gray-300 rounded-lg p-8 text-center bg-gray-50 hover:border-blue-600 hover:bg-blue-50 transition duration-300">
+                        <label
+                            htmlFor="upload-image"
+                            className="flex flex-col items-center cursor-pointer text-blue-600 font-medium mb-4"
+                        >
+                            <CloudArrowUpIcon className="h-6 w-6 mb-2" />
+                            <span>Tải ảnh bài viết</span>
+                            <small>Chấp nhận các định dạng: .jpg, .jpeg, .png</small>
+                        </label>
+                        <input
+                            type="file"
+                            id="upload-image"
+                            className="hidden"
+                            onChange={handleImageUpload}
+                            accept="image/jpeg,image/png,image/jpg"
+                        />
+                        {imageFileName && (
+                            <div className="mt-2 text-sm text-gray-600">Ảnh đã chọn: {imageFileName}</div>
+                        )}
+                    </div>
+                </div>
                 {/* File upload */}
                 <div className="mb-6">
                     <div className="relative border-2 border-dashed border-gray-300 rounded-lg p-8 text-center bg-gray-50 hover:border-blue-600 hover:bg-blue-50 transition duration-300">
@@ -183,7 +288,14 @@ const SubmissionForm = () => {
                             <span>Tải tệp bản thảo</span>
                             <small>Nhấn vào đây để chọn tệp</small>
                         </label>
-                        <input type="file" id="upload" className="hidden" onChange={handleFileUpload} multiple accept=".pdf"/>
+                        <input
+                            type="file"
+                            id="upload"
+                            className="hidden"
+                            onChange={handleFileUpload}
+                            multiple
+                            accept=".pdf"
+                        />
                         {fileName && <div className="mt-2 text-sm text-gray-600">File đã chọn: {fileName}</div>}
                     </div>
                 </div>
@@ -193,7 +305,7 @@ const SubmissionForm = () => {
                     <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded mb-2 sm:mb-0">
                         Trở lại
                     </button>
-                    <button onClick={() => handleTest()} className="bg-blue-500 text-white px-4 py-2 rounded">
+                    <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
                         Lưu
                     </button>
                 </div>
