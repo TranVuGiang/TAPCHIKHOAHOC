@@ -115,6 +115,217 @@ export const authService = {
             throw new Error(error.message || 'Không thể thay đổi');
         }
 
+<<<<<<< Updated upstream
         return response.json()
     }
+=======
+        return response.json();
+    },
+    //Google Login
+    googleLogin: async (name, sub, email, picture, verified_email) => {
+        const response = await fetch(`${API_URL}/api/user/login/google`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name, sub, email, picture, verified_email }),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Lỗi không thể lưu');
+        }
+        return response.json();
+    },
+    //List Bài Báo
+    getAllBaiBao: async () => {
+        const response = await fetch(`${API_URL}/api/baibao/all`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Lỗi khi load bài báo');
+        }
+        return response.json();
+    },
+
+    //Danh mục theo tuần
+    getAllDanhMuc: async () => {
+        const response = await fetch(`${API_URL}/api/danhmuc/get/week`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Không thể load danh mục');
+        }
+        return response.json();
+    },
+    // Lấy bài báo theo Id
+    getBaiBaoById: async (page, size) => {
+        const response = await fetch(`${API_URL}/api/baibao/all?page=${page}&size=${size}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Không thể load bài báo');
+        }
+        return response.json();
+    },
+    // Thể loại
+    getAllTheLoai: async () => {
+        const response = await fetch(`${API_URL}/api/theloai/all`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Không thể load thể loại');
+        }
+        return response.json();
+    },
+    // Gửi bài
+    createBaiBao: async (theloaiId, tenbaibao, noidung, tukhoa, url, file, token) => {
+        const response = await fetch(`${API_URL}/api/baibao/create`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(theloaiId, tenbaibao, noidung, tukhoa, url, file, token),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Không thể gửi bài');
+        }
+        return response.json();
+    },
+
+    uploadFile: async (formData) => {
+        const response = await fetch(`https://anime404.click/api/files/upload`, {
+            method: 'POST',
+            body: formData,
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Không thể gửi bài');
+        }
+        return response.json();
+    },
+    // Thêm bài báo
+    createDanhMuc: async (tieuDe, mota, url, tuan, so) => {
+        const response = await fetch(`${API_URL}/api/danhmuc/create`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(tieuDe, mota, url, tuan, so),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Không thể gửi bài');
+        }
+        return response.json();
+    },
+    // Đổi mật khẩu
+    changePassword: async ({ username, password, newpassword }) => {
+        const response = await fetch(`${API_URL}/api/user/changepassword`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username, password, newpassword }),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Cannot change password');
+        }
+        return response.json();
+    },
+    //Load bài báo all
+    loadBaibaoByUser: async (token) => {
+        const response = await fetch(`${API_URL}/api/baibao/get/baibao/author`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(token),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Cant fetch list Bai Bao');
+        }
+        return response.json();
+    },
+    //Editor Load Data
+    loadBaibaoForEditor: async (token) => {
+        const response = await fetch(`${API_URL}/api/baibao/get/baibao/all/editor`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(token),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Cant fetch list Bai Bao');
+        }
+        return response.json();
+    },
+    //Editor Load Data
+    getUserKiemDuyet: async (token) => {
+        const response = await fetch(`${API_URL}/api/user/get/taikhoan/kiemduyet`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token }),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Cant fetch list Nguoi Kiem Duyet');
+        }
+        return response.json();
+    },
+    //Phân kiểm duyệt
+    addCensor: async (taikhoanId, baobaiId, ghichu, token) => {
+        const response = await fetch(`${API_URL}/api/censor/create`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(taikhoanId, baobaiId, ghichu, token),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Không thể thêm người kiểm duyệt');
+        }
+        return response.json();
+    },
+    //update user
+    updateUser: async (hovaten, username, sdt, url, token) => {
+        const response = await fetch(`${API_URL}/api/user/update`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(hovaten, username, sdt, url, token), // Chuyển đổi đúng cú pháp
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Không thể sửa thông tin người dùng');
+        }
+
+        return response.json();
+    },
+>>>>>>> Stashed changes
 };
