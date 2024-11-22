@@ -42,9 +42,7 @@ const FormBaoMatTaiKhoan = ({userDetail}) => {
         <div className="p-8">
             {activeTab === 'profile' && (
               <ProfileForm
-                formData={formData}
-                handleInputChange={handleInputChange}
-                handleFileChange={handleFileChange}
+                userDetail={userDetail}
               />
             )}
             {activeTab === 'copyright' && (

@@ -8,7 +8,6 @@ function MagazineCard({ weekNumber, issueNumber, publicationDate, title, excerpt
         try {
 
             const slug = createUrlSlug(title);
-            console.log(slug);
             
             navigate(`/home/${slug}`);
         } catch (error) {

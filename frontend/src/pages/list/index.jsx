@@ -33,27 +33,15 @@ function ListPages() {
         const fetchArticles = async () => {
             try {
                 setLoading(true);
-                const response = await authService.getBaiBaoById(0, 12);
-                const allArticles = Array.from(response.data.content);
-
                 if (magazineSlug && categories.length > 0) {
                     const selectedCategory = categories.find(
-                        category => createUrlSlug(category.tieuDe) === magazineSlug
+                        category => createUrlSlug(category.tieude) === magazineSlug
                     );
-
-                    if (selectedCategory) {
-                        const filteredArticles = allArticles.filter(article => 
-                            article.danhmucbaibaos.some(
-                                category => category.tieuDe === selectedCategory.tieuDe
-                            )
-                        );
-                        
-                        setArticles(filteredArticles);
-                    } else {
-                        setArticles([]);
-                    }
+                    console.log(selectedCategory.baibao);
+                    setArticles(selectedCategory.baibao);
                 } else {
-                    setArticles(allArticles);
+                   console.log("Không thể fetch bài báo");
+                   
                 }
             } catch (err) {
                 console.error('Error fetching articles:', err);
@@ -101,7 +89,7 @@ function ListPages() {
     }
 
     return (
-        <div className="w-full max-w-3xl mx-auto p-2 sm:p-4">
+        <div className="w-full max-w-3xl mx-auto p-2 sm:p-4" key={articles.id}>
             {!loading && magazineSlug && (
                 <div className="mb-4 text-gray-600">
                     Tìm thấy {articles.length} bài viết
@@ -134,7 +122,7 @@ function ListPages() {
                         
                         <p className="text-sm text-gray-600 mb-2 line-clamp-2 
                                     hidden sm:block">
-                            {article.noidung}
+                              <span dangerouslySetInnerHTML={{ __html: article.noidung }} />
                         </p>
                         
                         <div className="flex flex-wrap items-center gap-2 mt-auto
@@ -148,7 +136,7 @@ function ListPages() {
                             </span>
                             <br />
                             <span className="text-blue-600">
-                                {article.danhmucbaibaos[0]?.tieuDe}
+                                Thể loại: {article.theloai.ten}
                             </span>
                         </div>
                     </div>

@@ -7,9 +7,9 @@ function Editor_AddDanhMuc() {
     const [isLoading, setIsLoading] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false); // Trạng thái thêm thành công
     const [formData, setFormData] = useState({
-        tieuDe: '',
-        moTa: '',
-        url: '', // URL của file sau khi upload
+        tieude: '',
+        mota: '',
+        url: '',
         tuan: '',
         so: '',
     });
@@ -41,25 +41,24 @@ function Editor_AddDanhMuc() {
         setIsLoading(true);
 
         try {
-            let uploadedUrl = formData.url; // URL file nếu đã có
+            let uploadedUrl = formData.url;
             if (imageFile) {
                 // Thực hiện upload file
                 const formDataImage = new FormData();
                 formDataImage.append('files', imageFile);
 
                 const response = await authService.uploadFile(formDataImage);
-                uploadedUrl = response.file; // Lấy URL sau khi upload
+                uploadedUrl = response.file;
                 console.log('Upload thành công:', response);
             }
 
-            // Lưu dữ liệu sau khi upload file
             const response = await authService.createDanhMuc({
                 ...formData,
-                url: uploadedUrl, // Cập nhật URL file vào formData
+                url: uploadedUrl,
             });
             console.log(response);
             console.log('Thêm Danh Mục Thành Công');
-            setIsSuccess(true); // Hiển thị dialog thành công
+            setIsSuccess(true);
         } catch (error) {
             console.error('Lỗi khi thêm danh mục:', error.message);
         } finally {
@@ -85,10 +84,10 @@ function Editor_AddDanhMuc() {
                                 <label className="block text-sm font-medium text-gray-700 mb-2">Tiêu đề</label>
                                 <input
                                     type="text"
-                                    name="tieuDe"
+                                    name="tieude"
                                     className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                     placeholder="Nhập tiêu đề danh mục..."
-                                    value={formData.tieuDe}
+                                    value={formData.tieude}
                                     onChange={handleOnChanges}
                                 />
                             </div>
@@ -96,11 +95,11 @@ function Editor_AddDanhMuc() {
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">Mô tả</label>
                                 <textarea
-                                    name="moTa"
+                                    name="mota  "
                                     rows="4"
                                     className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                     placeholder="Nhập mô tả chi tiết..."
-                                    value={formData.moTa}
+                                    value={formData.mota}
                                     onChange={handleOnChanges}
                                 />
                             </div>

@@ -16,12 +16,15 @@ const GoogleLoginButton = () => {
             );
             if (!tokenInfo.ok) throw new Error('Network response was not ok');
             const data = await tokenInfo.json();
+            console.log(data);
+            
             const userData = {
                 name: data.name,
                 sub: data.sub,
                 email: data.email,
                 picture: data.picture,
                 verified_email: data.email_verified === 'true',
+                credential: response.credential
             };
             console.log('User data before login:', userData);
             await GoogleLogin(userData);
@@ -32,9 +35,9 @@ const GoogleLoginButton = () => {
         }
     }, []);
 
-    const GoogleLogin = async ({ name, sub, email, picture, verified_email }) => {
+    const GoogleLogin = async ({ name, sub, email, picture, verified_email , credential}) => {
         try {
-            const loginResponse = await authService.googleLogin(name, sub, email, picture, verified_email);
+            const loginResponse = await authService.googleLogin(name, sub, email, picture, verified_email, credential);
             const token = loginResponse.data.token;
             const roles = loginResponse.data.roles;
             const fullname = loginResponse.data.fullname;
@@ -103,10 +106,6 @@ const GoogleLoginButton = () => {
         navigate('/');
     };
 
-    const handleCloseError = () => {
-        setError(false);
-        setDialogMessage('');
-    };
 
     return (
         <div className="w-full">

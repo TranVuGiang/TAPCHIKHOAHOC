@@ -1,115 +1,80 @@
 import PendingArticles from '@/components/pendingarticles';
+import { authService } from '@/utils/authService';
 import { AlertCircle, Check, FileText, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const CensorDashboard = () => {
+    const navigate = useNavigate()
     const [activeTab, setActiveTab] = useState('pending');
-    const [feedback, setFeedback] = useState('')
-    const [articles, setArticles] = useState([
-        {
-            id: 1,
-            title: 'Tiến bộ mới trong công nghệ AI',
-            date: '2024-10-23',
-            status: 'pending_editor',
-            editorFeedback: '',
-            censorFeedback: '',
-            editorStatus: '',
-            censorStatus: '',
-            pdf: 'article1.pdf',
-            editorName: 'Nguyễn Văn A',
-        },
-        {
-            id: 2,
-            title: 'Phát triển bền vững tại Việt Nam',
-            date: '2024-10-22',
-            status: 'pending_censor',
-            editorFeedback: 'Bài viết tốt, cần thêm số liệu',
-            censorFeedback: '',
-            editorStatus: 'needs_revision',
-            censorStatus: '',
-            pdf: 'article2.pdf',
-            editorName: 'Trần Thị B',
-        },
-    ]);
-
-    useEffect(() => {
-      console.log(feedback);
-      
-    }, [feedback])
-    const [notifications, setNotifications] = useState([
-        {
-            id: 1,
-            articleId: 2,
-            message: 'Bài viết mới cần phê duyệt từ Editor',
-            isRead: false,
-        },
-    ]);
 
     const getStatusIcon = (status) => {
         switch (status) {
-            case 'approved':
-                return <Check className="w-5 h-5 text-green-500" />;
-            case 'rejected':
-                return <X className="w-5 h-5 text-red-500" />;
-            case 'needs_revision':
+            case 0:
                 return <AlertCircle className="w-5 h-5 text-yellow-500" />;
+            case 1:
+                return <Check className="w-5 h-5 text-green-500" />;
+            case 2:
+                return <X className="w-5 h-5 text-red-500" />;
+
             default:
                 return <AlertCircle className="w-5 h-5 text-gray-500" />;
         }
     };
 
-    const getStatusText = (status) => {
-        switch (status) {
-            case 'approved':
-                return 'Đã duyệt';
-            case 'rejected':
-                return 'Từ chối';
-            case 'needs_revision':
-                return 'Cần chỉnh sửa';
-            case 'pending_editor':
-                return 'Chờ Editor duyệt';
-            case 'pending_censor':
-                return 'Chờ Censor duyệt';
-            default:
-                return 'Chờ duyệt';
+    const [danhsach, setDanhsach] = useState([]);
+    const [danhsachCho, setDanhsachCho] = useState([]);
+
+    useEffect(() => {
+        loadDataDanhSach();
+    }, []);
+
+    const loadDataDanhSach = async () => {
+        try {
+            const current = JSON.parse(localStorage.getItem('currentUser'));
+            const token = current.token;
+            const response = await authService.loadDanhSachForCensor(token);
+            setDanhsach(response.data.data);
+
+            if (!response.data.data && response.data.data.length === 0) {
+                console.log('Lỗi không fetch được');
+                return;
+            }
+            const dangxuly = response.data.data.filter(
+                item => item.status === 0
+            )
+            const duyetxong = response.data.data.filter(
+                item => item.status === 1 || item.status === 2
+            );
+            
+            if(dangxuly && duyetxong) {
+                setDanhsachCho(dangxuly)
+                setDanhsach(duyetxong)
+            }
+            console.log(danhsach);
+            
+        } catch (error) {
+            console.log(error);
         }
     };
 
-    const handleCensorDecision = (articleId, decision, feedback) => {
-        setArticles(
-            articles.map((article) => {
-                if (article.id === articleId) {
-                    return {
-                        ...article,
-                        status: decision === 'approved' ? 'approved' : 'rejected',
-                        censorStatus: decision,
-                        censorFeedback: feedback,
-                    };
-                }
-                return article;
-            }),
-        );
-
-        setNotifications(notifications.filter((notif) => notif.articleId !== articleId));
-    };
-
-   
+    const handleViewPdf = (file) => {
+        navigate(file)
+    }
     const ReviewedArticles = () => {
-        const reviewedArticles = articles.filter(
-            (article) => article.status === 'approved' || article.status === 'rejected',
-        );
+        const reviewedArticles = danhsach.filter((article) => article.status === '1' || article.status === '2');
 
         return (
             <div className="space-y-6">
-                {reviewedArticles.map((article) => (
+                {danhsach.map((article) => (
                     <div key={article.id} className="bg-white border rounded-lg shadow-sm">
                         <div className="p-4 border-b">
                             <div className="flex items-center gap-2">
-                                <h3 className="text-lg font-medium text-gray-900">{article.title}</h3>
+                                <h3 className="text-lg font-medium text-gray-900">{article.baiBao.tieude}</h3>
                                 {getStatusIcon(article.status)}
                             </div>
                             <div className="mt-1 text-sm text-gray-500">
-                                ID: {article.id} | Ngày đăng: {article.date}
+                                ID: {article.id} | Ngày đăng: {article.ngaytao}
                             </div>
                         </div>
 
@@ -118,13 +83,7 @@ const CensorDashboard = () => {
                                 <div className="font-medium">Thông tin đánh giá</div>
                                 <div className="mt-2 space-y-1 text-sm">
                                     <div>
-                                        <span className="font-medium">Editor:</span> {article.editorName}
-                                    </div>
-                                    <div>
-                                        <span className="font-medium">Nhận xét:</span> {article.editorFeedback}
-                                    </div>
-                                    <div>
-                                        <span className="font-medium">Phản hồi Censor:</span> {article.censorFeedback}
+                                        <span className="font-medium">Phản hồi Censor:</span> {article.ghichu}
                                     </div>
                                 </div>
                             </div>
@@ -147,7 +106,7 @@ const CensorDashboard = () => {
     return (
         <div className="p-4 md:p-6 max-w-4xl mx-auto">
             <div className="mb-6">
-                <h1 className="text-2xl font-bold text-gray-900">Dashboard Kiểm Duyệt</h1>
+                <h1 className="text-2xl font-bold text-gray-900">Kiểm Duyệt</h1>
             </div>
 
             <div className="mb-6">
@@ -177,7 +136,7 @@ const CensorDashboard = () => {
                 </div>
             </div>
 
-            <div>{activeTab === 'pending' ? <PendingArticles /> : <ReviewedArticles />}</div>
+            <div>{activeTab === 'pending' ? <PendingArticles danhsachCho={danhsachCho} /> : <ReviewedArticles />}</div>
         </div>
     );
 };

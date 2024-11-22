@@ -17,16 +17,15 @@ function Editor_Editing() {
 
     useEffect(() => {
         console.log(selectedReviewer);
-        
-    }, [selectedReviewer])
+    }, [selectedReviewer]);
 
     const loadDataUser = async () => {
         try {
             const current = JSON.parse(localStorage.getItem('currentUser'));
             const token = current.token;
             const response = await authService.loadBaibaoForEditor(token);
-            console.log(response.data.content);
-            setBaibao(response.data.content);
+            console.log(response.data.baibaos);
+            setBaibao(response.data.baibaos);
         } catch (error) {
             console.log(error.message || 'Lỗi khi tải bài viết');
         }
@@ -85,10 +84,9 @@ function Editor_Editing() {
     const STATUS_CONFIG = {
         0: { text: 'Đã gửi', color: 'bg-blue-100 text-blue-800' },
         1: { text: 'Chờ xử lý', color: 'bg-blue-100 text-blue-800' },
-        2: { text: 'Đã nhận', color: 'bg-orange-100 text-orange-800' },
-        3: { text: 'Đang duyệt', color: 'bg-yellow-100 text-yellow-800' },
-        4: { text: 'Đã duyệt', color: 'bg-green-100 text-green-800' },
-        5: { text: 'Đã đăng', color: 'bg-purple-100 text-purple-800' },
+        2: { text: 'Đang duyệt', color: 'bg-orange-100 text-orange-800' },
+        3: { text: 'Đã duyệt', color: 'bg-yellow-100 text-yellow-800' },
+        4: { text: 'Đã đăng', color: 'bg-green-100 text-green-800' },
     };
 
     const getStatusText = (status) => {
@@ -153,38 +151,85 @@ function Editor_Editing() {
             </div>
         );
     };
+    const FeedbackModal = ({ kiemduyetId }) => {
+        const [localFeedback, setLocalFeedback] = useState('');
+        const [isSuccess, setIsSuccess] = useState(false);
 
-    const FeedbackModal = () => (
-        <div
-            className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center ${
-                showFeedbackModal ? '' : 'hidden'
-            }`}
-        >
-            <div className="bg-white rounded-lg p-6 w-96">
-                <h3 className="text-lg font-semibold mb-4">Gửi phản hồi cho tác giả</h3>
-                <textarea
-                    className="w-full p-2 border rounded mb-4 h-32"
-                    value={feedback}
-                    onChange={(e) => setFeedback(e.target.value)}
-                    placeholder="Nhập nội dung phản hồi..."
-                />
-                <div className="flex justify-end gap-2">
-                    <button
-                        className="px-4 py-2 text-gray-600 rounded hover:bg-gray-100"
-                        onClick={() => setShowFeedbackModal(false)}
-                    >
-                        Hủy
-                    </button>
-                    <button
-                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                        onClick={handleSendFeedback}
-                    >
-                        Gửi
-                    </button>
+        const handleCensorDecision = async () => {
+            try {
+                const current = JSON.parse(localStorage.getItem('currentUser'));
+                const token = current.token;
+                console.log(token + " " + localFeedback + " " + kiemduyetId);
+                
+                const response = await authService.duyetBaiBao({
+                    token: token,
+                    kiemduyetId: kiemduyetId,
+                    status: "4",
+                    ghichu: localFeedback,  
+                });
+                setIsSuccess(true);
+                console.log(response);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        return (
+            <div
+                className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center ${
+                    showFeedbackModal ? '' : 'hidden'
+                }`}
+            >
+                <div className="bg-white rounded-lg p-6 w-96">
+                    <h3 className="text-lg font-semibold mb-4">Gửi phản hồi cho tác giả</h3>
+                    <textarea
+                        className="w-full p-2 border rounded mb-4 h-32"
+                        value={localFeedback}
+                        onChange={(e) => setLocalFeedback(e.target.value)}
+                        placeholder="Nhập nội dung phản hồi..."
+                    />
+                    <div className="flex justify-end gap-2">
+                        <button
+                            className="px-4 py-2 text-gray-600 rounded hover:bg-gray-100"
+                            onClick={() => setShowFeedbackModal(false)}
+                        >
+                            Hủy
+                        </button>
+                        <button
+                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                            onClick={handleCensorDecision}
+                        >
+                            Gửi
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-    );
+        );
+    };
+
+    const [feedbackCensor, setFeedbackCensor] = useState(false);
+    const FeedbackCensor = ({ ghichu }) => {
+        return (
+            <div
+                className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center ${
+                    feedbackCensor ? '' : 'hidden'
+                }`}
+            >
+                <div className="bg-white rounded-lg p-6 w-96">
+                    <h3 className="text-lg font-semibold mb-4">Phản hồi của tác giả</h3>
+                    <p className="text-sm text-gray-600 mb-2">{ghichu || 'Không có ghi chú'}</p>
+                    <div className="flex justify-end gap-2">
+                        <button
+                            className="px-4 py-2 text-gray-600 rounded hover:bg-gray-100"
+                            onClick={() => setFeedbackCensor(false)}
+                        >
+                            Đóng
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    };
 
     return (
         <div className="bg-white rounded-xl shadow-sm">
@@ -220,7 +265,7 @@ function Editor_Editing() {
                                 return (
                                     <tr key={item.id} className="hover:bg-gray-50">
                                         <td className="px-6 py-4 whitespace-nowrap">{item.tieude}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap">{item.taikhoan.hovaten}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap">{item.taikhoans.hovaten}</td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span
                                                 className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${status.color}`}
@@ -230,10 +275,12 @@ function Editor_Editing() {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             {item.status !== 0
-                                                ? item.kiemduyets.length > 0
-                                                    ? item.kiemduyets.map((kiemduyetItem, index) => (
+                                                ? item.kiemduyet.length > 0
+                                                    ? item.kiemduyet.map((kiemduyetItem, index) => (
                                                           <span key={index} className="block">
                                                               {kiemduyetItem.taikhoan?.hovaten || 'Chưa có'}
+                                                              <FeedbackCensor ghichu={item.kiemduyet.ghichu} />
+                                                              <FeedbackModal kiemduyetId={kiemduyetItem.id} />
                                                           </span>
                                                       ))
                                                     : 'Chưa có'
@@ -241,9 +288,9 @@ function Editor_Editing() {
                                         </td>
 
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {item.status !== 0
-                                                ? item.kiemduyets.length > 0
-                                                    ? item.kiemduyets.map((kiemduyetItem, index) => (
+                                            {item.status !== 0 && item.status !== 1
+                                                ? item.kiemduyet.length > 0
+                                                    ? item.kiemduyet.map((kiemduyetItem, index) => (
                                                           <span key={index} className="block">
                                                               {kiemduyetItem.ngaykiemduyet || 'Chưa có'}
                                                           </span>
@@ -253,7 +300,7 @@ function Editor_Editing() {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                                             <div className="flex space-x-2">
-                                                {item.status === 0 && (
+                                                {item.status === 1 && (
                                                     <button
                                                         className="text-blue-600 hover:text-blue-900"
                                                         onClick={() => {
@@ -262,6 +309,16 @@ function Editor_Editing() {
                                                         }}
                                                     >
                                                         Phân công
+                                                    </button>
+                                                )}
+                                                {item.status === 3 && (
+                                                    <button
+                                                        className="text-blue-600 hover:text-blue-900"
+                                                        onClick={() => {
+                                                            setFeedbackCensor(true);
+                                                        }}
+                                                    >
+                                                        Xem
                                                     </button>
                                                 )}
                                                 <button
@@ -283,7 +340,6 @@ function Editor_Editing() {
                 </div>
             </div>
             <AssignReviewerModal />
-            <FeedbackModal />
         </div>
     );
 }

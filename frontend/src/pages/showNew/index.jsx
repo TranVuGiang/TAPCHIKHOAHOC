@@ -5,39 +5,59 @@ import '@react-pdf-viewer/core/lib/styles/index.css';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-
-
 const App = () => {
-    const magazineSlug = useParams();
-    const [dataBaiBao, setDataBaiBao] = useState([]);
+    const { magazineSlug, articleSlug } = useParams();
     const [pdfFile, setPdfFile] = useState(null);
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [categories, setCategories] = useState([]);
 
+    const [theloai, setTheloai] = useState('')
+    // Fetch categories
+    // Fetch categories
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                setLoading(true);
+                const response = await authService.getAllDanhMuc();
+                setCategories(response.data.data || []);
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
 
+        fetchCategories();
+    }, []);
+
+    // Fetch articles and filter by category
     useEffect(() => {
         const fetchArticles = async () => {
             try {
                 setLoading(true);
-                const response = await authService.getBaiBaoById(0,12);
-                const allArticles = Array.from(response.data.content);
-                if (magazineSlug.articleSlug) {
-                    const selectedCategory = allArticles.find(
-                        (category) => createUrlSlug(category.tieude) === magazineSlug.articleSlug,
-                    );
-                    setDataBaiBao(selectedCategory);
+                if (!magazineSlug || categories.length === 0) {
+                    console.log('Không thể fetch bài báo: Thiếu dữ liệu cần thiết.');
+                    return;
+                }
+                const selectedCategory = categories.find((category) => createUrlSlug(category.tieude) === magazineSlug);
 
-                    
-                    // Set PDF file từ dataBaiBao
-                    if (selectedCategory?.file) {
-                        setPdfFile(selectedCategory.file);
-                    }
+                if (!selectedCategory) {
+                    console.log('Không tìm thấy danh mục phù hợp.');
+                    return;
+                }
+                const dataBaiBao = selectedCategory?.baibao?.find((item) => createUrlSlug(item.tieude) === articleSlug);
+                if (dataBaiBao) {
+                    setArticles(dataBaiBao);
+                    setPdfFile(dataBaiBao.file)
+                    setTheloai(dataBaiBao.theloai.ten)
                 } else {
-                    console.log("Lỗi không load được bài báo");
+                    console.log('Không tìm thấy bài báo phù hợp.');
+                    setArticles(selectedCategory.baibao || []);
                 }
             } catch (err) {
-                console.error('Error fetching articles:', err);
+                console.error('Lỗi khi fetch bài báo:', err);
                 setError(err.message);
                 setArticles([]);
             } finally {
@@ -45,43 +65,40 @@ const App = () => {
             }
         };
 
-        fetchArticles();
-    }, [magazineSlug.articleSlug]);
-
-    useEffect(() => {
-        console.log(dataBaiBao);
-        
-    }, [dataBaiBao])
+        if (categories.length > 0) {
+            fetchArticles();
+        }
+    }, [magazineSlug, articleSlug, categories]);
 
     return (
         <div className="max-w-6xl mx-auto p-6">
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                 {/* Header với tiêu đề và ngày đăng */}
                 <div className="p-6 border-b border-gray-200">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">{dataBaiBao.tieude}</h1>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-2">{articles.tieude}</h1>
                     <div className="flex items-center text-gray-600">
-                        <span className="text-sm">
-                            Ngày đăng: {new Date(dataBaiBao.ngaydang).toLocaleDateString('vi-VN')}
+                        <span className="text-md">
+                            Ngày đăng: {new Date(articles.ngaydang).toLocaleDateString('vi-VN')}
                         </span>
                     </div>
+                    <span className="text-md">Thể loại: {theloai}</span>
                 </div>
 
                 {/* Phần nội dung chính */}
                 <div className="p-6 space-y-6">
                     {/* Hình ảnh */}
-                    {dataBaiBao.url && (
+                    {articles.url && (
                         <div className="rounded-lg overflow-hidden shadow-md">
-                            <img
-                                src={dataBaiBao.url}
-                                alt={dataBaiBao.tieude}
-                                className="w-full h-auto object-cover"
-                            />
+                            <img src={articles.url} alt={articles.tieude} className="w-full h-auto object-cover" />
                         </div>
                     )}
 
                     {/* Nội dung bài viết */}
                     <div className="prose max-w-none">
-                        <p className="text-gray-700 leading-relaxed">{dataBaiBao.noidung}</p>
+                        <p
+                            dangerouslySetInnerHTML={{ __html: articles.noidung }}
+                            className="text-gray-700 leading-relaxed"
+                        />
                     </div>
 
                     {/* PDF Viewer */}
@@ -132,7 +149,7 @@ const App = () => {
                 <div className="p-6 border-t border-gray-200">
                     <div className="flex justify-between items-center">
                         <div className="text-sm text-gray-600">
-                            Tags: <span className="text-blue-600">Example, Test</span>
+                            Tags: <span className="text-blue-600">{articles.keyword}</span>
                         </div>
                         <button
                             onClick={() => window.print()}

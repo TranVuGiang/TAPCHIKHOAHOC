@@ -14,6 +14,8 @@ function Home() {
                 setLoading(true);
                 // Sửa lại cách gọi API - thêm dấu ()
                 const response = await authService.getAllDanhMuc();
+                console.log(response.data.data);
+                
                 setDanhmucs(response.data.data); // Giả sử response có dạng { data: [...] }
             } catch (error) {
                 setError(error.message);
@@ -69,9 +71,9 @@ function Home() {
                             <MagazineCard
                                 weekNumber={issue.tuan}
                                 issueNumber={issue.so}
-                                publicationDate={issue.ngayTao}
-                                title={issue.tieuDe}
-                                excerpt={issue.moTa}
+                                publicationDate={issue.ngaytao}
+                                title={issue.tieude}
+                                excerpt={issue.mota}
                                 coverImage={issue.url}
                             />
                         </div>

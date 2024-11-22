@@ -162,20 +162,7 @@ export const authService = {
         }
         return response.json();
     },
-    // Lấy bài báo theo Id
-    getBaiBaoById: async (page, size) => {
-        const response = await fetch(`${API_URL}/api/baibao/all?page=${page}&size=${size}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Không thể load bài báo');
-        }
-        return response.json();
-    },
+
     // Thể loại
     getAllTheLoai: async () => {
         const response = await fetch(`${API_URL}/api/theloai/all`, {
@@ -304,6 +291,55 @@ export const authService = {
         if(!response.ok){
             const error = await response.json()
             throw new Error(error.message || "Không thể thêm người kiểm duyệt")
+        }
+        return response.json()
+    },
+    //Update thông tin người dùng
+    updateUser: async (hovaten, username, sdt, url, token) => {
+        const response = await fetch(`${API_URL}/api/user/update`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(hovaten, username, sdt, url, token), // Chuyển đổi đúng cú pháp
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Không thể sửa thông tin người dùng');
+        }
+
+        return response.json();
+    },
+    //Load Danh Sách cho Censor
+    loadDanhSachForCensor: async (token) => {
+        const response = await fetch(`${API_URL}/api/censor/get/kiemduyet`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({token}), 
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Không thể sửa load danh sách cho kiểm duyệt');
+        }
+
+        return response.json();
+    },
+    //Duyệt bài viết Censor
+    duyetBaiBao: async(token, status, ghichu, kiemduyetId) => {
+        const response = await fetch(`${API_URL}/api/censor/update`,{
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(token, status, ghichu, kiemduyetId)
+        })
+        if(!response.ok) {
+            const error = await response.json()
+            throw new Error(error.message || "Lỗi khi duyệt bài báo")
         }
         return response.json()
     }
