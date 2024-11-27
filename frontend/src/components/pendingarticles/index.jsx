@@ -4,15 +4,15 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SuccessDialog } from '../modalDialog';
 
-const PendingArticles = ({danhsachCho}) => {
-    const navigate = useNavigate()
+const PendingArticles = ({ danhsachCho }) => {
+    const navigate = useNavigate();
 
     const [feedback, setFeedback] = useState('');
     const [danhsach, setDanhsach] = useState([]);
-    const [isSuccess, setIsSuccess] = useState(false)
+    const [isSuccess, setIsSuccess] = useState(false);
     useEffect(() => {
         console.log(danhsachCho);
-        
+
         try {
             setDanhsach(danhsachCho);
         } catch (error) {
@@ -30,7 +30,7 @@ const PendingArticles = ({danhsachCho}) => {
                 status: status,
                 ghichu: feedback,
             });
-            setIsSuccess(true)
+            setIsSuccess(true);
             window.location.reload();
             console.log(response);
         } catch (error) {
@@ -38,10 +38,13 @@ const PendingArticles = ({danhsachCho}) => {
         }
     };
 
-    const handleViewPdf = (file) => {
-        navigate(file)
-    }
-
+    const handleViewPdf = ({ file }) => {
+        if (file) {
+            window.open(file, '_blank');
+        } else {
+            console.log('Không có file');
+        }
+    };
     return (
         <div className="space-y-6 font-montserrat">
             {danhsach.length > 0 && (
@@ -50,11 +53,13 @@ const PendingArticles = ({danhsachCho}) => {
                     <p className="text-blue-700">Bạn có {danhsach.length} bài viết mới cần duyệt</p>
                 </div>
             )}
-            <SuccessDialog 
+            <SuccessDialog
                 isOpen={isSuccess}
-                onClose={() => {setIsSuccess(false)}}
-                title={"Thành công"}
-                titleButton={"Tiếp tục"}
+                onClose={() => {
+                    setIsSuccess(false);
+                }}
+                title={'Thành công'}
+                titleButton={'Tiếp tục'}
             />
             {danhsach.map((article) => (
                 <div key={article.baiBao.id} className="bg-white border rounded-lg shadow-sm">
@@ -69,7 +74,7 @@ const PendingArticles = ({danhsachCho}) => {
                         <div className="bg-gray-50 p-4 rounded-md">
                             <div className="mt-2 flex items-center gap-2">
                                 <span>
-                                    Tác giả: <strong>{article.baiBao.taiKhoan.hovaten}</strong>
+                                    Tác giả: <strong>{article.baiBao.taiKhoan.hovaten} {console.log(article.baiBao)}</strong>
                                 </span>
                             </div>
                             <div className="mt-2">
@@ -102,8 +107,11 @@ const PendingArticles = ({danhsachCho}) => {
                                 Từ chối
                             </button>
                         </div>
-
-                        <button onClick={handleViewPdf(article.file)} className="w-full flex items-center justify-center gap-2 px-4 py-2 border rounded-md hover:bg-gray-50 transition-colors">
+                        {console.log(article)}
+                        <button
+                            onClick={() => handleViewPdf({ file: article.baiBao.file })}
+                            className="w-full flex items-center justify-center gap-2 px-4 py-2 border rounded-md hover:bg-gray-50 transition-colors"
+                        >
                             <FileText className="w-4 h-4" />
                             Xem PDF
                         </button>

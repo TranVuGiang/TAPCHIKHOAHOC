@@ -1,7 +1,6 @@
 // src/services/authService.js
 
 const API_URL = 'https://congnghetoday.click';
-const API_UPLOAD_FILE = 'https://anime404.click';
 export const authService = {
     // Login user
     login: async (username, password) => {
@@ -119,13 +118,13 @@ export const authService = {
         return response.json();
     },
     //Google Login
-    googleLogin: async (name, sub, email, picture, verified_email) => {
+    googleLogin: async (credential) => {
         const response = await fetch(`${API_URL}/api/user/login/google`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ name, sub, email, picture, verified_email }),
+            body: JSON.stringify(credential),
         });
         if (!response.ok) {
             const error = await response.json();
@@ -162,7 +161,20 @@ export const authService = {
         }
         return response.json();
     },
-
+    //getAllDanhMuc mọi thời gian
+    getAllDanhMucByTime: async () => {
+        const response = await fetch(`${API_URL}/api/danhmuc/all`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Không thể load danh mục');
+        }
+        return response.json();
+    },
     // Thể loại
     getAllTheLoai: async () => {
         const response = await fetch(`${API_URL}/api/theloai/all`, {
@@ -178,13 +190,13 @@ export const authService = {
         return response.json();
     },
     // Gửi bài
-    createBaiBao: async (theloaiId, tenbaibao, noidung, tukhoa, url, file, token) => {
+    createBaiBao: async (baibaoId, theloaiId, tenbaibao, noidung, tukhoa, url, file, token) => {
         const response = await fetch(`${API_URL}/api/baibao/create`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(theloaiId, tenbaibao, noidung, tukhoa, url, file, token),
+            body: JSON.stringify(baibaoId, theloaiId, tenbaibao, noidung, tukhoa, url, file, token),
         });
         if (!response.ok) {
             const error = await response.json();
@@ -205,13 +217,27 @@ export const authService = {
         return response.json();
     },
     // Thêm bài báo
-    createDanhMuc: async (tieuDe, mota, url, tuan, so) => {
+    createDanhMuc: async (tieuDe, mota, url, tuan, so, token) => {
         const response = await fetch(`${API_URL}/api/danhmuc/create`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(tieuDe, mota, url, tuan, so),
+            body: JSON.stringify(tieuDe, mota, url, tuan, so, token),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Không thể gửi bài');
+        }
+        return response.json();
+    },
+    updateDanhMuc: async ( danhmucId ,tieuDe, mota, url, tuan, so, token) => {
+        const response = await fetch(`${API_URL}/api/danhmuc/create`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(danhmucId, tieuDe, mota, url, tuan, so, token),
         });
         if (!response.ok) {
             const error = await response.json();
@@ -235,73 +261,73 @@ export const authService = {
         return response.json();
     },
     //Load bài báo all
-    loadBaibaoByUser: async(token) => {
+    loadBaibaoByUser: async (token) => {
         const response = await fetch(`${API_URL}/api/baibao/get/baibao/author`, {
-            method: "POST",
+            method: 'POST',
             headers: {
-                "Content-Type" : "application/json"
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify(token)
-        })
-        if(!response.ok){
-            const error = await response.json()
-            throw new Error(error.message || "Cant fetch list Bai Bao")
+            body: JSON.stringify(token),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Cant fetch list Bai Bao');
         }
-        return response.json()
+        return response.json();
     },
     //Editor Load Data
-    loadBaibaoForEditor: async(token) => {
+    loadBaibaoForEditor: async (token) => {
         const response = await fetch(`${API_URL}/api/baibao/get/baibao/all/editor`, {
-            method: "POST",
+            method: 'POST',
             headers: {
-                "Content-Type" : "application/json"
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify(token)
-        })
-        if(!response.ok){
-            const error = await response.json()
-            throw new Error(error.message || "Cant fetch list Bai Bao")
+            body: JSON.stringify(token),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Cant fetch list Bai Bao');
         }
-        return response.json()
+        return response.json();
     },
     //Editor Load Data
-    getUserKiemDuyet: async(token) => {
+    getUserKiemDuyet: async (token) => {
         const response = await fetch(`${API_URL}/api/user/get/taikhoan/kiemduyet`, {
-            method: "POST",
+            method: 'POST',
             headers: {
-                "Content-Type" : "application/json"
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify({token})
-        })
-        if(!response.ok){
-            const error = await response.json()
-            throw new Error(error.message || "Cant fetch list Nguoi Kiem Duyet")
+            body: JSON.stringify({ token }),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Cant fetch list Nguoi Kiem Duyet');
         }
-        return response.json()
+        return response.json();
     },
     //Phân kiểm duyệt
-    addCensor: async(taikhoanId, baobaiId, ghichu, token) => {
+    addCensor: async (taikhoanId, baobaiId, ghichu, token) => {
         const response = await fetch(`${API_URL}/api/censor/create`, {
-            method: "POST",
+            method: 'POST',
             headers: {
-                "Content-Type" : "application/json"
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify(taikhoanId, baobaiId, ghichu, token)
-        })
-        if(!response.ok){
-            const error = await response.json()
-            throw new Error(error.message || "Không thể thêm người kiểm duyệt")
+            body: JSON.stringify(taikhoanId, baobaiId, ghichu, token),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Không thể thêm người kiểm duyệt');
         }
-        return response.json()
+        return response.json();
     },
     //Update thông tin người dùng
-    updateUser: async (hovaten, username, sdt, url, token) => {
+    updateUser: async (hovaten, sdt, url, token) => {
         const response = await fetch(`${API_URL}/api/user/update`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(hovaten, username, sdt, url, token), // Chuyển đổi đúng cú pháp
+            body: JSON.stringify(hovaten, sdt, url, token), // Chuyển đổi đúng cú pháp
         });
 
         if (!response.ok) {
@@ -318,7 +344,7 @@ export const authService = {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({token}), 
+            body: JSON.stringify({ token }),
         });
 
         if (!response.ok) {
@@ -329,18 +355,48 @@ export const authService = {
         return response.json();
     },
     //Duyệt bài viết Censor
-    duyetBaiBao: async(token, status, ghichu, kiemduyetId) => {
-        const response = await fetch(`${API_URL}/api/censor/update`,{
-            method: "POST",
+    duyetBaiBao: async (token, status, ghichu, kiemduyetId) => {
+        const response = await fetch(`${API_URL}/api/censor/update`, {
+            method: 'POST',
             headers: {
-                "Content-Type": "application/json"
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify(token, status, ghichu, kiemduyetId)
-        })
-        if(!response.ok) {
-            const error = await response.json()
-            throw new Error(error.message || "Lỗi khi duyệt bài báo")
+            body: JSON.stringify(token, status, ghichu, kiemduyetId),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Lỗi khi duyệt bài báo');
         }
-        return response.json()
-    }
+        return response.json();
+    },
+    // Check hạn sử dụng token
+    checkToken: async (token) => {
+        const response = await fetch(`${API_URL}/api/user/check`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token }),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Lỗi khi check Token');
+        }
+        return response.json();
+    },
+    // Đăng bài
+    dangBai: async (token, baibaoId, danhmucId) => {
+        const response = await fetch(`${API_URL}/api/danhmuc/add/baibao/danhmuc`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify( token, baibaoId, danhmucId ),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Lỗi khi check Token');
+        }
+        return response.json();
+    },
 };

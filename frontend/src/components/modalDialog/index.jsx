@@ -1,13 +1,15 @@
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { Check } from 'lucide-react';
-import { Fragment, useState } from 'react';
+import { Fragment } from 'react';
 
-export function ErrorDialog({ title }) {
-    const [open, setOpen] = useState(true);
-
+export function ErrorDialog({ title, isOpen, onClose }) {
     return (
-        <Dialog open={open} onClose={setOpen} className="relative z-10 font-montserrat">
+        <Dialog 
+            open={isOpen} 
+            onClose={onClose} 
+            className="relative z-10 font-montserrat"
+        >
             <DialogBackdrop
                 transition
                 className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
@@ -45,7 +47,7 @@ export function ErrorDialog({ title }) {
                         <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                             <button
                                 type="button"
-                                onClick={() => setOpen(false)}
+                                onClick={onClose}
                                 className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
                             >
                                 Quay lại
@@ -53,10 +55,10 @@ export function ErrorDialog({ title }) {
                             <button
                                 type="button"
                                 data-autofocus
-                                onClick={() => setOpen(false)}
+                                onClick={onClose}
                                 className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
                             >
-                                Cancel
+                                Hủy
                             </button>
                         </div>
                     </DialogPanel>

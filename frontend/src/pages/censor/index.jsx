@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const CensorDashboard = () => {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('pending');
 
     const getStatusIcon = (status) => {
@@ -40,27 +40,20 @@ const CensorDashboard = () => {
                 console.log('Lỗi không fetch được');
                 return;
             }
-            const dangxuly = response.data.data.filter(
-                item => item.status === 0
-            )
-            const duyetxong = response.data.data.filter(
-                item => item.status === 1 || item.status === 2
-            );
-            
-            if(dangxuly && duyetxong) {
-                setDanhsachCho(dangxuly)
-                setDanhsach(duyetxong)
+            const dangxuly = response.data.data.filter((item) => item.status === 0);
+            const duyetxong = response.data.data.filter((item) => item.status === 1 || item.status === 2);
+
+            if (dangxuly && duyetxong) {
+                setDanhsachCho(dangxuly);
+                setDanhsach(duyetxong);
             }
             console.log(danhsach);
-            
         } catch (error) {
             console.log(error);
         }
     };
 
-    const handleViewPdf = (file) => {
-        navigate(file)
-    }
+
     const ReviewedArticles = () => {
         const reviewedArticles = danhsach.filter((article) => article.status === '1' || article.status === '2');
 
@@ -87,8 +80,11 @@ const CensorDashboard = () => {
                                     </div>
                                 </div>
                             </div>
-
-                            <button className="w-full flex items-center justify-center gap-2 px-4 py-2 border rounded-md hover:bg-gray-50 transition-colors">
+                            {console.log(article)}
+                            <button
+                               
+                                className="w-full flex items-center justify-center gap-2 px-4 py-2 border rounded-md hover:bg-gray-50 transition-colors"
+                            >
                                 <FileText className="w-4 h-4" />
                                 Xem PDF
                             </button>

@@ -6,10 +6,7 @@ import { Fragment, Suspense } from 'react';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import DefaultLayout from './layouts/DefautLayouts';
 
-
-
 function App() {
-    
     return (
         <Router>
             <div className="App bg-blue-100">

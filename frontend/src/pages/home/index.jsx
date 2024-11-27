@@ -1,3 +1,4 @@
+import LoadingSpinner from '@/components/LoadingSpinner';
 import MagazineCard from '@/share/MagazineCard';
 import TitleText from '@/share/TitleText';
 import { authService } from '@/utils/authService';
@@ -58,6 +59,13 @@ function Home() {
             time: '4 giờ',
         },
     ];
+
+    if (loading) {
+        return (
+          <LoadingSpinner />
+        );
+    }
+
     return (
         <>
             {/* SỐ MỚI NHẤT */}
@@ -85,7 +93,7 @@ function Home() {
             {/* SỰ KIỆN HOT TRONG TUẦN */}
             <section className="container mx-auto px-4 py-8">
                 <div className="w-full h-[60px] bg-space-400 right-0 py-4 pl-8">
-                    <TitleText>CÁC SỐ MỚI NHẤT</TitleText>
+                    <TitleText>SỰ KIỆN HOT TRONG TUẦN</TitleText>
                 </div>
                 <div className="container mx-auto px-4 py-6">
                     {/* Main news */}
@@ -97,7 +105,7 @@ function Home() {
                                     alt={mainNews.title}
                                     className="object-cover rounded-lg w-full h-full"
                                 />
-                            </div>
+                            </div>  
                             <h1 className="text-xl md:text-2xl font-bold mb-2 group-hover:text-blue-600 transition-colors">
                                 {mainNews.title}
                             </h1>

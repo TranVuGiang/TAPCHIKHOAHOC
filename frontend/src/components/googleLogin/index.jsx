@@ -15,19 +15,7 @@ const GoogleLoginButton = () => {
                 `https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${response.credential}`,
             );
             if (!tokenInfo.ok) throw new Error('Network response was not ok');
-            const data = await tokenInfo.json();
-            console.log(data);
-            
-            const userData = {
-                name: data.name,
-                sub: data.sub,
-                email: data.email,
-                picture: data.picture,
-                verified_email: data.email_verified === 'true',
-                credential: response.credential
-            };
-            console.log('User data before login:', userData);
-            await GoogleLogin(userData);
+            await GoogleLogin(response.credential);
         } catch (error) {
             console.error('Error fetching user data:', error);
             setError(true);
@@ -35,9 +23,10 @@ const GoogleLoginButton = () => {
         }
     }, []);
 
-    const GoogleLogin = async ({ name, sub, email, picture, verified_email , credential}) => {
+    const GoogleLogin = async (credential) => {
+        
         try {
-            const loginResponse = await authService.googleLogin(name, sub, email, picture, verified_email, credential);
+            const loginResponse = await authService.googleLogin({credential: credential});
             const token = loginResponse.data.token;
             const roles = loginResponse.data.roles;
             const fullname = loginResponse.data.fullname;

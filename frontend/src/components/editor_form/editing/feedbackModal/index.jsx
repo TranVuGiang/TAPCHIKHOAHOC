@@ -1,3 +1,4 @@
+import { SuccessDialog } from '@/components/modalDialog';
 import { authService } from '@/utils/authService';
 import { useState } from 'react';
 
@@ -28,6 +29,12 @@ const FeedbackModal = ({ kiemduyetId, showFeedbackModal }) => {
                 showFeedbackModal ? '' : 'hidden'
             }`}
         >
+            <SuccessDialog
+                isOpen={isSuccess}
+                onClose={() => setIsSuccess(false)}
+                title={'Phân phản biện thành công'}
+                titleButton={'Tiếp tục'}
+            />
             <div className="bg-white rounded-lg p-6 w-96">
                 <h3 className="text-lg font-semibold mb-4">Gửi phản hồi cho tác giả</h3>
                 <textarea

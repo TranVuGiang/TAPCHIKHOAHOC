@@ -1,3 +1,4 @@
+import LoadingSpinner from '@/components/LoadingSpinner';
 import { authService } from '@/utils/authService';
 import { createUrlSlug } from '@/utils/urlUtils';
 import { useEffect, useState } from 'react';
@@ -64,9 +65,7 @@ function ListPages() {
 
     if (loading) {
         return (
-            <div className="w-full max-w-3xl mx-auto p-4 text-center">
-                <p className="text-gray-600">Đang tải...</p>
-            </div>
+           <LoadingSpinner />
         );
     }
 

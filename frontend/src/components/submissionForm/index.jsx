@@ -3,11 +3,15 @@ import { CloudArrowUpIcon } from '@heroicons/react/24/solid';
 import { useEffect, useState } from 'react';
 import ReactQuill from 'react-quill';
 import { useLocation } from 'react-router-dom';
-import { SuccessDialog } from '../modalDialog';
+import { ErrorDialog, SuccessDialog } from '../modalDialog';
 
 const SubmissionForm = () => {
     const location = useLocation();
-    const baibao = location.state.baibao;
+    const [error, setError] = useState({
+        message: '',
+        isError: false,
+    });
+    const baibao = location.state?.baibao ?? null;
     const modules = {
         toolbar: [
             [{ header: [1, 2, false] }],
@@ -22,12 +26,9 @@ const SubmissionForm = () => {
         ],
     };
 
-    const [reloadForm, setReloadForm] = useState([]);
-
     const [theloai, setTheloai] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [userDetail, setUserDetail] = useState([]);
-
+    const [token, setToken] = useState('');
     const [isSuccess, setIsSuccess] = useState(false);
     const [formData, setFormData] = useState({
         theloaiId: '',
@@ -36,7 +37,6 @@ const SubmissionForm = () => {
         tukhoa: '',
         file: '',
         url: '',
-        token: '',
     });
 
     const [checkboxes, setCheckboxes] = useState(Array(6).fill(false));
@@ -49,17 +49,15 @@ const SubmissionForm = () => {
     };
 
     useEffect(() => {
-        if (baibao) {
+        loadDataUser();
+        if (baibao !== null) {
             reloadFormData();
-            loadDataUser();
-        } else {
-            setReloadForm(null);
         }
     }, []);
 
     useEffect(() => {
-        console.log(baibao);
-    }, [baibao]);
+        console.log(formData);
+    }, [formData]);
 
     const reloadFormData = () => {
         setFormData(baibao);
@@ -69,11 +67,7 @@ const SubmissionForm = () => {
         try {
             const current = JSON.parse(localStorage.getItem('currentUser'));
             const token = current.token;
-            setFormData((prev) => ({
-                ...prev,
-                token: token,
-            }));
-
+            setToken(token);
             setIsLoading(false);
         } catch (error) {
             console.log(error.message || 'Lỗi nớ');
@@ -87,65 +81,150 @@ const SubmissionForm = () => {
                 const response = await authService.getAllTheLoai();
                 setTheloai(response.data);
             } catch (error) {
-                console.log(error);
+                setError(error);
             }
         };
         fetchData();
     }, []);
 
-
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!checkboxes.every(Boolean)) {
-            alert('Vui lòng chọn tất cả các yêu cầu trước khi nộp bài!');
+        
+        // Kiểm tra các trường bắt buộc
+        const validations = [
+            { 
+                condition: !formData.theloaiId, 
+                message: 'Vui lòng chọn loại bài viết' 
+            },
+            { 
+                condition: !formData.tieude.trim(), 
+                message: 'Tên bài báo không được để trống' 
+            },
+            { 
+                condition: !formData.noidung.trim(), 
+                message: 'Tóm tắt bài viết không được để trống' 
+            },
+            { 
+                condition: !formData.tukhoa.trim(), 
+                message: 'Từ khóa không được để trống' 
+            },
+            { 
+                condition: !checkboxes.every(Boolean), 
+                message: 'Vui lòng chọn tất cả các yêu cầu trước khi nộp bài!' 
+            }
+        ];
+    
+        // Kiểm tra file
+        const validateFile = (file, type) => {
+            if (!file) {
+                setError({
+                    message: `Vui lòng tải ${type} lên`,
+                    isError: true
+                });
+                return false;
+            }
+    
+            const allowedImageTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+            const allowedFileTypes = ['application/pdf'];
+    
+            const currentAllowedTypes = type === 'ảnh' ? allowedImageTypes : allowedFileTypes;
+            const maxSize = 10 * 1024 * 1024; // 10MB
+    
+            if (!currentAllowedTypes.includes(file.type)) {
+                setError({
+                    message: `Định dạng ${type} không hợp lệ. Vui lòng chọn file ${type} đúng định dạng`,
+                    isError: true
+                });
+                return false;
+            }
+    
+            if (file.size > maxSize) {
+                setError({
+                    message: `Kích thước ${type} vượt quá 10MB. Vui lòng chọn file nhỏ hơn`,
+                    isError: true
+                });
+                return false;
+            }
+    
+            return true;
+        };
+    
+        // Kiểm tra các validation
+        for (let validation of validations) {
+            if (validation.condition) {
+                setError({
+                    message: validation.message,
+                    isError: true
+                });
+                return;
+            }
+        }
+    
+        // Kiểm tra file ảnh
+        if (imageFile && !validateFile(imageFile, 'ảnh')) {
             return;
         }
-
+    
+        // Kiểm tra file bản thảo
+        if (file && !validateFile(file, 'bản thảo')) {
+            return;
+        }
+    
         try {
             let uploadImage = formData.url;
             let uploadFile = formData.file;
+            
             if (file) {
-                // Thực hiện upload file
-                const formDataImage = new FormData();
-                formDataImage.append('files', imageFile);
-
-                const response = await authService.uploadFile(formDataImage);
-                uploadFile = response.file; // Lấy URL sau khi upload
-                console.log('Upload thành công:', response);
+                const formDataFile = new FormData();
+                formDataFile.append('files', file);
+    
+                const response = await authService.uploadFile(formDataFile);
+                uploadFile = response.file;
             }
+            
             if (imageFile) {
-                // Thực hiện upload file
                 const formDataImage = new FormData();
                 formDataImage.append('files', imageFile);
-
+    
                 const response = await authService.uploadFile(formDataImage);
-                uploadImage = response.file; // Lấy URL sau khi upload
-                console.log('Upload thành công:', response);
+                uploadImage = response.file; 
             }
-
+            
+            let baibaoId = baibao !== null ? baibao.id : null;
+    
             const response = await authService.createBaiBao({
-                baibaoId: baibao.id,
+                baibaoId: baibaoId,
+                token: token,
                 theloaiId: formData.theloaiId,
                 tieude: formData.tieude,
                 noidung: formData.noidung,
                 tukhoa: formData.tukhoa,
                 url: uploadImage,
                 file: uploadFile,
-                token: formData.token,
             });
+            
             setIsSuccess(true);
-            setFormData(() => ({
+            setFormData({
                 theloaiId: '',
                 tieude: '',
                 noidung: '',
                 tukhoa: '',
                 file: '',
                 url: '',
-            }));
+            });
+            
+            // Reset file states
+            setFile(null);
+            setFileName('');
+            setImageFile(null);
+            setImageFileName('');
+            
             console.log(response);
         } catch (error) {
-            console.log(error);
+            setError({
+                message: error.response?.data?.message || 'Có lỗi xảy ra. Vui lòng thử lại.',
+                isError: true,
+            });
         }
     };
 
@@ -161,7 +240,7 @@ const SubmissionForm = () => {
             setFileName(file.name); // Hiển thị tên file
         }
     };
-    const handleFileNameChange = (e) => {
+    const handleFileImage = (e) => {
         const file = e.target.files[0];
         if (file) {
             setImageFile(file);
@@ -199,6 +278,11 @@ const SubmissionForm = () => {
     return (
         <>
             <h2 className="text-2xl md:text-3xl font-bold mb-6">Nộp Bài Viết</h2>
+            <ErrorDialog
+                title={error.message}
+                isOpen={error.isError}
+                onClose={() => setError({ message: '', isError: false })}
+            />
             <SuccessDialog
                 isOpen={isSuccess}
                 onClose={() => setIsSuccess(false)}
@@ -293,7 +377,7 @@ const SubmissionForm = () => {
                             type="file"
                             id="upload-image"
                             className="hidden"
-                            onChange={handleFileNameChange}
+                            onChange={handleFileImage}
                             accept="image/jpeg,image/png,image/jpg"
                         />
                         {imageFileName && (

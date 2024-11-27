@@ -71,7 +71,7 @@ const App = () => {
     }, [magazineSlug, articleSlug, categories]);
 
     return (
-        <div className="max-w-6xl mx-auto p-6">
+        <div className="max-w-6xl mx-auto">
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                 {/* Header với tiêu đề và ngày đăng */}
                 <div className="p-6 border-b border-gray-200">
@@ -89,7 +89,7 @@ const App = () => {
                     {/* Hình ảnh */}
                     {articles.url && (
                         <div className="rounded-lg overflow-hidden shadow-md">
-                            <img src={articles.url} alt={articles.tieude} className="w-full h-auto object-cover" />
+                            <img src={articles.url} alt={articles.tieude} className="w-80 object-cover" />
                         </div>
                     )}
 
@@ -108,7 +108,7 @@ const App = () => {
                             <div className="border border-gray-200 rounded-lg overflow-hidden">
                                 <div className="h-[800px] w-full">
                                     <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
-                                        <Viewer fileUrl={pdfFile} />
+                                        <Viewer fileUrl={pdfFile} className="w-full h-full"/>
                                     </Worker>
                                 </div>
                             </div>

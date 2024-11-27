@@ -175,20 +175,20 @@ const PasswordChangeForm = ({ username }) => {
     );
 
     return (
-        <div className="max-w-md mx-auto p-6 bg-white rounded-xl shadow-md">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Đổi mật khẩu</h2>
+        <div className="max-w-md lg:max-w-lg xl:max-w-xl mx-auto p-6 bg-white rounded-xl shadow-md">
+            <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-6 text-center lg:text-left">Đổi mật khẩu</h2>
             <SuccessDialog
                 isOpen={isSubmitting}
                 onClose={() => setIsSubmitting(false)}
                 title="Đăng nhập thành công"
-                titleButton={'Tiếp tục'}
+                titleButton="Tiếp tục"
             />
             <form onSubmit={handleSubmit} className="space-y-6">
-                {renderPasswordInput('currentPassword', 'Mật khẩu hiện tại', 'Nhập mật khẩu hiện tại')}
+                {renderPasswordInput('currentPassword', 'Mật khẩu hiện tại', 'Mật khẩu hiện tại')}
 
-                {renderPasswordInput('newPassword', 'Mật khẩu mới', 'Nhập mật khẩu mới')}
+                {renderPasswordInput('newPassword', 'Mật khẩu mới', 'Mật khẩu mới')}
 
-                {renderPasswordInput('confirmPassword', 'Xác nhận mật khẩu mới', 'Nhập lại mật khẩu mới')}
+                {renderPasswordInput('confirmPassword', 'Xác nhận mật khẩu mới', '')}
 
                 {errors.submit && (
                     <div className="p-3 mb-4 text-sm text-red-500 bg-red-50 rounded-lg">{errors.submit}</div>
@@ -198,9 +198,9 @@ const PasswordChangeForm = ({ username }) => {
                     type="submit"
                     disabled={isSubmitting}
                     className={`w-full py-2 px-4 rounded-lg text-white font-medium
-            ${
-                isSubmitting ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
-            } transition-colors duration-200`}
+                ${
+                    isSubmitting ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+                } transition-colors duration-200`}
                 >
                     {isSubmitting ? 'Đang xử lý...' : 'Đổi mật khẩu'}
                 </button>
@@ -208,7 +208,7 @@ const PasswordChangeForm = ({ username }) => {
 
             <div className="mt-4 text-sm text-gray-600">
                 <p className="font-medium mb-2">Mật khẩu phải đáp ứng các yêu cầu sau:</p>
-                <ul className="list-disc pl-5">
+                <ul className="list-disc pl-5 space-y-2">
                     <li>Ít nhất {passwordRules.minLength} ký tự</li>
                     <li>Chứa ít nhất 1 số</li>
                     <li>Chứa ít nhất 1 ký tự đặc biệt (!@#$%^&*)</li>

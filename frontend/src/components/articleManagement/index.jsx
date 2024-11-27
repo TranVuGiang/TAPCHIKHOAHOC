@@ -1,6 +1,7 @@
 import { authService } from '@/utils/authService';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ArticleDetailModal from '../chitietbaibao';
 import SubmissionForm from '../submissionForm';
 
 const QuanLyBaiViet = () => {
@@ -8,6 +9,8 @@ const QuanLyBaiViet = () => {
     const [selectedStatus, setSelectedStatus] = useState('all');
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(6);
+    const [selectedArticle, setSelectedArticle] = useState(null);
+
     const [pageInfo, setPageInfo] = useState({
         currentPage: 0, // Số trang hiện tại (bắt đầu từ 0)
         totalPages: 1, // Tổng số trang
@@ -26,14 +29,13 @@ const QuanLyBaiViet = () => {
             const current = JSON.parse(localStorage.getItem('currentUser'));
             const token = current.token;
             const response = await authService.loadBaibaoByUser(token);
-
-            const data = response.data;
-            setBaibao(data.content);
+            const data = response.data.baibaos;
+            setBaibao(data);
             setPageInfo({
                 currentPage: data.number, // Số trang hiện tại (bắt đầu từ 0)
-                totalPages: data.totalPages, // Tổng số trang
-                totalElements: data.totalElements, // Tổng số bài báo
-                size: data.size, // Số bài báo mỗi trang
+                totalPages: data.phantrang.tongtrang, // Tổng số trang
+                totalElements: data.phantrang.tongbaibao, // Tổng số bài báo
+                size: data.phantrang.kichthuoc, // Số bài báo mỗi trang
                 isFirst: data.first, // Có phải trang đầu
                 isLast: data.last, // Có phải trang cuối
                 numberOfElements: data.numberOfElements, // Số phần tử trong trang hiện tại
@@ -44,12 +46,17 @@ const QuanLyBaiViet = () => {
     };
 
     // Cập nhật cấu hình trạng thái với đầy đủ các trạng thái mới
+    // Cập nhật cấu hình trạng thái với 8 trạng thái
     const STATUS_CONFIG = {
         0: { text: 'Đã gửi', color: 'bg-blue-100 text-blue-800' },
         1: { text: 'Chờ xử lý', color: 'bg-orange-100 text-orange-800' },
         2: { text: 'Đang duyệt', color: 'bg-yellow-100 text-yellow-800' },
         3: { text: 'Đã duyệt', color: 'bg-green-100 text-green-800' },
-        4: { text: 'Đã đăng', color: 'bg-purple-100 text-purple-800' },
+        4: { text: 'Chấp nhận', color: 'bg-emerald-100 text-emerald-800' },
+        5: { text: 'Cần chỉnh sửa', color: 'bg-amber-100 text-amber-800' },
+        6: { text: 'Không chấp nhận', color: 'bg-red-100 text-red-800' },
+        7: { text: 'Đã đăng', color: 'bg-purple-100 text-purple-800' },
+
     };
 
     // Cập nhật danh sách options cho select
@@ -57,10 +64,13 @@ const QuanLyBaiViet = () => {
         { value: 'all', label: 'Tất cả' },
         { value: '0', label: 'Đã gửi' },
         { value: '1', label: 'Chờ xử lý' },
-        { value: '2', label: 'Đã nhận' },
-        { value: '3', label: 'Đang duyệt' },
-        { value: '4', label: 'Đã duyệt' },
-        { value: '5', label: 'Đã đăng' },
+        { value: '2', label: 'Đang duyệt' },
+        { value: '3', label: 'Đã duyệt' },
+        { value: '4', label: 'Chấp nhận' },
+        { value: '5', label: 'Cần chỉnh sửa' },
+        { value: '6', label: 'Không chấp nhận' },
+        { value: '7', label: 'Đã đăng' },
+
     ];
 
     // Lọc bài viết theo trạng thái
@@ -80,19 +90,16 @@ const QuanLyBaiViet = () => {
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = filteredArticles.slice(indexOfFirstItem, indexOfLastItem);
 
-
     // Lấy thông tin trạng thái
     const getStatusText = (status) => {
         return STATUS_CONFIG[status] || { text: 'Unknown', color: 'bg-gray-100 text-gray-800' };
     };
 
-    const navigate = useNavigate()
-    const handleUpdate = (item) => {        
-        navigate('/home/TacGiaDashboard/submission',  {state : {baibao: item}})
-        return(
-            <SubmissionForm />
-        )
-    }
+    const navigate = useNavigate();
+    const handleUpdate = (item) => {
+        navigate('/home/TacGiaDashboard/submission', { state: { baibao: item } });
+        return <SubmissionForm />;
+    };
 
     // Component phân trang
     const Pagination = () => (
@@ -146,6 +153,7 @@ const QuanLyBaiViet = () => {
             </div>
         </div>
     );
+
 
     return (
         <div className="bg-white rounded-lg shadow-lg p-6">
@@ -208,7 +216,7 @@ const QuanLyBaiViet = () => {
                                 scope="col"
                                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                             >
-                                Tệp PDF
+                                Chi tiết
                             </th>
                             <th
                                 scope="col"
@@ -221,8 +229,7 @@ const QuanLyBaiViet = () => {
                     <tbody className="bg-white divide-y divide-gray-200">
                         {currentItems.map((article) => {
                             const status = getStatusText(article.status);
-                            console.log(article);
-                            
+
                             return (
                                 <tr key={article.id} className="hover:bg-gray-50">
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{article.id}</td>
@@ -242,10 +249,8 @@ const QuanLyBaiViet = () => {
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                                         <a
-                                            href={article.file}
-                                            className="text-blue-600 hover:text-blue-900"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
+                                            onClick={() => setSelectedArticle(article)}
+                                            className="text-blue-600 hover:text-blue-900 cursor-pointer"
                                         >
                                             Xem
                                         </a>
@@ -264,7 +269,10 @@ const QuanLyBaiViet = () => {
                     </tbody>
                 </table>
             </div>
-
+            {/* Thêm điều kiện render modal */}
+            {selectedArticle && (
+                <ArticleDetailModal article={selectedArticle} onClose={() => setSelectedArticle(null)} />
+            )}
             <Pagination />
         </div>
     );
