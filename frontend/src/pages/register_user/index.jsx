@@ -94,12 +94,13 @@ export default function RegisterUser() {
             }, 1500); // 1.5 second delay to show success message
         } catch (err) {
             setErrors({ general: err.data.data || 'Có lỗi xảy ra khi đăng ký' });
+            setLoadingErrors(true)
             console.log(err.data.data);
         } finally {
             setLoading(false);
         }
     };
-
+    const [loadingErrors, setLoadingErrors] = useState(false)
     const isValidEmail = (email) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
@@ -119,7 +120,7 @@ export default function RegisterUser() {
 
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-2xl">
                 <div className="bg-white py-8 px-4 shadow-lg sm:rounded-lg sm:px-10">
-                    {errors.general && <ErrorDialog title={errors.general} />}
+                    {errors.general && <ErrorDialog isOpen={loadingErrors} onClose={() => setLoadingErrors(false)} title={errors.general} />}
                     <SuccessDialog title={'Đăng ký thành công'} isOpen={success} onClose={() => setSuccess(false)} titleButton={"Tiếp tục"}/>
                     <form className="space-y-6" onSubmit={handleSubmit}>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

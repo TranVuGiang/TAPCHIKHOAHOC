@@ -17,7 +17,7 @@ function ListPages() {
         const fetchCategories = async () => {
             try {
                 setLoading(true);
-                const response = await authService.getAllDanhMuc();
+                const response = await authService.getAllDanhMuc({});
                 setCategories(response.data.data || []);
             } catch (err) {
                 setError(err.message);

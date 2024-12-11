@@ -9,8 +9,13 @@ const ArticleDetailModal = ({ article, onClose }) => {
         1: { text: 'Chờ xử lý', color: 'bg-orange-100 text-orange-800' },
         2: { text: 'Đang duyệt', color: 'bg-yellow-100 text-yellow-800' },
         3: { text: 'Đã duyệt', color: 'bg-green-100 text-green-800' },
-        4: { text: 'Đã đăng', color: 'bg-purple-100 text-purple-800' },
+        4: { text: 'Chấp nhận', color: 'bg-emerald-100 text-emerald-800' },
+        5: { text: 'Cần chỉnh sửa', color: 'bg-amber-100 text-amber-800' },
+        6: { text: 'Không chấp nhận', color: 'bg-red-100 text-red-800' },
+        7: { text: 'Đã đăng', color: 'bg-purple-100 text-purple-800' },
+
     };
+
 
     const status = STATUS_CONFIG[article.status] || {
         text: 'Không xác định',
@@ -40,14 +45,22 @@ const ArticleDetailModal = ({ article, onClose }) => {
                             <p className="font-semibold text-gray-600">Trạng Thái:</p>
                             <span className={`px-2 py-1 rounded-full text-xs ${status.color}`}>{status.text}</span>
                         </div>
+                       
                         <div>
                             <p className="font-semibold text-gray-600">Tiêu Đề:</p>
                             <p className="text-gray-900">{article.tieude}</p>
                         </div>
+                        {(article.status === 4 || article.status === 5 || article.status === 6) && (
+                            <div>
+                                <p className="font-semibold text-gray-600">Ghi chú từ kiểm duyệt: </p>
+                                <p className="text-gray-900"><strong>{article.kiemduyet.map((item) => item.ghichu)}</strong></p>
+                            </div>
+                        )}
                         <div>
                             <p className="font-semibold text-gray-600">Nội dung</p>
-                            <p className="text-gray-900" dangerouslySetInnerHTML={{ __html: article.noidung }}/>
+                            <p className="text-gray-900" dangerouslySetInnerHTML={{ __html: article.noidung }} />
                         </div>
+                        
                         <div>
                             <p className="font-semibold text-gray-600">Ngày Tạo:</p>
                             <p className="text-gray-900">{article.ngaytao?.trim() || 'Không có thông tin'}</p>
@@ -56,7 +69,6 @@ const ArticleDetailModal = ({ article, onClose }) => {
                             <p className="font-semibold text-gray-600">Ngày Đăng:</p>
                             <p className="text-gray-900">{article.ngaydang?.trim() || 'Chưa phát hành'}</p>
                         </div>
-                      {console.log(article)}
                        
                     </div>
 

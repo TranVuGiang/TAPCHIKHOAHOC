@@ -107,8 +107,9 @@ function Header() {
 
     useEffect(() => {
         const storedUser = localStorage.getItem('currentUser');
-        if (storedUser) {
+        if (storedUser !== null) {
             const parsedUser = JSON.parse(storedUser);
+
             // Chuyển đổi roles object thành array
             const rolesArray = Object.values(parsedUser.roles);
             setUser({
@@ -157,11 +158,12 @@ function Header() {
                                     <Link to="/home/danhmuc" className={`${textNavbar}`}>
                                         Danh mục
                                     </Link>
-                                    {getMenuNavbar(user.roles).map((item, index) => (
-                                        <Link key={index} to={item.path} className={`${textNavbar}`}>
-                                            {item.label}
-                                        </Link>
-                                    ))}
+                                    {user &&
+                                        getMenuNavbar(user.roles).map((item, index) => (
+                                            <Link key={index} to={item.path} className={`${textNavbar}`}>
+                                                {item.label}
+                                            </Link>
+                                        ))}
                                     <Link
                                         to={user ? '/home/option_advertisement' : '#'}
                                         className={`${textNavbar}`}
@@ -294,15 +296,12 @@ function Header() {
                         <Link to="/home/danhmuc" className="text-white hover:text-space-200 text-lg">
                             Danh mục
                         </Link>
-                        <Link
-                            to={user ? '/home/TacGiaDashboard' : '#'}
-                            className="text-white hover:text-space-200 text-lg"
-                            onClick={() => {
-                                handleNavigation('/submitForm');
-                            }}
-                        >
-                            Gửi bài Online
-                        </Link>
+                        {user &&
+                            getMenuNavbar(user.roles).map((item, index) => (
+                                <Link key={index} to={item.path} className={`${textNavbar}`}>
+                                    {item.label}
+                                </Link>
+                            ))}
                         <Link to="/advertisement" className="text-white hover:text-space-200 text-lg">
                             Khác
                         </Link>

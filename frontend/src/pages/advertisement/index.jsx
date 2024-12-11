@@ -1,7 +1,8 @@
+import PdfGenerator from '@/components/inhoadon';
+import { createUrlSlug } from "@/utils/urlUtils.jsx";
 import { Check } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import { createUrlSlug } from "@/utils/urlUtils.jsx";
 
 export default function Advertisement() {
   const [selectedPlan, setSelectedPlan] = useState('day');
@@ -88,6 +89,7 @@ export default function Advertisement() {
           >
             Chọn Gói Này
           </button>
+          <PdfGenerator />
         </div>
       </div>
   );

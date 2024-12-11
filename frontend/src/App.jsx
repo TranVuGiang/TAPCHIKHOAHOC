@@ -2,11 +2,42 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import NoAccess from '@/components/noAcess';
 import { privateRoutes, publicRoutes } from '@/Routes/index';
 import ProtectedRoute from '@/Routes/privateRoute';
-import { Fragment, Suspense } from 'react';
+import { Fragment, Suspense, useEffect } from 'react';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import DefaultLayout from './layouts/DefautLayouts';
+import { authService } from './utils/authService';
 
 function App() {
+    useEffect(() => {
+        checkToken();
+    }, []);
+    const checkToken = async () => {
+        const currentUser = localStorage.getItem('currentUser');
+        if (currentUser) {
+            try {
+                const arr = JSON.parse(currentUser);
+                if (arr.token && arr.token.length > 10) {
+                    try {
+                        const response = await authService.checkToken(arr.token);
+                        if (!response.success) {
+                            localStorage.removeItem('currentUser');
+                        }
+                    } catch (error) {
+                        console.error("Lỗi khi xác thực token:", error);
+                        localStorage.removeItem('currentUser');
+                    }
+                } else {
+                    console.warn("Token không tồn tại hoặc không hợp lệ.");
+                    localStorage.removeItem('currentUser');
+                }
+            } catch (error) {
+                console.error("Dữ liệu currentUser không hợp lệ:", error);
+                localStorage.removeItem('currentUser');
+            }
+        }
+    };
+    
+
     return (
         <Router>
             <div className="App bg-blue-100">

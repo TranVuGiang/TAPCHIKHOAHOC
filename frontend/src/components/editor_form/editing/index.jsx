@@ -12,25 +12,29 @@ function Editor_Editing() {
     const [showAssignModal, setShowAssignModal] = useState(false);
     const [showFeedbackModal, setShowFeedbackModal] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
-    const [showDialogModal, setShowDialogModal] = useState(false)
     const [selectedStatus, setSelectedStatus] = useState('all'); // Thêm state cho bộ lọc
     const [selectedArticle, setSelectedArticle] = useState(null);
-
+    const [selectedKiemDuyetItem, setSelectedKiemDuyetItem] = useState(null);
+    const [activeTab, setActiveTab] = useState('all');
     useEffect(() => {
-        loadDataUser();
-        loadReviewers();
+        console.log(filteredBaibaos);
+
+        const loadData = () => {
+            loadDataUser();
+            loadReviewers();
+        };
+        loadData();
+        const intervalId = setInterval(loadData, 100000);
+
+        // Cleanup: dừng interval khi component unmount
+        return () => clearInterval(intervalId);
     }, []);
-
-    useEffect(() => {
-        console.log(selectedReviewer);
-    }, [selectedReviewer]);
 
     const loadDataUser = async () => {
         try {
             const current = JSON.parse(localStorage.getItem('currentUser'));
             const token = current.token;
             const response = await authService.loadBaibaoForEditor(token);
-            console.log(response.data.baibaos);
             setBaibao(response.data.baibaos);
         } catch (error) {
             console.log(error.message || 'Lỗi khi tải bài viết');
@@ -42,7 +46,6 @@ function Editor_Editing() {
             const current = JSON.parse(localStorage.getItem('currentUser'));
             const token = current.token;
             const response = await authService.getUserKiemDuyet(token);
-            console.log(response.data);
             setReviewers(response.data);
         } catch (error) {
             console.log('Lỗi khi tải danh sách phản biện:', error);
@@ -54,7 +57,7 @@ function Editor_Editing() {
             const current = JSON.parse(localStorage.getItem('currentUser'));
             const token = current.token;
             console.log('selectedReviewer: ', selectedReviewer);
-            await authService.addCensor({
+            const response = await authService.addCensor({
                 baibaoId: selectedBaibao.id,
                 taikhoanId: selectedReviewer,
                 token: token,
@@ -64,23 +67,25 @@ function Editor_Editing() {
             setShowAssignModal(false);
             setSelectedReviewer('');
             setIsSuccess(true);
+            console.log(response);
         } catch (error) {
             alert('Lỗi khi phân công phản biện');
         }
     };
 
-
-
     const STATUS_CONFIG = {
         0: { text: 'Đã gửi', color: 'bg-blue-100 text-blue-800' },
-        1: { text: 'Chờ xử lý', color: 'bg-blue-100 text-blue-800' },
-        2: { text: 'Đang duyệt', color: 'bg-orange-100 text-orange-800' },
-        3: { text: 'Đã duyệt', color: 'bg-yellow-100 text-yellow-800' },
-        4: { text: 'Đã đăng', color: 'bg-green-100 text-green-800' },
+        1: { text: 'Chờ xử lý', color: 'bg-orange-100 text-orange-800' },
+        2: { text: 'Đang duyệt', color: 'bg-yellow-100 text-yellow-800' },
+        3: { text: 'Đã duyệt', color: 'bg-green-100 text-green-800' },
+        4: { text: 'Chấp nhận', color: 'bg-emerald-100 text-emerald-800' },
+        5: { text: 'Cần chỉnh sửa', color: 'bg-amber-100 text-amber-800' },
+        6: { text: 'Không chấp nhận', color: 'bg-red-100 text-red-800' },
+        7: { text: 'Đã đăng', color: 'bg-purple-100 text-purple-800' },
     };
 
     const filteredBaibaos =
-        selectedStatus === 'all' ? baibaos : baibaos.filter((baibao) => baibao.status.toString() === selectedStatus);
+        activeTab === 'all' ? baibaos : baibaos.filter((baibao) => baibao.status.toString() === activeTab);
 
     const getStatusText = (status) => {
         return STATUS_CONFIG[status] || { text: 'Unknown', color: 'bg-gray-100 text-gray-800' };
@@ -153,33 +158,74 @@ function Editor_Editing() {
     const FeedbackModal = ({ kiemduyetId }) => {
         const [localFeedback, setLocalFeedback] = useState('');
         const [isSuccess, setIsSuccess] = useState(false);
+        const [selectedStatus, setSelectedStatus] = useState('4');
+
+        // Các tùy chọn trạng thái cho combobox
+        const statusOptions = [
+            { id: 4, name: 'Chấp nhận' },
+            { id: 5, name: 'Cần chỉnh sửa' },
+            { id: 6, name: 'Không chấp nhận' },
+        ];
 
         const handleCensorDecision = async () => {
+            console.log(kiemduyetId);
+
             try {
                 const current = JSON.parse(localStorage.getItem('currentUser'));
                 const token = current.token;
 
-                const response = await authService.duyetBaiBao({
+                const response = await authService.phanhoiTacGia({
                     token: token,
                     kiemduyetId: kiemduyetId,
-                    status: '4',
+                    status: String(selectedStatus),
                     ghichu: localFeedback,
                 });
+                loadDataUser();
                 setIsSuccess(true);
-                 console.log(response);
+                console.log(response);
             } catch (error) {
                 console.log(error);
+            } finally {
+                setShowFeedbackModal(false);
             }
         };
+        useEffect(() => {
+            if (isSuccess) {
+                const timer = setTimeout(() => {
+                    setShowFeedbackModal(false); // Đóng modal sau khi thông báo thành công
+                }, 1000); // 1000ms (1 giây) hoặc tuỳ chỉnh
 
+                return () => clearTimeout(timer); // Cleanup timer khi unmount
+            }
+        }, [isSuccess]);
         return (
             <div
                 className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center ${
                     showFeedbackModal ? '' : 'hidden'
                 }`}
             >
+                <SuccessDialog
+                    isOpen={isSuccess}
+                    onClose={() => setIsSuccess(false)}
+                    title={'Gửi phản hồi thành công'}
+                    titleButton={'Tiếp tục'}
+                />
                 <div className="bg-white rounded-lg p-6 w-96">
                     <h3 className="text-lg font-semibold mb-4">Gửi phản hồi cho tác giả</h3>
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Trạng thái phản hồi</label>
+                        <select
+                            className="w-full p-2 border rounded"
+                            value={selectedStatus}
+                            onChange={(e) => setSelectedStatus(e.target.value)}
+                        >
+                            {statusOptions.map((status) => (
+                                <option key={status.id} value={status.id}>
+                                    {status.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                     <textarea
                         className="w-full p-2 border rounded mb-4 h-32"
                         value={localFeedback}
@@ -233,18 +279,30 @@ function Editor_Editing() {
         <div className="bg-white rounded-xl shadow-sm">
             <div className="p-6">
                 <h2 className="text-lg font-semibold text-gray-800 mb-6">Bài báo đang biên tập</h2>
-                <select
-                    className="px-4 py-2 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={selectedStatus}
-                    onChange={(e) => setSelectedStatus(e.target.value)}
-                >
-                    <option value="all">Tất cả trạng thái</option>
-                    {Object.entries(STATUS_CONFIG).map(([key, value]) => (
-                        <option key={key} value={key}>
-                            {value.text}
-                        </option>
+                {/* Tab Navigation */}
+                <div className="flex border-b mb-4">
+                    {[
+                        { key: 'all', label: 'Tất cả' },
+                        ...Object.entries(STATUS_CONFIG).map(([key, value]) => ({
+                            key,
+                            label: value.text,
+                        })),
+                    ].map((tab) => (
+                        <button
+                            key={tab.key}
+                            className={`px-4 py-2 border-b-2 ${
+                                activeTab === tab.key
+                                    ? 'border-blue-500 text-blue-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                            }`}
+                            onClick={() => setActiveTab(tab.key)}
+                        >
+                            {tab.label}
+                        </button>
                     ))}
-                </select>
+                </div>
+
+               
                 <div className="overflow-x-auto">
                     <table className="min-w-full">
                         <thead>
@@ -252,30 +310,42 @@ function Editor_Editing() {
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Tiêu đề
                                 </th>
-                             
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Trạng thái
-                                </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Người kiểm duyệt
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Trạng thái
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Thời gian
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Thao tác
-                                </th> <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                </th>{' '}
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Chi tiết
                                 </th>
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                            {filteredBaibaos.map((item) => {
+                        {filteredBaibaos.map((item) => {
                                 const status = getStatusText(item.status);
-                                
+
                                 return (
                                     <tr key={item.id} className="hover:bg-gray-50">
                                         <td className="px-6 py-4 whitespace-nowrap">{item.tieude}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            {item.status !== 0
+                                                ? item.kiemduyet.length > 0
+                                                    ? item.kiemduyet.map((kiemduyetItem, index) => (
+                                                          <span key={index} className="block">
+                                                              {kiemduyetItem.taikhoan?.hovaten || 'Chưa có'}
+                                                          </span>
+                                                      ))
+                                                    : 'Chưa có'
+                                                : 'Chưa phân công'}
+                                        </td>
+
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span
                                                 className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${status.color}`}
@@ -283,31 +353,11 @@ function Editor_Editing() {
                                                 {status.text}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            {item.status !== 0
-                                                ? item.kiemduyet.length > 0
-                                                    ? item.kiemduyet.map((kiemduyetItem, index) => (
-                                                          <span key={index} className="block">
-                                                              {kiemduyetItem.taikhoan?.hovaten || 'Chưa có'}    
-                                                              {console.log(kiemduyetItem)}
-                                                              <FeedbackCensor ghichu={kiemduyetItem.ghichu} />
-                                                              <FeedbackModal kiemduyetId={kiemduyetItem.id} />
-                                                          </span>
-                                                      ))
-                                                    : 'Chưa có'
-                                                : 'Chưa phân công'}
-                                        </td>
 
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {item.status !== 0 && item.status !== 1
-                                                ? item.kiemduyet.length > 0
-                                                    ? item.kiemduyet.map((kiemduyetItem, index) => (
-                                                          <span key={index} className="block">
-                                                              {kiemduyetItem.ngaykiemduyet || 'Chưa có'}
-                                                          </span>
-                                                      ))
-                                                    : 'Chưa có'
-                                                : 'Chưa có ngày'}
+                                            {item.status !== 0 && item.status !== 1 && (
+                                                <span className="block">{item.lichsu || 'Chưa có'}</span>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                                             <div className="flex space-x-2">
@@ -322,35 +372,40 @@ function Editor_Editing() {
                                                         Phân công
                                                     </button>
                                                 )}
-                                                {item.status === 3 && (
-                                                    <button
-                                                        className="text-blue-600 hover:text-blue-900"
-                                                        onClick={() => {
-                                                            setFeedbackCensor(true);
-                                                        }}
-                                                    >
-                                                        Xem
-                                                    </button>
-                                                )}
-                                                <button
-                                                    className="text-green-600 hover:text-green-900"
-                                                    onClick={() => {
-                                                        setSelectedBaibao(item);
-                                                        setShowFeedbackModal(true);
-                                                    }}
-                                                >
-                                                    Phản hồi
-                                                </button>
+                                                {item.status === 3 &&
+                                                    item.kiemduyet.map((kiemduyetItem, index) => (
+                                                        <div key={index}>
+                                                            <button
+                                                                className="text-blue-600 hover:text-blue-900"
+                                                                onClick={() => {
+                                                                    setSelectedKiemDuyetItem(kiemduyetItem);
+                                                                    setFeedbackCensor(true);
+                                                                }}
+                                                            >
+                                                                Xem/
+                                                            </button>
+                                                            <button
+                                                                className="text-green-600 hover:text-green-900"
+                                                                onClick={() => {
+                                                                    setSelectedKiemDuyetItem(kiemduyetItem);
+                                                                    setShowFeedbackModal(true);
+                                                                }}
+                                                            >
+                                                                Phản hồi
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                    
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                        <a
-                                            onClick={() => setSelectedArticle(item)}
-                                            className="text-blue-600 hover:text-blue-900 cursor-pointer"
-                                        >
-                                            Xem
-                                        </a>
-                                    </td>
+                                            <a
+                                                onClick={() => setSelectedArticle(item)}
+                                                className="text-blue-600 hover:text-blue-900 cursor-pointer"
+                                            >
+                                                Xem
+                                            </a>
+                                        </td>
                                     </tr>
                                 );
                             })}
@@ -359,6 +414,12 @@ function Editor_Editing() {
                 </div>
             </div>
             {/* Thêm điều kiện render modal */}
+            {selectedKiemDuyetItem && (
+                <>
+                    <FeedbackModal kiemduyetId={selectedKiemDuyetItem.id} />
+                    <FeedbackCensor ghichu={selectedKiemDuyetItem.ghichu} />
+                </>
+            )}
             {selectedArticle && (
                 <ArticleDetailModal article={selectedArticle} onClose={() => setSelectedArticle(null)} />
             )}

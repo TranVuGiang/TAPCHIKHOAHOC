@@ -1,3 +1,4 @@
+import SocialInteraction from '@/components/socialInteraction';
 import { authService } from '@/utils/authService';
 import { createUrlSlug } from '@/utils/urlUtils';
 import { Viewer, Worker } from '@react-pdf-viewer/core';
@@ -8,21 +9,42 @@ import { useParams } from 'react-router-dom';
 const App = () => {
     const { magazineSlug, articleSlug } = useParams();
     const [pdfFile, setPdfFile] = useState(null);
-    const [articles, setArticles] = useState([]);
+    const [articles, setArticles] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [categories, setCategories] = useState([]);
+    const [theloai, setTheloai] = useState('');
+    const [token, setToken] = useState('');
 
-    const [theloai, setTheloai] = useState('')
-    // Fetch categories
+    // Fetch token
+    useEffect(() => {
+        const loadToken = async () => {
+            try {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                if (currentUser) {
+                    setToken(currentUser.token);
+                }
+            } catch (err) {
+                console.error('Lỗi khi lấy token:', err);
+            }
+        };
+        loadToken();
+    }, []);
+
     // Fetch categories
     useEffect(() => {
         const fetchCategories = async () => {
             try {
                 setLoading(true);
-                const response = await authService.getAllDanhMuc();
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                if (!currentUser) {
+                    throw new Error('Không tìm thấy thông tin người dùng');
+                }
+
+                const response = await authService.getAllDanhMuc({ token: currentUser.token });
                 setCategories(response.data.data || []);
             } catch (err) {
+                console.error('Lỗi khi tải danh mục:', err);
                 setError(err.message);
             } finally {
                 setLoading(false);
@@ -37,29 +59,38 @@ const App = () => {
         const fetchArticles = async () => {
             try {
                 setLoading(true);
+                
+                // Kiểm tra điều kiện
                 if (!magazineSlug || categories.length === 0) {
                     console.log('Không thể fetch bài báo: Thiếu dữ liệu cần thiết.');
                     return;
                 }
-                const selectedCategory = categories.find((category) => createUrlSlug(category.tieude) === magazineSlug);
+
+                // Tìm danh mục
+                const selectedCategory = categories.find((category) => 
+                    createUrlSlug(category.tieude) === magazineSlug
+                );
 
                 if (!selectedCategory) {
                     console.log('Không tìm thấy danh mục phù hợp.');
                     return;
                 }
-                const dataBaiBao = selectedCategory?.baibao?.find((item) => createUrlSlug(item.tieude) === articleSlug);
+
+                // Tìm bài báo
+                const dataBaiBao = selectedCategory?.baibao?.find((item) => 
+                    createUrlSlug(item.tieude) === articleSlug
+                );
+
                 if (dataBaiBao) {
                     setArticles(dataBaiBao);
-                    setPdfFile(dataBaiBao.file)
-                    setTheloai(dataBaiBao.theloai.ten)
+                    setPdfFile(dataBaiBao.file);
+                    setTheloai(dataBaiBao.theloai?.ten || 'Chưa xác định');
                 } else {
                     console.log('Không tìm thấy bài báo phù hợp.');
-                    setArticles(selectedCategory.baibao || []);
                 }
             } catch (err) {
                 console.error('Lỗi khi fetch bài báo:', err);
                 setError(err.message);
-                setArticles([]);
             } finally {
                 setLoading(false);
             }
@@ -69,6 +100,33 @@ const App = () => {
             fetchArticles();
         }
     }, [magazineSlug, articleSlug, categories]);
+
+    // Hiển thị trạng thái load
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <div className="text-xl text-gray-600">Đang tải dữ liệu...</div>
+            </div>
+        );
+    }
+
+    // Hiển thị lỗi
+    if (error) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <div className="text-xl text-red-600">Có lỗi xảy ra: {error}</div>
+            </div>
+        );
+    }
+
+    // Kiểm tra dữ liệu
+    if (!articles) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <div className="text-xl text-gray-600">Không tìm thấy bài báo</div>
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-6xl mx-auto">
@@ -108,7 +166,7 @@ const App = () => {
                             <div className="border border-gray-200 rounded-lg overflow-hidden">
                                 <div className="h-[800px] w-full">
                                     <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
-                                        <Viewer fileUrl={pdfFile} className="w-full h-full"/>
+                                        <Viewer fileUrl={pdfFile} className="w-full h-full" />
                                     </Worker>
                                 </div>
                             </div>
@@ -120,30 +178,8 @@ const App = () => {
                     </div>
                 </div>
 
-                {/* Phần bài viết gợi ý */}
-                {/* <div className="p-6 bg-gray-50">
-                    <h2 className="text-2xl font-bold mb-6">Bài viết liên quan</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {suggestedArticles.map((article) => (
-                            <div
-                                key={article.id}
-                                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
-                            >
-                                <img src={article.hinhanh} alt={article.tieude} className="w-full h-48 object-cover" />
-                                <div className="p-4">
-                                    <h3 className="font-semibold text-lg mb-2 text-gray-800 hover:text-blue-600">
-                                        <a href={`/article/${article.id}`}>{article.tieude}</a>
-                                    </h3>
-                                    <p className="text-gray-600 text-sm mb-3">{article.tomtat}</p>
-                                    <div className="flex items-center justify-between text-sm text-gray-500">
-                                        <span>{new Date(article.ngaydang).toLocaleDateString('vi-VN')}</span>
-                                        <span>{article.luotxem} lượt xem</span>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div> */}
+                {/* Thích và bình luận */}
+                <SocialInteraction articles={articles} />
 
                 {/* Footer */}
                 <div className="p-6 border-t border-gray-200">

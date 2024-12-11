@@ -1,4 +1,3 @@
-import { authService } from '@/utils/authService';
 import { Navigate, useLocation } from 'react-router-dom';
 
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
@@ -6,17 +5,9 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
     const arr = JSON.parse(localStorage.getItem('currentUser'));
     const currentUser = Object.values(arr.roles);
 
-    const checkToken = async () => {
-        const response = await authService.checkToken(arr.token);
-        if (!response.success) {
-            localStorage.removeItem('currentUser');
-            return <Navigate to="/login" state={{ from: location }} replace />;
-        }
-    };
-
-    checkToken();
+   
     // Nếu người dùng chưa đăng nhập, chuyển hướng đến trang đăng nhập
-    if (!arr) {
+    if (!currentUser) {
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
     const hasRoles = allowedRoles.some((role) => currentUser.includes(role));

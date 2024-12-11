@@ -1,3 +1,4 @@
+import ArticleDetailModal from '@/components/chitietbaibao';
 import { authService } from '@/utils/authService';
 import { useEffect, useState } from 'react';
 
@@ -8,17 +9,19 @@ const Editor_DangBaiBao = () => {
     const [showPublishModal, setShowPublishModal] = useState(false);
     const [selectedDanhMuc, setSelectedDanhMuc] = useState('');
     const [danhmucs, setDanhmucs] = useState([]);
+    const [selectedArticle, setSelectedArticle] = useState(null);
 
     const STATUS_CONFIG = {
         0: { text: 'Đã gửi', color: 'bg-blue-100 text-blue-800' },
         1: { text: 'Chờ xử lý', color: 'bg-blue-100 text-blue-800' },
         2: { text: 'Đang duyệt', color: 'bg-orange-100 text-orange-800' },
         3: { text: 'Đã duyệt', color: 'bg-yellow-100 text-yellow-800' },
-        4: { text: 'Đã đăng', color: 'bg-green-100 text-green-800' },
+        4: { text: 'Chờ đăng', color: 'bg-indigo-100 text-green-800' },
+        5: { text: 'Đã đăng', color: 'bg-green-100 text--800' },
     };
 
     // Chỉ lọc các bài báo có status = 3
-    const filteredBaibaos = baibaos.filter((baibao) => baibao.status === 3);
+    const filteredBaibaos = baibaos.filter((baibao) => baibao.status === 4);
 
     const getStatusText = (status) => {
         return STATUS_CONFIG[status] || { text: 'Unknown', color: 'bg-gray-100 text-gray-800' };
@@ -32,7 +35,7 @@ const Editor_DangBaiBao = () => {
 
     const loadComboboxDanhMuc = async () => {
         try {
-            const response = await authService.getAllDanhMuc();
+            const response = await authService.getAllDanhMuc({});
             setDanhmucs(response.data.data);
         } catch (error) {
             console.log(error);
@@ -109,7 +112,7 @@ const Editor_DangBaiBao = () => {
                                     Ngày tạo
                                 </th>
                                 <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    File
+                                    Chi tiết
                                 </th>
                                 <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Status
@@ -133,7 +136,7 @@ const Editor_DangBaiBao = () => {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <button
-                                                onClick={() => handleViewPdf(item.file)}
+                                                onClick={() => setSelectedArticle(item)}
                                                 className="text-blue-600 hover:text-blue-900"
                                             >
                                                 Xem
@@ -211,6 +214,9 @@ const Editor_DangBaiBao = () => {
                         </div>
                     </div>
                 </div>
+            )}
+            {selectedArticle && (
+                <ArticleDetailModal article={selectedArticle} onClose={() => setSelectedArticle(null)} />
             )}
         </div>
     );

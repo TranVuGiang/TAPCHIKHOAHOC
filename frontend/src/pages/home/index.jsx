@@ -14,9 +14,16 @@ function Home() {
             try {
                 setLoading(true);
                 // Sửa lại cách gọi API - thêm dấu ()
-                const response = await authService.getAllDanhMuc();
+                const response = await authService.getAllDanhMuc({});
+                if (response !== null) {
+                    const data = await authService.getAllDanhMuc({
+                        page: response.pageSize,
+                        size: response.totalPage,
+                    });
+                    console.log(data);
+                }
                 console.log(response.data.data);
-                
+
                 setDanhmucs(response.data.data); // Giả sử response có dạng { data: [...] }
             } catch (error) {
                 setError(error.message);
@@ -61,9 +68,7 @@ function Home() {
     ];
 
     if (loading) {
-        return (
-          <LoadingSpinner />
-        );
+        return <LoadingSpinner />;
     }
 
     return (
@@ -105,7 +110,7 @@ function Home() {
                                     alt={mainNews.title}
                                     className="object-cover rounded-lg w-full h-full"
                                 />
-                            </div>  
+                            </div>
                             <h1 className="text-xl md:text-2xl font-bold mb-2 group-hover:text-blue-600 transition-colors">
                                 {mainNews.title}
                             </h1>
