@@ -3,13 +3,18 @@ import { Navigate, useLocation } from 'react-router-dom';
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
     const location = useLocation();
     const arr = JSON.parse(localStorage.getItem('currentUser'));
+
+    if(arr === null || undefined ){
+        return <Navigate to="/login" state={{ from: location }} replace />; 
+    }
+
     const currentUser = Object.values(arr.roles);
 
    
-    // Nếu người dùng chưa đăng nhập, chuyển hướng đến trang đăng nhập
-    if (!currentUser) {
-        return <Navigate to="/login" state={{ from: location }} replace />;
-    }
+    // // Nếu người dùng chưa đăng nhập, chuyển hướng đến trang đăng nhập
+    // if (!currentUser) {
+    //     return <Navigate to="/login" state={{ from: location }} replace />;
+    // }
     const hasRoles = allowedRoles.some((role) => currentUser.includes(role));
     // Nếu vai trò hiện tại không được phép truy cập, chuyển hướng về trang không có quyền truy cập
     if (allowedRoles.length > 0 && !hasRoles) {

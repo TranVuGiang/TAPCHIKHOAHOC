@@ -19,6 +19,7 @@ function App() {
                 if (arr.token && arr.token.length > 10) {
                     try {
                         const response = await authService.checkToken(arr.token);
+                        console.log(response)
                         if (!response.success) {
                             localStorage.removeItem('currentUser');
                         }

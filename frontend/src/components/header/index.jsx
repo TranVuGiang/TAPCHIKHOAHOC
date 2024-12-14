@@ -1,5 +1,5 @@
 import useMediaQuery from '@/hooks/useMediaQuery';
-import { Bars3Icon, MagnifyingGlassIcon, UserIcon, XMarkIcon } from '@heroicons/react/24/solid';
+import { Bars3Icon, UserIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -181,9 +181,8 @@ function Header() {
                             </button>
                         )}
 
-                        {/* Search and Login */}
                         <div className="flex items-center space-x-3">
-                            {/* Search Icon */}
+                            {/* Search Icon
                             <div className="relative flex justify-center items-center">
                                 <button
                                     onClick={() => setShowSearch(!showSearch)}
@@ -196,7 +195,6 @@ function Header() {
                                     )}
                                 </button>
 
-                                {/* Search Input */}
                                 {showSearch && (
                                     <div className="absolute right-0 w-48">
                                         <input
@@ -207,7 +205,7 @@ function Header() {
                                         <MagnifyingGlassIcon className="h-5 w-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2" />
                                     </div>
                                 )}
-                            </div>
+                            </div> */}
 
                             {/* User Icon with Dropdown */}
                             <div className="group relative">

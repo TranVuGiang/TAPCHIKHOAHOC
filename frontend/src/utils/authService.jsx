@@ -154,7 +154,7 @@ export const authService = {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify( pageSize, totalPage)
+            body: JSON.stringify(pageSize, totalPage),
         });
         if (!response.ok) {
             const error = await response.json();
@@ -163,13 +163,15 @@ export const authService = {
         return response.json();
     },
     //getAllDanhMuc mọi thời gian
-    getAllDanhMucByTime: async () => {
+    getAllDanhMucByTime: async (token) => {
         const response = await fetch(`${API_URL}/api/danhmuc/all`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
+            body: JSON.stringify(token)
         });
+
         if (!response.ok) {
             const error = await response.json();
             throw new Error(error.message || 'Không thể load danh mục');
@@ -459,5 +461,121 @@ export const authService = {
             throw new Error(error.message || 'Lỗi không thể thêm baibao');
         }
         return response.json();
-    }
+    },
+    // load User by Admin
+    loadUserByAdmin: async (token) => {
+        const response = await fetch(`${API_URL}/api/admin/get/user`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(token),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Lỗi không thể load user');
+        }
+        return response.json();
+    },
+    loadUserByAdminPhanTrang: async (token, page, size) => {
+        const response = await fetch(`${API_URL}/api/admin/get/user?page=${page}&size=${size}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token }),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Lỗi không thể load user');
+        }
+        return response.json();
+    },
+    loadRoleByAdmin: async (token) => {
+        const response = await fetch(`${API_URL}/api/admin/get/role`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token }),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Lỗi');
+        }
+        return response.json();
+    },
+    addRolesByAdmin: async (token, taikhoanId, role) => {
+        const response = await fetch(`${API_URL}/api/admin/add/user/role`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(token, taikhoanId, role),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            console.log(error);
+
+            throw new Error(error || 'Lỗi');
+        }
+        return response.json();
+    },
+    removeRolesByAdmin: async (token, taikhoanId, role) => {
+        const response = await fetch(`${API_URL}/api/admin/remove/user/role`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(token, taikhoanId, role),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            console.log(error);
+
+            throw new Error(error || 'Lỗi không thể xóa');
+        }
+        return response.json();
+    },
+    updateStatusUser: async (token, status, taikhoanId) => {
+        const response = await fetch(`${API_URL}/api/admin/update/user/status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(token, status, taikhoanId),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Lỗi không thể xóa');
+        }
+        return response.json();
+    },
+    loadQC: async () => {
+        const response = await fetch(`${API_URL}/bgqc/all`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Lỗi không thể xóa');
+        }
+        return response.json();
+    },
+
+    taoHopDong: async (bgqcid) => {
+        const response = await fetch(`${API_URL}/contract/create?bgqcid=${bgqcid}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Lỗi tạo hợp đồng');
+        }
+        return response.json();
+    },
 };

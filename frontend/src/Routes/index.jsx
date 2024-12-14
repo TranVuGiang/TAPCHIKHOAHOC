@@ -17,6 +17,7 @@ const publicRoutes = [
     { path: '/home/danhmuc', component: Components.Category },
     { path: '/home/otp', component: Components.ConfirmOTP, layout: NoneLayouts },
     { path: '/home/dang-ky-quang-cao', component: Components.AdRegistrationForm, layout: HeaderOnly },
+    // { path: '/home/test-voice', component: VoiceSearch, layout: NoneLayouts },
 ];
 
 // Routes được bảo vệ (cần xác thực)
@@ -38,6 +39,11 @@ const privateRoutes = [
     {
         path: '/home/option_advertisement',
         component: Components.Advertisement,
+        roles: ['PARTNER'], // Chỉ admin và đối tác quảng cáo mới truy cập được
+    },
+    {
+        path: '/home/option_advertisement/:slug',
+        component: Components.ChiTietQuangCao,
         roles: ['PARTNER'], // Chỉ admin và đối tác quảng cáo mới truy cập được
     },
     {

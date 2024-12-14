@@ -21,6 +21,7 @@ export const AdRegistrationForm = lazy(() => import("@/pages/formadvertisement/i
 export const Category = lazy(() => import("@/pages/danhmuc/index.jsx"));
 export const AdminDashboard = lazy(() => import("@/pages/admin/index.jsx"));
 export const ConfirmOTP = lazy(() => import("@/pages/otp/index.jsx"));
+export const ChiTietQuangCao = lazy(() => import("@/pages/advertismentDetail/index.jsx"));
 // Protected Pages
 export const TacGiaDashboard = lazy(() => import("@/pages/submitPost"));
 export const DangXuLy = lazy(() => import("@/pages/dang_xu_ly"));
