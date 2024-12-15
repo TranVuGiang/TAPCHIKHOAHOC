@@ -8,6 +8,7 @@ target/
 *.log
 *.properties
 
+
 ### STS ###
 .apt_generated
 .classpath

@@ -1,4 +1,7 @@
 {
+<<<<<<< Updated upstream
   "CodeGPT.apiKey": "CodeGPT Plus Beta",
+=======
+>>>>>>> Stashed changes
   "java.compile.nullAnalysis.mode": "automatic"
 }
