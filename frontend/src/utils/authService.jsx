@@ -1,6 +1,6 @@
 // src/services/authService.js
 
-const API_URL = 'https://congnghetoday.click';
+const API_URL = 'http://localhost:9000';
 export const authService = {
     // Login user
     login: async (username, password) => {
@@ -572,7 +572,7 @@ export const authService = {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(token)
+            body: JSON.stringify(token),
         });
         if (!response.ok) {
             const error = await response.json();
@@ -595,13 +595,13 @@ export const authService = {
         }
         return response.json();
     },
-    taoThanhToan: async (productName, description, price, token, hopdong_id) => {
+    taoThanhToan: async (productName, description, price, token, hopdong_id, bgqcId) => {
         const response = await fetch(`${API_URL}/order/create`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(productName, description, price, token, hopdong_id),
+            body: JSON.stringify({ productName, description, price, token, hopdong_id, bgqcId }),
         });
         if (!response.ok) {
             const error = await response.json();
@@ -670,7 +670,7 @@ export const authService = {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify( {token} ),
+            body: JSON.stringify({ token }),
         });
         if (!response.ok) {
             const error = await response.json();
@@ -684,7 +684,7 @@ export const authService = {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify( {token} ),
+            body: JSON.stringify({ token }),
         });
         if (!response.ok) {
             const error = await response.json();

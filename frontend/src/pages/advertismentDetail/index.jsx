@@ -1,4 +1,5 @@
 import { authService } from '@/utils/authService';
+// import { log } from 'console';
 import { AlertCircle, Calendar, Check, FileCodeIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -13,30 +14,26 @@ export default function ChiTietQuangCao() {
 
     // Mapping of ad placement details
     const adPlanDetails = {
-        '1': {
+        1: {
             fullName: 'Vị trí Quảng Cáo Cuối Trang',
             benefits: [
                 'Quảng cáo hiển thị tại vị trí cuối trang',
                 'Tiếp cận người dùng sau khi xem nội dung',
-                'Vị trí hiển thị ổn định'
-            ]
+                'Vị trí hiển thị ổn định',
+            ],
         },
-        '2': {
+        2: {
             fullName: 'Vị trí Quảng Cáo Popup',
-            benefits: [
-                'Quảng cáo hiển thị dạng popup',
-                'Thu hút chú ý người dùng',
-                'Hiệu ứng xuất hiện nổi bật'
-            ]
+            benefits: ['Quảng cáo hiển thị dạng popup', 'Thu hút chú ý người dùng', 'Hiệu ứng xuất hiện nổi bật'],
         },
-        '3': {
+        3: {
             fullName: 'Vị trí Quảng Cáo Đầu Trang',
             benefits: [
                 'Quảng cáo hiển thị ngay đầu trang',
                 'Tiếp cận người dùng ngay khi vào trang',
-                'Vị trí ưu tiên nhất'
-            ]
-        }
+                'Vị trí ưu tiên nhất',
+            ],
+        },
     };
 
     useEffect(() => {
@@ -49,12 +46,12 @@ export default function ChiTietQuangCao() {
 
         // Get advertisement information from navigation state
         const advertisementData = location.state.quangcao;
-        
+
         // Enhance the advertisement data with full details
         const enhancedQuangcao = {
             ...advertisementData,
             fullName: adPlanDetails[advertisementData.bgqcId]?.fullName || advertisementData.tengoi,
-            benefits: adPlanDetails[advertisementData.bgqcId]?.benefits || []
+            benefits: adPlanDetails[advertisementData.bgqcId]?.benefits || [],
         };
 
         setQuangcao(enhancedQuangcao);
@@ -73,16 +70,16 @@ export default function ChiTietQuangCao() {
                 token: nguoiDung.token,
                 bgqcid: bgqcid,
             });
-            if (resp.data && resp.data.bgqc) {
-                resp.data.bgqc.forEach((item) => {
-                    taoThanhToan(
-                        'ADS - ' + item.songay + ' Days',
-                        item.tengoi,
-                        item.giatien,
-                        resp.data.hopdong_id,
-                        nguoiDung.token
-                    );
-                });
+            console.log('Tạo hợp đồng thành công:', resp);
+            if (resp.data) {
+                taoThanhToan(
+                    'ADS - ' + resp.data.bangGiaQC.songay + ' Days',
+                    resp.data.bangGiaQC.tengoi,
+                    resp.data.bangGiaQC.giatien,
+                    nguoiDung.token,
+                    resp.data.hopDong.hopdong_id,
+                    resp.data.bangGiaQC.bgqcId,
+                );
             }
         } catch (error) {
             console.error('Lỗi tạo hợp đồng:', error);
@@ -92,11 +89,13 @@ export default function ChiTietQuangCao() {
         }
     };
 
-    const taoThanhToan = async (productName, description, price, hopdong_id, token) => {
+    const taoThanhToan = async (productName, description, price, token, hopdong_id, bgqcId) => {
         setIsLoading(true);
+
         try {
-            const resp = await authService.taoThanhToan(productName, description, price, hopdong_id, token);
+            const resp = await authService.taoThanhToan(productName, description, price, token, hopdong_id, bgqcId);
             window.location.href = resp.data.checkoutData.checkoutUrl;
+            console.log('Tạo thanh toán thành công:', resp);
         } catch (error) {
             console.error('Lỗi tạo thanh toán:', error);
             setError('Không thể tạo thanh toán. Vui lòng thử lại.');
@@ -169,7 +168,7 @@ export default function ChiTietQuangCao() {
                         )}
                         <button
                             className="w-full flex items-center justify-center bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition duration-300"
-                            onClick={() => taohopdong(quangcao.banggiaqc_id)}
+                            onClick={() => taohopdong(quangcao.bgqcId)}
                         >
                             <FileCodeIcon className="mr-2" size={20} />
                             Tạo Hợp Đồng Quảng Cáo
