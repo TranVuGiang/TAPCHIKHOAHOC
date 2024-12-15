@@ -169,7 +169,7 @@ export const authService = {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(token)
+            body: JSON.stringify(token),
         });
 
         if (!response.ok) {
@@ -551,12 +551,13 @@ export const authService = {
         }
         return response.json();
     },
-    loadQC: async () => {
-        const response = await fetch(`${API_URL}/bgqc/all`, {
-            method: 'GET',
+    loadQC: async (token) => {
+        const response = await fetch(`${API_URL}/api/bgqc/get/all`, {
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
+            body: JSON.stringify(token),
         });
         if (!response.ok) {
             const error = await response.json();

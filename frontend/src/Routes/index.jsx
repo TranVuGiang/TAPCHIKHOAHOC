@@ -17,6 +17,21 @@ const publicRoutes = [
     { path: '/home/danhmuc', component: Components.Category },
     { path: '/home/otp', component: Components.ConfirmOTP, layout: NoneLayouts },
     { path: '/home/dang-ky-quang-cao', component: Components.AdRegistrationForm, layout: HeaderOnly },
+    {
+        path: '/home/option_advertisement/:slug',
+        component: Components.ChiTietQuangCao,
+        layout: HeaderOnly,
+    },
+    {
+        path: '/home/payment',
+        component: Components.PaymentPage,
+        layout: HeaderOnly,
+    },
+    {
+        path: '/home/option_advertisement',
+        component: Components.Advertisement,
+        layout: HeaderOnly,
+    },
     // { path: '/home/test-voice', component: VoiceSearch, layout: NoneLayouts },
 ];
 
@@ -36,27 +51,14 @@ const privateRoutes = [
         layout: HeaderOnly,
         roles: ['CENSOR'], //Kiểm duyệt
     },
-    {
-        path: '/home/option_advertisement',
-        component: Components.Advertisement,
-        roles: ['PARTNER'], // Chỉ admin và đối tác quảng cáo mới truy cập được
-    },
-    {
-        path: '/home/option_advertisement/:slug',
-        component: Components.ChiTietQuangCao,
-        roles: ['PARTNER'], // Chỉ admin và đối tác quảng cáo mới truy cập được
-    },
+
     {
         path: '/home/profile_user',
         component: Components.UserDashboard,
         layout: NoneLayouts,
         roles: ['CUSTOMER', 'ADMIN', 'AUTHOR', 'EDITOR', 'CENSOR', 'PARTNER'], //READER
     },
-    {
-        path: '/home/payment',
-        component: Components.PaymentPage,
-        roles: ['PARTNER'], // Chỉ admin và đối tác quảng cáo mới truy cập được
-    },
+
     {
         path: '/home/TacGiaDashboard/*',
         component: Components.TacGiaDashboard,
@@ -72,4 +74,3 @@ const privateRoutes = [
 ];
 
 export { privateRoutes, publicRoutes };
-
