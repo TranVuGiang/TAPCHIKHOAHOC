@@ -29,19 +29,40 @@ const App = () => {
             }
         };
         loadToken();
+        // handleLike()
     }, []);
 
+    const handleLike = async () => {
+        if (!articles) return;
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (currentUser === null || undefined) {
+            return;
+        }
+
+        try {
+            const response = await authService.likeBaibao({
+                token: currentUser.token,
+                baibaoId: articles.baibaoId,
+                status: "",
+            });
+            console.log(response);
+        } catch (error) {
+            console.log(error);
+        }
+    };
     // Fetch categories
     useEffect(() => {
         const fetchCategories = async () => {
             try {
+                let response = [];
                 setLoading(true);
                 const currentUser = JSON.parse(localStorage.getItem('currentUser'));
                 if (!currentUser) {
-                    throw new Error('Không tìm thấy thông tin người dùng');
+                    response = await authService.getAllDanhMuc({});
+                } else {
+                    response = await authService.getAllDanhMuc({ token: currentUser.token });
                 }
-
-                const response = await authService.getAllDanhMuc({ token: currentUser.token });
+                console.log(response);
                 setCategories(response.data.data || []);
             } catch (err) {
                 console.error('Lỗi khi tải danh mục:', err);
@@ -59,7 +80,7 @@ const App = () => {
         const fetchArticles = async () => {
             try {
                 setLoading(true);
-                
+
                 // Kiểm tra điều kiện
                 if (!magazineSlug || categories.length === 0) {
                     console.log('Không thể fetch bài báo: Thiếu dữ liệu cần thiết.');
@@ -67,9 +88,7 @@ const App = () => {
                 }
 
                 // Tìm danh mục
-                const selectedCategory = categories.find((category) => 
-                    createUrlSlug(category.tieude) === magazineSlug
-                );
+                const selectedCategory = categories.find((category) => createUrlSlug(category.tieude) === magazineSlug);
 
                 if (!selectedCategory) {
                     console.log('Không tìm thấy danh mục phù hợp.');
@@ -77,9 +96,7 @@ const App = () => {
                 }
 
                 // Tìm bài báo
-                const dataBaiBao = selectedCategory?.baibao?.find((item) => 
-                    createUrlSlug(item.tieude) === articleSlug
-                );
+                const dataBaiBao = selectedCategory?.baibao?.find((item) => createUrlSlug(item.tieude) === articleSlug);
 
                 if (dataBaiBao) {
                     setArticles(dataBaiBao);

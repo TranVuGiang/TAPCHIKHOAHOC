@@ -1,5 +1,7 @@
 import HeaderOnly from '@/layouts/HeaderOnly';
 import NoneLayouts from '@/layouts/NoneLayouts';
+import CancelOrderPage from '@/pages/paymentcheck';
+import OrderSuccessPage from '@/pages/paymentsuccess';
 import * as Components from '@/Routes/lazyComponents';
 
 // Public Route
@@ -16,7 +18,7 @@ const publicRoutes = [
     { path: '/home/introduce', component: Components.Introduce },
     { path: '/home/danhmuc', component: Components.Category },
     { path: '/home/otp', component: Components.ConfirmOTP, layout: NoneLayouts },
-    { path: '/home/dang-ky-quang-cao', component: Components.AdRegistrationForm, layout: HeaderOnly },
+
     // { path: '/home/test-voice', component: VoiceSearch, layout: NoneLayouts },
 ];
 
@@ -46,6 +48,23 @@ const privateRoutes = [
         component: Components.ChiTietQuangCao,
         roles: ['PARTNER'], // Chỉ admin và đối tác quảng cáo mới truy cập được
     },
+    {
+        path: '/order/cancel',
+        component: CancelOrderPage,
+        roles: ['PARTNER'], // Chỉ admin và đối tác quảng cáo mới truy cập được
+    },
+    {
+        path: '/order/success',
+        component: OrderSuccessPage,
+        roles: ['PARTNER'], // Chỉ admin và đối tác quảng cáo mới truy cập được
+    },
+    {
+        path: '/home/dang-ky-quang-cao',
+        component: Components.AdRegistrationForm,
+        layout: HeaderOnly,
+        roles: ['PARTNER'],
+    },
+
     {
         path: '/home/profile_user',
         component: Components.UserDashboard,

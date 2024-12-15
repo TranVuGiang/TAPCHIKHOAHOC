@@ -28,3 +28,4 @@ export const DangXuLy = lazy(() => import("@/pages/dang_xu_ly"));
 export const CensorDashboard = lazy(() => import("@/pages/censor"));
 export const UserDashboard = lazy(() => import("@/pages/user"));
 export const PaymentPage = lazy(() => import("@/pages/pay/index.jsx"));
+export const PaymentStatusPage = lazy(() => import("@/pages/paymentcheck/index.jsx"));

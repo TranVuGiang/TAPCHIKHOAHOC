@@ -169,7 +169,22 @@ export const authService = {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(token)
+            body: JSON.stringify(token),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Không thể load danh mục');
+        }
+        return response.json();
+    },
+    getAllDanhMucByTimePhanTrang: async (token, page, size) => {
+        const response = await fetch(`${API_URL}/api/danhmuc/all?page=${page}&size=${size}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(token),
         });
 
         if (!response.ok) {
@@ -551,12 +566,13 @@ export const authService = {
         }
         return response.json();
     },
-    loadQC: async () => {
-        const response = await fetch(`${API_URL}/bgqc/all`, {
-            method: 'GET',
+    loadQC: async (token) => {
+        const response = await fetch(`${API_URL}/api/bgqc/get/all`, {
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
+            body: JSON.stringify(token)
         });
         if (!response.ok) {
             const error = await response.json();
@@ -565,16 +581,114 @@ export const authService = {
         return response.json();
     },
 
-    taoHopDong: async (bgqcid) => {
-        const response = await fetch(`${API_URL}/contract/create?bgqcid=${bgqcid}`, {
+    taoHopDong: async (token, bgqcid) => {
+        const response = await fetch(`${API_URL}/contract/create`, {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(token, bgqcid),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Lỗi tạo hợp đồng');
+        }
+        return response.json();
+    },
+    taoThanhToan: async (productName, description, price, token, hopdong_id) => {
+        const response = await fetch(`${API_URL}/order/create`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(productName, description, price, token, hopdong_id),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Lỗi tạo thanh toán');
+        }
+        return response.json();
+    },
+    checkThanhToan: async () => {
+        const response = await fetch(`${API_URL}/order/cancel`, {
+            method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
             },
         });
         if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.message || 'Lỗi tạo hợp đồng');
+            throw new Error(error.message || 'Lỗi tạo thanh toán');
+        }
+        return response.json();
+    },
+    loadThongkeByAdmin: async (token) => {
+        const response = await fetch(`${API_URL}/api/admin/get/thongke`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(token),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Lỗi không thể fetch Thống kê');
+        }
+        return response.json();
+    },
+    loadBaibaoByAdmin: async (token) => {
+        const response = await fetch(`${API_URL}/api/admin/get/baibao`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token }),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Lỗi không thể fetch bài báo theo admin');
+        }
+        return response.json();
+    },
+    updateStatusBaiBaoByAdmin: async (token, baibaoId, status) => {
+        const response = await fetch(`${API_URL}/api/admin/update/baibao/status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token, baibaoId, status }),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Lỗi không thể update bài báo');
+        }
+        return response.json();
+    },
+    baibaoDathich: async (token) => {
+        const response = await fetch(`${API_URL}/api/like/get/user/like`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify( {token} ),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Lỗi không thể load bài báo đã thích');
+        }
+        return response.json();
+    },
+    baibaoDaXem: async (token) => {
+        const response = await fetch(`${API_URL}/api/like/get/user/daxem`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify( {token} ),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Lỗi không thể load bài báo đã xem');
         }
         return response.json();
     },

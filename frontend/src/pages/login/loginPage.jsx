@@ -115,7 +115,7 @@ function LoginPage() {
         } finally {
             setIsLoading(false);
         }
-    };
+    };  
     const [loadingErrors, setLoadingErrors] = useState(false);
 
     return (
@@ -124,7 +124,6 @@ function LoginPage() {
                     <div className="md:w-1/2 px-10 pt-7">
                         <h2 className="font-bold text-2xl text-sky-700 text-center">Đăng nhập</h2>
                         <p className="text-sm mt-4 text-sky-700 text-center">Nếu đã có tài khoản, hãy đăng nhập</p>
-
                         {errors.server && (
                             <ErrorDialog
                                 isOpen={loadingErrors}

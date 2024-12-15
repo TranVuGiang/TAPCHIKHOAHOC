@@ -23,8 +23,9 @@ const SocialInteraction = ({ articles }) => {
             // Kiểm tra điều kiện articles không phải null và undefined
             if (articles) {
                 setChitietbaibao(articles);
+                console.log(articles);
                 // Sử dụng optional chaining để tránh lỗi
-                setLikeCount(articles.thich?.thich || '0');
+                setLikeCount(Number(articles.thich?.thich) || '0');
                 setDathich(articles.thich?.dathich || false);
                 setBinhluan(articles.binhluans || null);
                 setIsLoading(false);
@@ -43,7 +44,6 @@ const SocialInteraction = ({ articles }) => {
         if (currentUser === null || undefined) {
             return;
         }
-
         let status = null;
         if (dathich) {
             status = '0';
@@ -103,7 +103,7 @@ const SocialInteraction = ({ articles }) => {
         } catch (error) {
             console.log(error);
         }
-    }
+    };
     // Hiển thị loading nếu đang tải dữ liệu
     if (isLoading) {
         return <div className="text-center py-4">Đang tải dữ liệu...</div>;

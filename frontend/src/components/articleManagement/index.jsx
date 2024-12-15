@@ -1,4 +1,5 @@
 import { authService } from '@/utils/authService';
+import { createUrlSlug } from '@/utils/urlUtils';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ArticleDetailModal from '../chitietbaibao';
@@ -6,6 +7,7 @@ import SubmissionForm from '../submissionForm';
 
 const QuanLyBaiViet = () => {
     const [baibaos, setBaibao] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
     const [selectedStatus, setSelectedStatus] = useState('all');
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(6);
@@ -26,6 +28,7 @@ const QuanLyBaiViet = () => {
 
     const loadDataUser = async () => {
         try {
+            setIsLoading(true);
             const current = JSON.parse(localStorage.getItem('currentUser'));
             const token = current.token;
             const response = await authService.loadBaibaoByUser(token);
@@ -42,6 +45,8 @@ const QuanLyBaiViet = () => {
             });
         } catch (error) {
             console.log(error.message || 'Lỗi khi tải bài viết');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -56,7 +61,6 @@ const QuanLyBaiViet = () => {
         5: { text: 'Cần chỉnh sửa', color: 'bg-amber-100 text-amber-800' },
         6: { text: 'Không chấp nhận', color: 'bg-red-100 text-red-800' },
         7: { text: 'Đã đăng', color: 'bg-purple-100 text-purple-800' },
-
     };
 
     // Cập nhật danh sách options cho select
@@ -70,7 +74,6 @@ const QuanLyBaiViet = () => {
         { value: '5', label: 'Cần chỉnh sửa' },
         { value: '6', label: 'Không chấp nhận' },
         { value: '7', label: 'Đã đăng' },
-
     ];
 
     // Lọc bài viết theo trạng thái
@@ -100,6 +103,13 @@ const QuanLyBaiViet = () => {
         navigate('/home/TacGiaDashboard/submission', { state: { baibao: item } });
         return <SubmissionForm />;
     };
+
+    const handleArticleClick = (tendanhmuc, tieude) => {
+        const magazineSlug = createUrlSlug(tendanhmuc);
+        const articleSlug = createUrlSlug(tieude);
+        navigate(`/home/${magazineSlug}/${articleSlug}`);
+    };
+
 
     // Component phân trang
     const Pagination = () => (
@@ -153,10 +163,17 @@ const QuanLyBaiViet = () => {
             </div>
         </div>
     );
-
+    const LoadingSpinner = () => {
+        return (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-20">
+                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500" />
+            </div>
+        );
+    };
 
     return (
-        <div className="bg-white rounded-lg shadow-lg p-6">
+        <div className="bg-white w-full rounded-lg shadow-lg p-6">
+            {isLoading && <LoadingSpinner />}
             <h2 className="text-2xl font-bold mb-6">Quản Lý Bài Viết</h2>
 
             {/* Status Filter */}
@@ -222,7 +239,7 @@ const QuanLyBaiViet = () => {
                                 scope="col"
                                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                             >
-                                Chỉnh sửa
+                                Thao tác
                             </th>
                         </tr>
                     </thead>
@@ -256,13 +273,16 @@ const QuanLyBaiViet = () => {
                                         </a>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <button
-                                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full cursor-pointer hover:text-space-300`}
-                                            onClick={() => handleUpdate(article)}
-                                        >
-                                            Chỉnh sửa
-                                        </button>
+                                        {article.status === 7 && (
+                                            <button
+                                                className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full cursor-pointer hover:text-space-300`}
+                                                onClick={() => handleArticleClick(article.tendanhmuc, article.tieude)}
+                                            >
+                                                Xem bài báo
+                                            </button>
+                                        )}
                                     </td>
+                                    
                                 </tr>
                             );
                         })}

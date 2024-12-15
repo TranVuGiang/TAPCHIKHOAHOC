@@ -86,7 +86,7 @@ const TacGiaDashboard = () => {
 
             {/* Main Content với thêm transition */}
             <main className="flex-1 p-4 md:p-8 transition-all duration-300 ease-in-out">
-                <div className="max-w-7xl mx-auto">
+                <div className="w-full mx-auto">
                     {renderContent()}
                 </div>
             </main>

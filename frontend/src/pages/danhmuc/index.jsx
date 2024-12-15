@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 const Category = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [danhmucs, setDanhmucs] = useState([]);
+    const [danhmucs2, setDanhmucs2] = useState([]);
     const [isListening, setIsListening] = useState(false);
 
     // Search and Filter States
@@ -16,7 +17,12 @@ const Category = () => {
     const [selectedWeek, setSelectedWeek] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const articlesPerPage = 4;
-
+    const [pagination, setPagination] = useState({
+        pageNumber: 0,
+        totalPage: 0,
+        pageSize: 6,
+        totalElements: 0,
+    });
     useEffect(() => {
         loadDanhMuc();
     }, []);
@@ -25,7 +31,20 @@ const Category = () => {
         try {
             setIsLoading(true);
             const response = await authService.getAllDanhMucByTime({});
+
+            const response2 = await authService.getAllDanhMucByTimePhanTrang(
+                { token: '' },
+                '0',
+                response.data.totalElements,
+            );
             setDanhmucs(response.data.data);
+            setDanhmucs2(response2.data.data);
+            setPagination({
+                pageNumber: 0,
+                totalPage: response.data.totalPage,
+                pageSize: response.data.pageSize,
+                totalElements: response.data.totalElements,
+            });
         } catch (error) {
             console.error('Lỗi tải danh mục:', error.message);
         } finally {
@@ -33,18 +52,36 @@ const Category = () => {
         }
     };
 
+    const loadDanhMucPhanTrang = async (page, size) => {
+        setIsLoading(true);
+        try {
+            const response2 = await authService.getAllDanhMucByTimePhanTrang({ token: '' }, page, size);
+
+            setDanhmucs(response2.data.data);
+            setPagination((prevState) => ({
+                ...prevState,
+                pageNumber: page,
+            }));
+        } catch (error) {
+            console.log(error.message || 'Đã có lỗi xảy ra khi tải trang');
+        } finally {
+            setIsLoading(false);
+        }
+    };
     // Filtering Logic
-    const filteredDanhmucs = danhmucs.filter((danhmuc) => {
-        const matchesSearch =
-            danhmuc.tieude.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            danhmuc.mota.toLowerCase().includes(searchQuery.toLowerCase());
+    const filteredDanhmucs = searchQuery
+        ? danhmucs2.filter((danhmuc) => {
+              const matchesSearch =
+                  danhmuc.tieude.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                  danhmuc.mota.toLowerCase().includes(searchQuery.toLowerCase());
 
-        const matchesTopic = selectedTopic ? danhmuc.chude === selectedTopic : true;
+              const matchesTopic = selectedTopic ? danhmuc.chude === selectedTopic : true;
 
-        const matchesWeek = selectedWeek ? danhmuc.tuan.toString() === selectedWeek : true;
+              const matchesWeek = selectedWeek ? danhmuc.tuan.toString() === selectedWeek : true;
 
-        return matchesSearch && matchesTopic && matchesWeek;
-    });
+              return matchesSearch && matchesTopic && matchesWeek;
+          })
+        : danhmucs;
 
     // Pagination
     const currentDanhmucs = filteredDanhmucs.slice((currentPage - 1) * articlesPerPage, currentPage * articlesPerPage);
@@ -93,6 +130,18 @@ const Category = () => {
             alert('Trình duyệt của bạn không hỗ trợ nhận diện giọng nói!');
         }
     };
+
+    const handlePreviousPage = () => {
+        if (pagination.pageNumber > 0) {
+            loadDanhMucPhanTrang(pagination.pageNumber - 1, '6');
+        }
+    };
+
+    const handleNextPage = () => {
+        if (pagination.pageNumber < pagination.totalPage - 1) {
+            loadDanhMucPhanTrang(pagination.pageNumber + 1, '6');
+        }
+    };
     return (
         <div className="max-w-7xl mx-auto px-4 py-8 bg-gray-50 min-h-screen">
             <div className="space-y-8">
@@ -133,7 +182,7 @@ const Category = () => {
                                 disabled={isListening}
                             >
                                 {isListening ? (
-                                     <MicrophoneIcon className="w-5 h-5" />
+                                    <MicrophoneIcon className="w-5 h-5" />
                                 ) : (
                                     <MicrophoneIcon className="w-5 h-5" />
                                 )}
@@ -214,49 +263,72 @@ const Category = () => {
                 </div>
 
                 {/* Pagination */}
-                {filteredDanhmucs.length > articlesPerPage && (
-                    <div className="flex justify-center items-center gap-2 mt-8">
-                        <button
-                            onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-                            disabled={currentPage === 1}
-                            className={`p-2 rounded-lg border ${
-                                currentPage === 1
-                                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                    : 'bg-white hover:bg-gray-50 text-gray-700'
-                            }`}
-                        >
-                            <ChevronLeft className="w-5 h-5" />
-                        </button>
-                        {Array.from({ length: Math.ceil(filteredDanhmucs.length / articlesPerPage) }).map((_, i) => (
-                            <button
-                                key={i + 1}
-                                onClick={() => setCurrentPage(i + 1)}
-                                className={`min-w-[40px] h-10 rounded-lg ${
-                                    currentPage === i + 1
-                                        ? 'bg-blue-600 text-white'
-                                        : 'bg-white hover:bg-gray-50 text-gray-700'
-                                }`}
-                            >
-                                {i + 1}
-                            </button>
-                        ))}
-                        <button
-                            onClick={() =>
-                                setCurrentPage((prev) =>
-                                    Math.min(Math.ceil(filteredDanhmucs.length / articlesPerPage), prev + 1),
-                                )
+                <div className="flex justify-center items-center space-x-2 p-4">
+                    {/* Nút Previous */}
+                    <button
+                        onClick={handlePreviousPage}
+                        disabled={isLoading || pagination.pageNumber === 0}
+                        className={`
+                            p-2 border rounded-l 
+                            transition duration-200 ease-in-out
+                            flex items-center justify-center
+                            ${
+                                pagination.pageNumber === 0
+                                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                    : 'bg-white text-blue-500 hover:bg-blue-100'
                             }
-                            disabled={currentPage === Math.ceil(filteredDanhmucs.length / articlesPerPage)}
-                            className={`p-2 rounded-lg border ${
-                                currentPage === Math.ceil(filteredDanhmucs.length / articlesPerPage)
-                                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                    : 'bg-white hover:bg-gray-50 text-gray-700'
-                            }`}
+                            ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}
+                        `}
+                    >
+                        <ChevronLeft size={20} />
+                    </button>
+
+                    {/* Các nút số trang */}
+                    {[...Array(parseInt(pagination.totalPage))].map((_, index) => (
+                        <button
+                            key={index}
+                            onClick={() => {
+                                loadDanhMucPhanTrang(index, '6');
+                                console.log(index);
+                            }}
+                            disabled={isLoading}
+                            className={`
+                                px-4 py-2 border 
+                                transition duration-200 ease-in-out 
+                                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50
+                                active:scale-95 active:bg-blue-600 active:text-white
+                                ${
+                                    // Modify this condition to explicitly check for page 0 on initial load
+                                    pagination.pageNumber === index
+                                        ? 'bg-blue-500 text-white shadow-md'
+                                        : 'bg-white text-blue-500 hover:bg-blue-100 hover:shadow-sm'
+                                }
+                                ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}
+                            `}
                         >
-                            <ChevronRight className="w-5 h-5" />
+                            {index + 1}
                         </button>
-                    </div>
-                )}
+                    ))}
+
+                    {/* Nút Next */}
+                    <button
+                        onClick={handleNextPage}
+                        disabled={isLoading || pagination.pageNumber === pagination.totalPage - 1}
+                        className={`
+                            p-2 border rounded-r 
+                            transition duration-200 ease-in-out
+                            flex items-center justify-center
+                            ${
+                                pagination.pageNumber === pagination.totalPage - 1
+                                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                    : 'bg-white text-blue-500 hover:bg-blue-100'
+                            }
+                            ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}
+                        `}
+                    >
+                        <ChevronRight size={20} />
+                    </button>
+                </div>
             </div>
         </div>
     );
