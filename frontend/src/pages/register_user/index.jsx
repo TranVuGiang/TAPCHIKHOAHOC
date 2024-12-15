@@ -94,13 +94,13 @@ export default function RegisterUser() {
             }, 1500); // 1.5 second delay to show success message
         } catch (err) {
             setErrors({ general: err.data.data || 'Có lỗi xảy ra khi đăng ký' });
-            setLoadingErrors(true);
+            setLoadingErrors(true)
             console.log(err.data.data);
         } finally {
             setLoading(false);
         }
     };
-    const [loadingErrors, setLoadingErrors] = useState(false);
+    const [loadingErrors, setLoadingErrors] = useState(false)
     const isValidEmail = (email) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
@@ -112,27 +112,16 @@ export default function RegisterUser() {
     };
 
     return (
-        <div className="min-h-screen bg-red-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-montserrat">
+        <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-montserrat">
             <div className="sm:mx-auto sm:w-full sm:max-w-2xl">
-                <h2 className="text-center text-3xl font-extrabold text-amber-200">Đăng ký tài khoản</h2>
-                <p className="mt-2 text-center text-sm text-yellow-50">Vui lòng điền đầy đủ thông tin bên dưới</p>
+                <h2 className="text-center text-3xl font-extrabold text-blue-800">Đăng ký tài khoản</h2>
+                <p className="mt-2 text-center text-sm text-gray-600">Vui lòng điền đầy đủ thông tin bên dưới</p>
             </div>
 
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-2xl">
                 <div className="bg-white py-8 px-4 shadow-lg sm:rounded-lg sm:px-10">
-                    {errors.general && (
-                        <ErrorDialog
-                            isOpen={loadingErrors}
-                            onClose={() => setLoadingErrors(false)}
-                            title={errors.general}
-                        />
-                    )}
-                    <SuccessDialog
-                        title={'Đăng ký thành công'}
-                        isOpen={success}
-                        onClose={() => setSuccess(false)}
-                        titleButton={'Tiếp tục'}
-                    />
+                    {errors.general && <ErrorDialog isOpen={loadingErrors} onClose={() => setLoadingErrors(false)} title={errors.general} />}
+                    <SuccessDialog title={'Đăng ký thành công'} isOpen={success} onClose={() => setSuccess(false)} titleButton={"Tiếp tục"}/>
                     <form className="space-y-6" onSubmit={handleSubmit}>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Cột 1 */}
@@ -262,7 +251,7 @@ export default function RegisterUser() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-amber-100 bg-red-700 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                             >
                                 {loading ? 'Đang đăng ký...' : 'Đăng ký'}
                             </button>

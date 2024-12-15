@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { authService } from '@/utils/authService';
 import { ErrorDialog, SuccessDialog } from '@/components/modalDialog';
+import { authService } from '@/utils/authService';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const OTPVerification = () => {
@@ -37,7 +37,7 @@ const OTPVerification = () => {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         // Allow alphanumeric characters and limit to 6 characters
-        const sanitizedValue = value.replace(/[^a-zA-Z0-9]/g, '').slice(0, 6).toUpperCase();
+        const sanitizedValue = value.replace(/[^a-zA-Z0-9]/g, '').slice(0, 6);
         
         setFormData((prev) => ({
             ...prev,
@@ -61,16 +61,12 @@ const OTPVerification = () => {
 
         setIsLoading(true);
         try {
-            const response = await authService.verify(formData.otp.trim());
-            
-            if (!response?.data?.success) {
-                throw new Error('Mã OTP không hợp lệ');
-            }
+            await authService.verify(formData.otp.trim());
 
             setShowSuccessDialog(true);
             
             setTimeout(() => {
-                navigate('/');
+                navigate('/home/login');
             }, 1500);
             
         } catch (error) {
@@ -83,23 +79,23 @@ const OTPVerification = () => {
         }
     };
 
-    // Handle resend OTP
-    const handleResendOTP = async () => {
-        try {
-            await authService.resendOTP();
-            setErrors((prev) => ({
-                ...prev,
-                server: 'Mã OTP mới đã được gửi thành công!',
-                isSuccess: true,
-            }));
-        } catch (error) {
-            setErrors((prev) => ({
-                ...prev,
-                server: 'Không thể gửi lại mã OTP. Vui lòng thử lại sau.',
-                isSuccess: false,
-            }));
-        }
-    };
+    // // Handle resend OTP
+    // const handleResendOTP = async () => {
+    //     try {
+    //         await authService.resendOTP();
+    //         setErrors((prev) => ({
+    //             ...prev,
+    //             server: 'Mã OTP mới đã được gửi thành công!',
+    //             isSuccess: true,
+    //         }));
+    //     } catch (error) {
+    //         setErrors((prev) => ({
+    //             ...prev,
+    //             server: 'Không thể gửi lại mã OTP. Vui lòng thử lại sau.',
+    //             isSuccess: false,
+    //         }));
+    //     }
+    // };
 
     return (
         <section className="min-h-screen flex items-center justify-center font-montserrat">
@@ -128,12 +124,13 @@ const OTPVerification = () => {
                     isOpen={showSuccessDialog}
                     onClose={() => setShowSuccessDialog(false)}
                     title="Xác thực OTP thành công"
+                    titleButton={"Tiếp tục"}
                 />
 
                 <form onSubmit={handleSubmit} className="mt-8">
                     <div className="mb-4">
                         <input
-                            className={`p-4 rounded-xl border w-full text-center text-xl uppercase
+                            className={`p-4 rounded-xl border w-full text-center text-xl
                                 tracking-widest font-mono
                                 focus:outline-none focus:border-sky-700
                                 ${errors.otp ? 'border-red-500' : ''}`}
@@ -162,7 +159,6 @@ const OTPVerification = () => {
                     <div className="mt-4 text-center">
                         <button
                             type="button"
-                            onClick={handleResendOTP}
                             className="text-sky-700 text-sm hover:underline"
                         >
                             Gửi lại mã OTP

@@ -86,7 +86,7 @@ const EditorDashboard = () => {
         { id: 3, name: 'TS. Trần Văn Z', expertise: 'Công nghệ', currentLoad: 3 }
     ];
 
-    // Status definitions
+    // Status definitions   
     const articleStatuses = {
         new: { label: 'Mới', color: 'bg-green-100 text-green-800' },
         reviewing: { label: 'Đang kiểm duyệt', color: 'bg-blue-100 text-blue-800' },

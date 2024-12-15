@@ -1,12 +1,14 @@
 import QuanLyBaiviet from '@/components/articleManagement';
 import NotificationComponent from '@/components/notification';
 import SubmissionForm from '@/components/submissionForm';
+import { authService } from '@/utils/authService';
+import { useEffect, useState } from 'react';
 import 'react-quill/dist/quill.snow.css';
 import { Link, useLocation } from 'react-router-dom';
 
 const TacGiaDashboard = () => {
     const location = useLocation();
-    
+    const [baibaos, setBaibaos] = useState([])
     // Function to check if current path matches the link
     const isActiveLink = (path) => {
         return location.pathname === path;
@@ -20,13 +22,30 @@ const TacGiaDashboard = () => {
         { label: 'Thông báo', path: '/home/TacGiaDashboard/notifications' }
     ];
 
+    useEffect(() => {
+        loadData()
+    }, [])
+
+    const loadData = async() => {
+       try {
+        const current = JSON.parse(localStorage.getItem('currentUser'));
+        const token = current.token;
+        const response = await authService.loadBaibaoByUser(token);
+        const data = response.data;
+        setBaibaos(data)
+       } catch (error) {
+        console.log(error);
+        
+       }
+    }
+
     const renderContent = () => {
         const path = location.pathname;
         
         if (path.includes('/submission')) {
             return <SubmissionForm />;
         } else if (path.includes('/management')) {
-            return <QuanLyBaiviet />;
+            return <QuanLyBaiviet/>;
         } else if (path.includes('/notifications')) {
             return <NotificationComponent />;
         } else {
