@@ -2,24 +2,20 @@ import { createUrlSlug } from '@/utils/urlUtils';
 import { ArrowRight, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-function MagazineCard({ weekNumber, issueNumber, publicationDate, title, excerpt, coverImage }) {
+function MagazineCard({ issueNumber, publicationDate, title, excerpt, coverImage }) {
     const navigate = useNavigate();
     const handleReadMore = () => {
-        try {
-            const slug = createUrlSlug(title);
-            navigate(`/home/${slug}`);
-        } catch (error) {
-            console.log(error);
-        }
+        const slug = createUrlSlug(title);
+        navigate(`/home/${slug}`);
     };
 
     return (
-        <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 h-[500px]">
+        <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
             {/* Image cover with issue number overlay */}
             <div className="relative">
                 <img loading="lazy" src={coverImage} alt={title} className="w-full h-[250px] object-cover" />
                 <div className="absolute top-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold">
-                    Tuần {weekNumber}: Số {issueNumber}
+                    {issueNumber}
                 </div>
             </div>
 
