@@ -1,11 +1,10 @@
-import React from 'react';
 
-const LoadingComponent = () => {
+const LoadingSpinner = () => {
   return (
-    <div className="flex items-center justify-center h-screen">
-      <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
-    </div>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-20">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500" />
+      </div>
   );
 };
 
-export default LoadingComponent;
+export default LoadingSpinner;

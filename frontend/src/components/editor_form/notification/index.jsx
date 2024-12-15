@@ -12,8 +12,9 @@ const Editor_Notification = () => {
         try {
             const current = JSON.parse(localStorage.getItem('currentUser'));
             const token = current.token;
-            const response = await authService.loadBaibaoByUser(token);
-            setBaibao(response.data.content);
+            const response = await authService.loadBaibaoForEditor(token);
+            console.log(response)
+            setBaibao(response.data.baibaos);
         } catch (error) {
             console.log(error.message || 'Lỗi khi tải bài viết');
         }

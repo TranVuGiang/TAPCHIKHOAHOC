@@ -8,14 +8,13 @@ function Editor_Editing() {
     const [reviewers, setReviewers] = useState([]);
     const [selectedBaibao, setSelectedBaibao] = useState(null);
     const [selectedReviewer, setSelectedReviewer] = useState('');
-    const [feedback, setFeedback] = useState('');
     const [showAssignModal, setShowAssignModal] = useState(false);
     const [showFeedbackModal, setShowFeedbackModal] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
-    const [selectedStatus, setSelectedStatus] = useState('all'); // Thêm state cho bộ lọc
     const [selectedArticle, setSelectedArticle] = useState(null);
     const [selectedKiemDuyetItem, setSelectedKiemDuyetItem] = useState(null);
     const [activeTab, setActiveTab] = useState('all');
+    const [isLoading, setIsLoading] = useState(false);
     useEffect(() => {
         console.log(filteredBaibaos);
 
@@ -31,6 +30,7 @@ function Editor_Editing() {
     }, []);
 
     const loadDataUser = async () => {
+        setIsLoading(true);
         try {
             const current = JSON.parse(localStorage.getItem('currentUser'));
             const token = current.token;
@@ -38,6 +38,8 @@ function Editor_Editing() {
             setBaibao(response.data.baibaos);
         } catch (error) {
             console.log(error.message || 'Lỗi khi tải bài viết');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -90,7 +92,13 @@ function Editor_Editing() {
     const getStatusText = (status) => {
         return STATUS_CONFIG[status] || { text: 'Unknown', color: 'bg-gray-100 text-gray-800' };
     };
-
+    const LoadingSpinner = () => {
+        return (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-20">
+                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500" />
+            </div>
+        );
+    };
     // Tách AssignReviewerModal thành component riêng
     const AssignReviewerModal = () => {
         const [localGhichu, setLocalGhichu] = useState('');
@@ -277,6 +285,7 @@ function Editor_Editing() {
 
     return (
         <div className="bg-white rounded-xl shadow-sm">
+            {isLoading && <LoadingSpinner />}
             <div className="p-6">
                 <h2 className="text-lg font-semibold text-gray-800 mb-6">Bài báo đang biên tập</h2>
                 {/* Tab Navigation */}
@@ -302,7 +311,6 @@ function Editor_Editing() {
                     ))}
                 </div>
 
-               
                 <div className="overflow-x-auto">
                     <table className="min-w-full">
                         <thead>
@@ -311,13 +319,13 @@ function Editor_Editing() {
                                     Tiêu đề
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Tác giả
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Người kiểm duyệt
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Trạng thái
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Thời gian
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Thao tác
@@ -328,12 +336,13 @@ function Editor_Editing() {
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                        {filteredBaibaos.map((item) => {
+                            {filteredBaibaos.map((item) => {
                                 const status = getStatusText(item.status);
 
                                 return (
                                     <tr key={item.id} className="hover:bg-gray-50">
                                         <td className="px-6 py-4 whitespace-nowrap">{item.tieude}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap">{item.taikhoans.hovaten}</td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             {item.status !== 0
                                                 ? item.kiemduyet.length > 0
@@ -354,11 +363,6 @@ function Editor_Editing() {
                                             </span>
                                         </td>
 
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {item.status !== 0 && item.status !== 1 && (
-                                                <span className="block">{item.lichsu || 'Chưa có'}</span>
-                                            )}
-                                        </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                                             <div className="flex space-x-2">
                                                 {item.status === 1 && (
@@ -395,7 +399,7 @@ function Editor_Editing() {
                                                             </button>
                                                         </div>
                                                     ))}
-                                                    
+                                                {item.status === 7 && <div className="text-gray-500">Đã đăng bài</div>}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm">

@@ -88,6 +88,7 @@ const SubmissionForm = () => {
     }, []);
 
     const handleSubmit = async (e) => {
+        setIsLoading(true)
         e.preventDefault();
 
         // Kiểm tra các trường bắt buộc
@@ -225,6 +226,8 @@ const SubmissionForm = () => {
                 message: error.response?.data?.message || 'Có lỗi xảy ra. Vui lòng thử lại.',
                 isError: true,
             });
+        } finally {
+            setIsLoading(true)
         }
     };
 
@@ -275,8 +278,18 @@ const SubmissionForm = () => {
             noidung: e,
         }));
     };
+
+    const LoadingSpinner = () => {
+        return (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-20">
+                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500" />
+            </div>
+        );
+    };
+
     return (
         <>
+            {isLoading && <LoadingSpinner />}
             <h2 className="text-2xl md:text-3xl font-bold mb-6">Nộp Bài Viết</h2>
             <ErrorDialog
                 title={error.message}

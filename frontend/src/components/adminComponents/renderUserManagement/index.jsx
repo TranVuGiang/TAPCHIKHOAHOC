@@ -1,11 +1,13 @@
 import { SuccessDialog } from '@/components/modalDialog';
 import { authService } from '@/utils/authService';
-import { AlertCircle, ChevronLeft, ChevronRight, Edit } from 'lucide-react';
+import { MicrophoneIcon } from '@heroicons/react/24/solid';
+import { AlertCircle, ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import PermissionManagementPopup from './capquyen';
 
 export const RenderUserManagement = () => {
     const [users, setUsers] = useState([]);
+    const [users2, setUsers2] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
@@ -33,14 +35,15 @@ export const RenderUserManagement = () => {
         setErrorMessage('');
         try {
             const resp = await authService.loadUserByAdmin({ token: token });
-             const resp2 = await authService.loadUserByAdminPhanTrang({ token: token , page: "0", size: resp.data.phantrang.totalElements});
-            console.log(resp2)
+            const resp2 = await authService.loadUserByAdminPhanTrang(token, 0, resp.data.phantrang.totalElements);
             setUsers(resp.data.data);
+            setUsers2(resp2.data.data);
             setPagination({
                 ...resp.data.phantrang,
                 pageNumber: 0,
             });
         } catch (error) {
+            console.log(error);
             setErrorMessage(error.message || 'Đã có lỗi xảy ra khi tải danh sách người dùng');
         } finally {
             setIsLoading(false);
@@ -158,12 +161,14 @@ export const RenderUserManagement = () => {
     //     setPermissions(permissions.filter((p) => p.code !== permissionToRemove.code));
     // };
 
-    const filterUser = users.filter((user) => {
-        const matchesSearch =
-            user.hovaten.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            user.email.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchesSearch;
-    });
+    const filteredUsers = searchQuery
+        ? users2.filter((user) => {
+              const matchesSearch =
+                  user.hovaten.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                  user.email.toLowerCase().includes(searchQuery.toLowerCase());
+              return matchesSearch;
+          })
+        : users;
 
     const handleVoiceSearch = () => {
         if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
@@ -227,20 +232,30 @@ export const RenderUserManagement = () => {
                     </div>
                 </div>
             )}
-            <div className="flex items-center space-x-2">
+            <div className="relative flex items-center space-x-4 p-4 bg-gray-100 rounded-lg shadow-sm">
+                {/* Icon tìm kiếm */}
+                <Search className="absolute left-10 top-1/2 transform -translate-y-1/2 text-gray-400 w-6 h-6" />
+
+                {/* Ô tìm kiếm */}
                 <input
                     type="text"
+                    placeholder="Tìm kiếm tiêu đề hoặc mô tả..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="p-2 border rounded"
-                    placeholder="Tìm kiếm..."
+                    onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                    }}
+                    className="w-full pl-12 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
                 />
+
+                {/* Nút voice search */}
                 <button
                     onClick={handleVoiceSearch}
-                    className="p-2 bg-blue-500 text-white rounded"
+                    className={`flex items-center justify-center w-10 h-10 rounded-full transition-all ${
+                        isListening ? 'bg-gray-300' : 'bg-blue-500 hover:bg-blue-600'
+                    } text-white shadow-md`}
                     disabled={isListening}
                 >
-                    {isListening ? 'Đang nghe...' : 'Tìm kiếm bằng giọng nói'}
+                    {isListening ? <MicrophoneIcon className="w-5 h-5" /> : <MicrophoneIcon className="w-5 h-5" />}
                 </button>
             </div>
             <div className="bg-white shadow-md rounded-lg overflow-x-auto">
@@ -253,12 +268,11 @@ export const RenderUserManagement = () => {
                             <th className="p-3 text-left">Số Điện Thoại</th>
                             <th className="p-3 text-left">Email</th>
                             <th className="p-3 text-center">Cấp quyền</th>
-                            <th className="p-3 text-center">Thao Tác</th>
                             <th className="p-3 text-center">Trạng thái</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {filterUser
+                        {filteredUsers
                             .slice() // Tạo một bản sao để tránh sửa đổi trực tiếp mảng ban đầu
                             .sort((a, b) => a.taikhoanId - b.taikhoanId) // Sắp xếp theo taikhoanId tăng dần
                             .map((user) =>
@@ -279,11 +293,7 @@ export const RenderUserManagement = () => {
                                                 Xem
                                             </button>
                                         </td>
-                                        <td className="p-3 flex justify-center space-x-2">
-                                            <button className="text-blue-500 hover:text-blue-700">
-                                                <Edit size={20} />
-                                            </button>
-                                        </td>
+
                                         <td className="p-3">
                                             <StatusSelect
                                                 currentStatus={user.status}

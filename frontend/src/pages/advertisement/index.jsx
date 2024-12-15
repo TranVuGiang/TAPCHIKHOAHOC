@@ -11,26 +11,30 @@ export default function Advertisement() {
 
     // Updated features to match specific ad placements
     const adPlanFeatures = {
-        1: {
+        '1': {
             name: 'Vị trí cuối trang',
             features: [
                 'Hiển thị quảng cáo tại cuối trang',
                 'Tiếp cận người dùng kết thúc nội dung',
-                'Vị trí hiển thị cố định',
-            ],
+                'Vị trí hiển thị cố định'
+            ]
         },
-        2: {
+        '2': {
             name: 'Vị trí popup',
-            features: ['Hiển thị quảng cáo dạng popup', 'Thu hút chú ý người dùng', 'Hiệu ứng xuất hiện mềm mại'],
+            features: [
+                'Hiển thị quảng cáo dạng popup',
+                'Thu hút chú ý người dùng',
+                'Hiệu ứng xuất hiện mềm mại'
+            ]
         },
-        3: {
+        '3': {
             name: 'Vị trí đầu trang',
             features: [
                 'Hiển thị quảng cáo ngay đầu trang',
                 'Tiếp cận người dùng ngay khi vào trang',
-                'Vị trí ưu tiên và nổi bật',
-            ],
-        },
+                'Vị trí ưu tiên và nổi bật'
+            ]
+        }
     };
 
     useEffect(() => {
@@ -46,13 +50,13 @@ export default function Advertisement() {
                 ...plan,
                 name: adPlanFeatures[plan.bgqcId].name,
                 features: adPlanFeatures[plan.bgqcId].features,
-                period: plan.songay + ' ngày',
+                period: plan.songay + ' ngày'
             }));
 
             setQuangcao(transformedPlans);
 
             // Set the first available plan as selected by default
-            const availablePlans = transformedPlans.filter((plan) => plan.conqc);
+            const availablePlans = transformedPlans.filter(plan => plan.conqc);
             if (availablePlans.length > 0) {
                 setSelectedPlan(availablePlans[0].tengoi);
             }
@@ -118,7 +122,7 @@ export default function Advertisement() {
                                 {plan.giatien}
                                 <span className="text-lg font-normal text-gray-500">/ {plan.period}</span>
                             </p>
-
+                            
                             {!plan.conqc ? (
                                 <div className="flex items-center text-red-500 mb-4">
                                     <AlertCircle className="mr-2" />

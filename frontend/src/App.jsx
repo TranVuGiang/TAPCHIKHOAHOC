@@ -22,6 +22,7 @@ function App() {
                         console.log(response)
                         if (!response.success) {
                             localStorage.removeItem('currentUser');
+                            window.location.href = "/home/login"
                         }
                     } catch (error) {
                         console.error("Lỗi khi xác thực token:", error);
@@ -42,7 +43,6 @@ function App() {
     return (
         <Router>
             <div className="App bg-blue-100">
-                <Suspense fallback={<LoadingSpinner />}>
                     <Routes>
                         {/* Public Routes */}
                         {publicRoutes.map((route, index) => {
@@ -91,7 +91,6 @@ function App() {
                         <Route path="/no-access" element={<NoAccess />} />
                         <Route path="*" element={<Navigate to="/home" replace />} />
                     </Routes>
-                </Suspense>
             </div>
         </Router>
     );

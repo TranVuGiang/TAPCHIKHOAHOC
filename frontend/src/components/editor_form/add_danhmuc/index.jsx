@@ -2,8 +2,10 @@ import { SuccessDialog } from '@/components/modalDialog';
 import { authService } from '@/utils/authService';
 import { CloudArrowUpIcon, PencilIcon, XCircleIcon } from '@heroicons/react/24/solid';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Editor_AddDanhMuc() {
+    const navigate = useNavigate()
     // State for form data
     const [formData, setFormData] = useState({
         danhmucId: null,
@@ -12,7 +14,7 @@ function Editor_AddDanhMuc() {
         url: '',
         tuan: '',
         so: '',
-        token: ''
+        token: '',
     });
     const [imageFile, setImageFile] = useState(null);
     const [imageFileName, setImageFileName] = useState('');
@@ -24,7 +26,7 @@ function Editor_AddDanhMuc() {
     const [danhMucList, setDanhMucList] = useState([]);
     const [isEditing, setIsEditing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [isSuccess, setIsSuccess] = useState(false)
+    const [isSuccess, setIsSuccess] = useState(false);
     // Validation function
     const validateForm = () => {
         const newErrors = {};
@@ -66,13 +68,20 @@ function Editor_AddDanhMuc() {
 
     // Fetch Danh Muc List
     const fetchDanhMucList = async () => {
+        const current = JSON.parse(localStorage.getItem('currentUser'))
+        if(current === null || undefined ) {
+            navigate('/')
+        }
+        setIsLoading(true)
         try {
-            const response = await authService.getAllDanhMucByTime();
+            const response = await authService.getAllDanhMucByTime({token: current.token});
             console.log(response.data.data);
-            
+
             setDanhMucList(response.data.data);
         } catch (error) {
             console.error('Lỗi khi tải danh mục:', error.message);
+        } finally {
+        setIsLoading(false)
         }
     };
 
@@ -87,7 +96,7 @@ function Editor_AddDanhMuc() {
             setImageFile(file);
             setImageFileName(file.name);
             // Clear image error when file is selected
-            setErrors(prev => ({ ...prev, image: undefined }));
+            setErrors((prev) => ({ ...prev, image: undefined }));
         }
     };
 
@@ -98,10 +107,10 @@ function Editor_AddDanhMuc() {
             ...prev,
             [name]: value,
         }));
-        
+
         // Clear error when user starts typing
         if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: undefined }));
+            setErrors((prev) => ({ ...prev, [name]: undefined }));
         }
     };
 
@@ -138,10 +147,9 @@ function Editor_AddDanhMuc() {
     // Handle Submit (Create/Update)
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const current = JSON.parse(localStorage.getItem('currentUser'))
-        const token = current.token
-      
-        
+        const current = JSON.parse(localStorage.getItem('currentUser'));
+        const token = current.token;
+
         // Validate form before submission
         if (!validateForm()) {
             return;
@@ -164,19 +172,18 @@ function Editor_AddDanhMuc() {
             const submitData = {
                 ...formData,
                 url: uploadedUrl,
-                token: token
+                token: token,
             };
 
             // Create or Update based on editing state
             if (isEditing) {
                 console.log(formData);
-                
+
                 await authService.updateDanhMuc(submitData);
-                setIsSuccess(true)
-                
+                setIsSuccess(true);
             } else {
                 await authService.createDanhMuc(submitData);
-                setIsSuccess(true)
+                setIsSuccess(true);
             }
 
             handleReset();
@@ -186,6 +193,7 @@ function Editor_AddDanhMuc() {
             alert('Thao tác thất bại');
         } finally {
             setIsLoading(false);
+           
         }
     };
 
@@ -205,11 +213,22 @@ function Editor_AddDanhMuc() {
         setErrors({});
     };
 
+    const LoadingSpinner = () => {
+        return (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-20">
+                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500" />
+            </div>
+        );
+    };
+
+    
+
     return (
         <div className="container mx-auto px-4 py-8">
-            <SuccessDialog 
-                title={"Thêm danh mục thành công"}
-                titleButton={"Tiếp tục"}
+            {isLoading && <LoadingSpinner />}
+            <SuccessDialog
+                title={'Thêm danh mục thành công'}
+                titleButton={'Tiếp tục'}
                 isOpen={isSuccess}
                 onClose={() => setIsSuccess(false)}
             />
@@ -223,9 +242,9 @@ function Editor_AddDanhMuc() {
                                 type="text"
                                 name="tieude"
                                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 ${
-                                    errors.tieude 
-                                    ? 'border-red-500 focus:ring-red-500' 
-                                    : 'focus:ring-blue-500 focus:border-blue-500'
+                                    errors.tieude
+                                        ? 'border-red-500 focus:ring-red-500'
+                                        : 'focus:ring-blue-500 focus:border-blue-500'
                                 }`}
                                 placeholder="Nhập tiêu đề danh mục..."
                                 value={formData.tieude}
@@ -245,9 +264,9 @@ function Editor_AddDanhMuc() {
                                 name="mota"
                                 rows="4"
                                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 ${
-                                    errors.mota 
-                                    ? 'border-red-500 focus:ring-red-500' 
-                                    : 'focus:ring-blue-500 focus:border-blue-500'
+                                    errors.mota
+                                        ? 'border-red-500 focus:ring-red-500'
+                                        : 'focus:ring-blue-500 focus:border-blue-500'
                                 }`}
                                 placeholder="Nhập mô tả chi tiết..."
                                 value={formData.mota}
@@ -268,9 +287,9 @@ function Editor_AddDanhMuc() {
                                     type="number"
                                     name="tuan"
                                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 ${
-                                        errors.tuan 
-                                        ? 'border-red-500 focus:ring-red-500' 
-                                        : 'focus:ring-blue-500 focus:border-blue-500'
+                                        errors.tuan
+                                            ? 'border-red-500 focus:ring-red-500'
+                                            : 'focus:ring-blue-500 focus:border-blue-500'
                                     }`}
                                     placeholder="Nhập số tuần..."
                                     value={formData.tuan}
@@ -290,9 +309,9 @@ function Editor_AddDanhMuc() {
                                     type="number"
                                     name="so"
                                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 ${
-                                        errors.so 
-                                        ? 'border-red-500 focus:ring-red-500' 
-                                        : 'focus:ring-blue-500 focus:border-blue-500'
+                                        errors.so
+                                            ? 'border-red-500 focus:ring-red-500'
+                                            : 'focus:ring-blue-500 focus:border-blue-500'
                                     }`}
                                     placeholder="Nhập số..."
                                     value={formData.so}
@@ -308,11 +327,13 @@ function Editor_AddDanhMuc() {
                         </div>
 
                         <div>
-                            <div className={`relative border-2 border-dashed rounded-lg p-8 text-center transition duration-300 ${
-                                errors.image 
-                                ? 'border-red-500 bg-red-50' 
-                                : 'border-gray-300 bg-gray-50 hover:border-blue-600 hover:bg-blue-50'
-                            }`}>
+                            <div
+                                className={`relative border-2 border-dashed rounded-lg p-8 text-center transition duration-300 ${
+                                    errors.image
+                                        ? 'border-red-500 bg-red-50'
+                                        : 'border-gray-300 bg-gray-50 hover:border-blue-600 hover:bg-blue-50'
+                                }`}
+                            >
                                 <label
                                     htmlFor="upload-image"
                                     className="flex flex-col items-center cursor-pointer text-blue-600 font-medium mb-4"
@@ -365,10 +386,18 @@ function Editor_AddDanhMuc() {
                         <table className="w-full">
                             <thead className="bg-gray-100 border-b">
                                 <tr>
-                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tiêu Đề</th>
-                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tuần</th>
-                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Số</th>
-                                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Hành Động</th>
+                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                        Tiêu Đề
+                                    </th>
+                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                        Tuần
+                                    </th>
+                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                        Số
+                                    </th>
+                                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                                        Hành Động
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -379,13 +408,12 @@ function Editor_AddDanhMuc() {
                                         <td className="px-4 py-3">{item.so}</td>
                                         <td className="px-4 py-3 text-center">
                                             <div className="flex justify-center space-x-2">
-                                                <button 
+                                                <button
                                                     onClick={() => handleEdit(item)}
                                                     className="text-blue-600 hover:text-blue-800"
                                                 >
                                                     <PencilIcon className="h-5 w-5" />
                                                 </button>
-                                                
                                             </div>
                                         </td>
                                     </tr>
@@ -393,9 +421,7 @@ function Editor_AddDanhMuc() {
                             </tbody>
                         </table>
                         {danhMucList.length === 0 && (
-                            <div className="text-center py-4 text-gray-500">
-                                Không có danh mục nào
-                            </div>
+                            <div className="text-center py-4 text-gray-500">Không có danh mục nào</div>
                         )}
                     </div>
                 </div>

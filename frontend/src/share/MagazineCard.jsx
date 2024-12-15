@@ -15,7 +15,7 @@ function MagazineCard({ weekNumber, issueNumber, publicationDate, title, excerpt
     };
 
     return (
-        <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow h-[470px] duration-300">
             {/* Image cover with issue number overlay */}
             <div className="relative">
                 <img loading="lazy" src={coverImage} alt={title} className="w-full h-[250px] object-cover" />

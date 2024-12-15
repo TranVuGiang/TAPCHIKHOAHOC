@@ -5,11 +5,7 @@ import { Fragment } from 'react';
 
 export function ErrorDialog({ title, isOpen, onClose }) {
     return (
-        <Dialog 
-            open={isOpen} 
-            onClose={onClose} 
-            className="relative z-10 font-montserrat"
-        >
+        <Dialog open={isOpen} onClose={onClose} className="relative z-10 font-montserrat">
             <DialogBackdrop
                 transition
                 className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
@@ -109,7 +105,10 @@ export const SuccessDialog = ({ title, isOpen, onClose, titleButton }) => {
 
                     {/* Button */}
                     <button
-                        onClick={onClose}
+                        onClick={() => {
+                            onClose;
+                            window.location.reload();
+                        }}
                         className="w-full px-4 py-3 bg-[#6366F1] text-white rounded-xl
                         hover:bg-[#5558E8] active:bg-[#4447E0]
                         transition-all duration-200 ease-out

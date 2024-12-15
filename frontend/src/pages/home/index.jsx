@@ -98,7 +98,7 @@ function Home() {
             {/* SỰ KIỆN HOT TRONG TUẦN */}
             <section className="container mx-auto px-4 py-8">
                 <div className="w-full h-[60px] bg-space-400 right-0 py-4 pl-8">
-                    <TitleText>SỰ KIỆN HOT TRONG TUẦN</TitleText>
+                    <TitleText>CÓ THỂ BẠN QUAN TÂM</TitleText>
                 </div>
                 <div className="container mx-auto px-4 py-6">
                     {/* Main news */}
@@ -114,17 +114,17 @@ function Home() {
                             <h1 className="text-xl md:text-2xl font-bold mb-2 group-hover:text-blue-600 transition-colors">
                                 {mainNews.title}
                             </h1>
-                            <div className="flex items-center text-sm text-gray-500 gap-4">
+                            {/* <div className="flex items-center text-sm text-gray-500 gap-4">
                                 <span className="font-medium">{mainNews.source}</span>
                                 <span>{mainNews.time}</span>
                                 <span className="text-gray-400">•</span>
                                 <span>{mainNews.engagement}</span>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
 
                     {/* Related news */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                    {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                         {relatedNews.map((news) => (
                             <div key={news.id} className="group cursor-pointer">
                                 <div className="relative w-full h-[200px] mb-3">
@@ -144,7 +144,7 @@ function Home() {
                                 </div>
                             </div>
                         ))}
-                    </div>
+                    </div> */}
                 </div>
             </section>
         </>

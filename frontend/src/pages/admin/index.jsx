@@ -1,6 +1,9 @@
+import { RenderArticleManagement } from '@/components/adminComponents/renderBaibaoManagement';
 import { RenderUserManagement } from '@/components/adminComponents/renderUserManagement';
+import { RenderDashboard } from '@/components/adminComponents/thongke';
 import {
     BarChart2,
+    Bell,
     CheckCircle,
     Clock,
     DollarSign,
@@ -11,17 +14,30 @@ import {
     Menu,
     Radio,
     Settings,
-    Trash2,
     Users,
     X,
     XCircle,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const AdminDashboard = () => {
     const [activeTab, setActiveTab] = useState('dashboard');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [token, setToken] = useState('');
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        loadToken();
+    }, []);
+
+    const loadToken = () => {
+        const current = JSON.parse(localStorage.getItem('currentUser'));
+        if (current === null || undefined) {
+            navigate('/home/login');
+        }
+        setToken(current.token);
+    };
 
     // Sample data with expanded fields
     const [users, setUsers] = useState([
@@ -106,134 +122,6 @@ const AdminDashboard = () => {
                 </option>
             ))}
         </select>
-    );
-
-    const renderDashboard = () => (
-        <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <StatCard title="Người dùng" value={users.length} icon={<Users className="text-blue-500" />} />
-            <StatCard title="Bài báo" value={articles.length} icon={<FileText className="text-green-500" />} />
-            <StatCard
-                title="Quảng cáo"
-                value={ads.pending.length + ads.approved.length + ads.published.length}
-                icon={<Radio className="text-purple-500" />}
-            />
-            <StatCard
-                title="Tổng Doanh Thu"
-                value={`$${revenue.reduce((sum, r) => sum + r.amount, 0)}`}
-                icon={<DollarSign className="text-yellow-500" />}
-            />
-        </div>
-    );
-
-    const StatCard = ({ title, value, icon }) => (
-        <div className="bg-white shadow-md rounded-lg p-5 flex items-center justify-between">
-            <div>
-                <h3 className="text-gray-500 text-sm">{title}</h3>
-                <p className="text-2xl font-bold">{value}</p>
-            </div>
-            {icon}
-        </div>
-    );
-
-    const renderUserManagement = () => (
-        <div className="p-6">
-            <h2 className="text-2xl font-bold mb-6">Quản Lý Người Dùng</h2>
-            <div className="bg-white shadow-md rounded-lg overflow-x-auto">
-                <table className="w-full">
-                    <thead className="bg-gray-100">
-                        <tr>
-                            <th className="p-3 text-left">Tên Đăng Nhập</th>
-                            <th className="p-3 text-left">Mật Khẩu</th>
-                            <th className="p-3 text-left">Họ Và Tên</th>
-                            <th className="p-3 text-left">Số Điện Thoại</th>
-                            <th className="p-3 text-left">Email</th>
-                            <th className="p-3 text-left">Cấp Quyền</th>
-                            <th className="p-3 text-center">Thao Tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {users.map((user) => (
-                            <tr key={user.id} className="border-b hover:bg-gray-50">
-                                <td className="p-3">{user.username}</td>
-                                <td className="p-3">{user.password}</td>
-                                <td className="p-3">{user.fullName}</td>
-                                <td className="p-3">{user.phone}</td>
-                                <td className="p-3">{user.email}</td>
-                                <td className="p-3">
-                                    <RoleSelect
-                                        currentRole={user.role}
-                                        onChange={(newRole) => {
-                                            const updatedUsers = users.map((u) =>
-                                                u.id === user.id ? { ...u, role: newRole } : u,
-                                            );
-                                            setUsers(updatedUsers);
-                                        }}
-                                    />
-                                </td>
-                                <td className="p-3 flex justify-center space-x-2">
-                                    <button className="text-blue-500 hover:text-blue-700">
-                                        <Edit size={20} />
-                                    </button>
-                                    <button className="text-red-500 hover:text-red-700">
-                                        <Trash2 size={20} />
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    );
-
-    const renderArticleManagement = () => (
-        <div className="p-6">
-            <h2 className="text-2xl font-bold mb-6">Quản Lý Bài Báo</h2>
-            <div className="bg-white shadow-md rounded-lg overflow-x-auto">
-                <table className="w-full">
-                    <thead className="bg-gray-100">
-                        <tr>
-                            <th className="p-3 text-left">Tiêu Đề</th>
-                            <th className="p-3 text-left">Nội Dung</th>
-                            <th className="p-3 text-left">Ngày Tạo</th>
-                            <th className="p-3 text-left">Ngày Đăng</th>
-                            <th className="p-3 text-left">File</th>
-                            <th className="p-3 text-left">Trạng Thái</th>
-                            <th className="p-3 text-center">Thao Tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {articles.map((article) => (
-                            <tr key={article.id} className="border-b hover:bg-gray-50">
-                                <td className="p-3">{article.title}</td>
-                                <td className="p-3 truncate max-w-xs">{article.content}</td>
-                                <td className="p-3">{article.createdDate}</td>
-                                <td className="p-3">{article.publishedDate || 'Chưa đăng'}</td>
-                                <td className="p-3">{article.file}</td>
-                                <td className="p-3">
-                                    <span
-                                        className={`
-                    px-2 py-1 rounded-full text-xs 
-                    ${article.status === 'PUBLISHED' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}
-                  `}
-                                    >
-                                        {article.status}
-                                    </span>
-                                </td>
-                                <td className="p-3 flex justify-center space-x-2">
-                                    <button className="text-blue-500 hover:text-blue-700">
-                                        <Edit size={20} />
-                                    </button>
-                                    <button className="text-green-500 hover:text-green-700">
-                                        <Eye size={20} />
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-        </div>
     );
 
     const AdsManagement = ({ ads }) => {
@@ -334,11 +222,13 @@ const AdminDashboard = () => {
     const renderContent = () => {
         switch (activeTab) {
             case 'dashboard':
-                return renderDashboard();
+                return <RenderDashboard />;
+            case 'capquyen':
+                return <RenderDashboard />;
             case 'users':
                 return <RenderUserManagement />;
             case 'articles':
-                return renderArticleManagement();
+                return <RenderArticleManagement token={token}/>;
             case 'ads':
                 return <AdsManagement ads={ads} />;
             case 'revenue':
@@ -368,6 +258,7 @@ const AdminDashboard = () => {
                 <div className="px-4 space-y-2">
                     {[
                         { id: 'dashboard', icon: BarChart2, label: 'Thống Kê' },
+                        { id: 'capquyen', icon: Bell, label: 'Cấp quyền' },
                         { id: 'users', icon: Users, label: 'Quản Lý Người Dùng' },
                         { id: 'articles', icon: FileText, label: 'Quản Lý Bài Báo' },
                         { id: 'ads', icon: Radio, label: 'Quản Lý Quảng Cáo' },
@@ -401,11 +292,10 @@ const AdminDashboard = () => {
     );
 
     // ... (previous rendering methods from the previous artifact remain the same)
-    const navigate = useNavigate()
     const logout = () => {
-        localStorage.removeItem('currentUser')
-        navigate('/home/login')
-    }
+        localStorage.removeItem('currentUser');
+        navigate('/home/login');
+    };
 
     return (
         <div className="min-h-screen bg-gray-100 flex font-montserrat">
