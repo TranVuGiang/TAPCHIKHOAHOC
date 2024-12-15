@@ -24,9 +24,8 @@ const GoogleLoginButton = () => {
     }, []);
 
     const GoogleLogin = async (credential) => {
-        
         try {
-            const loginResponse = await authService.googleLogin({credential: credential});
+            const loginResponse = await authService.googleLogin({ credential: credential });
             const token = loginResponse.data.token;
             const roles = loginResponse.data.roles;
             const fullname = loginResponse.data.fullname;
@@ -95,12 +94,11 @@ const GoogleLoginButton = () => {
         navigate('/');
     };
 
-
     return (
         <div className="w-full">
             <div
                 id="google-login"
-                className="my-5 rounded-xl [&>div]:!rounded-lg [&>div]:!w-full [&>div]:!h-10 [&>div]:!border [&>div]:hover:!bg-gray-200 [&>div]:!transition [&>div]:!duration-300"
+                className="my-5 rounded-xl [&>div]:!rounded-lg [&>div]:!w-full [&>div]:!h-10 [&>div]:!border [&>div]:hover:!bg-red-800 [&>div] text-amber-50 [&>div]:!transition [&>div]:!duration-300"
             />
             {error && <ErrorDialog title={dialogMessage || 'Đăng nhập thất bại'} />}
             <SuccessDialog

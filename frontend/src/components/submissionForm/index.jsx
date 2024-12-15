@@ -89,109 +89,109 @@ const SubmissionForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         // Kiểm tra các trường bắt buộc
         const validations = [
-            { 
-                condition: !formData.theloaiId, 
-                message: 'Vui lòng chọn loại bài viết' 
+            {
+                condition: !formData.theloaiId,
+                message: 'Vui lòng chọn loại bài viết',
             },
-            { 
-                condition: !formData.tieude.trim(), 
-                message: 'Tên bài báo không được để trống' 
+            {
+                condition: !formData.tieude.trim(),
+                message: 'Tên bài báo không được để trống',
             },
-            { 
-                condition: !formData.noidung.trim(), 
-                message: 'Tóm tắt bài viết không được để trống' 
+            {
+                condition: !formData.noidung.trim(),
+                message: 'Tóm tắt bài viết không được để trống',
             },
-            { 
-                condition: !formData.tukhoa.trim(), 
-                message: 'Từ khóa không được để trống' 
+            {
+                condition: !formData.tukhoa.trim(),
+                message: 'Từ khóa không được để trống',
             },
-            { 
-                condition: !checkboxes.every(Boolean), 
-                message: 'Vui lòng chọn tất cả các yêu cầu trước khi nộp bài!' 
-            }
+            {
+                condition: !checkboxes.every(Boolean),
+                message: 'Vui lòng chọn tất cả các yêu cầu trước khi nộp bài!',
+            },
         ];
-    
+
         // Kiểm tra file
         const validateFile = (file, type) => {
             if (!file) {
                 setError({
                     message: `Vui lòng tải ${type} lên`,
-                    isError: true
+                    isError: true,
                 });
                 return false;
             }
-    
+
             const allowedImageTypes = ['image/jpeg', 'image/png', 'image/jpg'];
             const allowedFileTypes = ['application/pdf'];
-    
+
             const currentAllowedTypes = type === 'ảnh' ? allowedImageTypes : allowedFileTypes;
             const maxSize = 10 * 1024 * 1024; // 10MB
-    
+
             if (!currentAllowedTypes.includes(file.type)) {
                 setError({
                     message: `Định dạng ${type} không hợp lệ. Vui lòng chọn file ${type} đúng định dạng`,
-                    isError: true
+                    isError: true,
                 });
                 return false;
             }
-    
+
             if (file.size > maxSize) {
                 setError({
                     message: `Kích thước ${type} vượt quá 10MB. Vui lòng chọn file nhỏ hơn`,
-                    isError: true
+                    isError: true,
                 });
                 return false;
             }
-    
+
             return true;
         };
-    
+
         // Kiểm tra các validation
         for (let validation of validations) {
             if (validation.condition) {
                 setError({
                     message: validation.message,
-                    isError: true
+                    isError: true,
                 });
                 return;
             }
         }
-    
+
         // Kiểm tra file ảnh
         if (imageFile && !validateFile(imageFile, 'ảnh')) {
             return;
         }
-    
+
         // Kiểm tra file bản thảo
         if (file && !validateFile(file, 'bản thảo')) {
             return;
         }
-    
+
         try {
             let uploadImage = formData.url;
             let uploadFile = formData.file;
-            
+
             if (file) {
                 const formDataFile = new FormData();
                 formDataFile.append('files', file);
-    
+
                 const response = await authService.uploadFile(formDataFile);
                 uploadFile = response.file;
             }
-            
+
             if (imageFile) {
                 const formDataImage = new FormData();
                 formDataImage.append('files', imageFile);
-    
+
                 const response = await authService.uploadFile(formDataImage);
-                uploadImage = response.file; 
+                uploadImage = response.file;
             }
-            
+
             let baibaoId = baibao !== null ? baibao.id : null;
-    
+
             const response = await authService.createBaiBao({
                 baibaoId: baibaoId,
                 token: token,
@@ -202,7 +202,7 @@ const SubmissionForm = () => {
                 url: uploadImage,
                 file: uploadFile,
             });
-            
+
             setIsSuccess(true);
             setFormData({
                 theloaiId: '',
@@ -212,13 +212,13 @@ const SubmissionForm = () => {
                 file: '',
                 url: '',
             });
-            
+
             // Reset file states
             setFile(null);
             setFileName('');
             setImageFile(null);
             setImageFileName('');
-            
+
             console.log(response);
         } catch (error) {
             setError({
@@ -316,9 +316,9 @@ const SubmissionForm = () => {
                         Bạn phải đọc và xác nhận rằng bạn đã hoàn thành các yêu cầu bên dưới trước khi tiếp tục
                     </p>
                     {[
-                        'Sự phù hợp với mục đích - phạm vi của Tạp chí.',
-                        'Sự tuân thủ các chính sách gửi bài, phản biện, biên tập của Tạp chí.',
-                        'Sự phù hợp với thể lệ bài viết của Tạp chí.',
+                        'Phù hợp với mục đích - phạm vi của Tạp chí.',
+                        'Tuân thủ các chính sách gửi bài, phản biện, biên tập của Tạp chí.',
+                        'Phù hợp với thể lệ bài viết của Tạp chí.',
                         'Tác giả sử dụng mẫu bản thảo để chuẩn bị bài viết.',
                         'Tác giả chịu trách nhiệm hoàn toàn trước pháp luật về Bản quyền đối với bài viết.',
                         'Cam kết bài viết chưa từng được công bố trên bất kỳ tạp chí nào trước đó và không gửi bài đến tạp chí khác trong thời gian chờ xét duyệt.',
