@@ -567,7 +567,7 @@ export const authService = {
         return response.json();
     },
     loadQC: async (token) => {
-        const response = await fetch(`${API_URL}/api/bgqc/get/all`, {
+        const response = await fetch(`${API_URL}/api/bgqc/get/all/bgqc`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
