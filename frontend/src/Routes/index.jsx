@@ -18,8 +18,6 @@ const publicRoutes = [
     { path: '/home/introduce', component: Components.Introduce },
     { path: '/home/danhmuc', component: Components.Category },
     { path: '/home/otp', component: Components.ConfirmOTP, layout: NoneLayouts },
-
-    // { path: '/home/test-voice', component: VoiceSearch, layout: NoneLayouts },
 ];
 
 // Routes được bảo vệ (cần xác thực)

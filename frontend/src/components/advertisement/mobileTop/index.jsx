@@ -1,47 +1,67 @@
-import img1 from '@/assets/1.png';
-import img2 from '@/assets/2.png';
-import img3 from '@/assets/banner1.png';
-import img4 from '@/assets/banner2.png';
-import { useEffect, useState } from "react";
-function MobileAdverTop() {
-  const [currentIndex, setCurrentIndex] = useState(0);
- const images = [img1, img2, img3, img4];
-  useEffect(() => {
-    // Tự động chuyển slide sau mỗi 5 giây
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 5000);
+import imgnull from '@/assets/quangcaonull.png';
+import { authService } from '@/utils/authService';
+import { useEffect, useState } from 'react';
 
-    return () => clearInterval(interval); // Dọn dẹp interval khi component unmount
-  }, [images.length]);
+function MobileAdverTop({ quangcao1 }) {
+    const [qc1, setQc1] = useState([]);
 
-  return (
-    <div className=" w-full mb-6">
-      <div className="relative h-[100px] bg-slate-100 rounded-lg overflow-hidden shadow-lg">
-        {/* Hiển thị hình ảnh */}
-        <img
-          src={images[currentIndex]}
-          alt={`Banner ${currentIndex}`}
-          className="h-full w-full object-cover rounded-lg transition-opacity duration-1000 ease-in-out"
-        />
+    useEffect(() => {
+        // Kiểm tra xem quangcao1 có tồn tại trước khi load
+        if (quangcao1 && quangcao1.length > 0) {
+            loadQuangCao();
+        }
+    }, [quangcao1]); // Lắng nghe thay đổi của quangcao1
 
-        {/* Lớp phủ tối nhẹ */}
-        <div className="absolute inset-0 bg-black bg-opacity-30 rounded-lg"></div>
+    const loadQuangCao = async () => {
+        try {
+            const quangcao = quangcao1.filter((item) => item.bgqcId === '1'); // Lọc dữ liệu với bgqcId === '1'
+            setQc1(quangcao); // Cập nhật vào state qc1
+        } catch (error) {
+            console.log('Error loading ads:', error);
+        }
+    };
 
-        {/* Dots Indicator */}
-        <a className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
-          {images.map((_, index) => (
+    const handleClickBanner = async (e, quangcaoId) => {
+        e.preventDefault();
+        try {
+            const resp = await authService.clickQuangCao(quangcaoId);
+            console.log(resp);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    const defaultId = qc1.length > 0 ? qc1[0].quangcaoId : null;
+
+    return (
+        <div className="w-full mb-6">
             <div
-              key={index}
-              className={`w-2 h-2 rounded-full ${
-                currentIndex === index ? "bg-white" : "bg-gray-400"
-              }`}
-            ></div>
-          ))}
-        </a>
-      </div>
-    </div>
-  );
+                onClick={(e) => handleClickBanner(e, defaultId)}
+                className="relative h-[100px] bg-slate-100 rounded-lg overflow-hidden shadow-lg cursor-pointer"
+            >
+                {/* Hiển thị hình ảnh */}
+                {qc1.length > 0 ? (
+                    qc1.map((item, index) => (
+                        <div key={index}>
+                            <div>
+                                <img
+                                    src={item.url ? item.url : imgnull}
+                                    alt={`Banner ${index}`}
+                                    className="h-full w-full object-cover rounded-lg transition-opacity duration-1000 ease-in-out"
+                                />
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <div className="h-full w-full bg-gray-300 flex items-center justify-center">
+                        <span>Loading...</span> {/* Placeholder nếu chưa có dữ liệu */}
+                    </div>
+                )}
+
+                {/* Lớp phủ tối nhẹ */}
+                <div className="absolute inset-0 bg-black bg-opacity-30 rounded-lg"></div>
+            </div>
+        </div>
+    );
 }
 
 export default MobileAdverTop;
