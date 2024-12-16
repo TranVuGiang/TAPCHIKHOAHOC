@@ -791,4 +791,46 @@ export const authService = {
         }
         return response.json();
     },
+    updatequyenAuthor: async (token, taikhoanId, status) => {
+        const response = await fetch(`${API_URL}/api/admin/update/user/capquyen`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(token, taikhoanId, status),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Lỗi không thể');
+        }
+        return response.json();
+    },
+    loadQuangcaoByPatner: async (token) => {
+        const response = await fetch(`${API_URL}/api/quangcao/get/user/quangcao`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token }),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Lỗi không thể');
+        }
+        return response.json();
+    },
+    updateQuangCao: async (token, quangcaoId, url, link, tieude) => {
+        const response = await fetch(`${API_URL}/api/quangcao/update/user/quangcao`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(token, quangcaoId, url, link, tieude),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Lỗi không thể');
+        }
+        return response.json();
+    },
 };

@@ -3,18 +3,7 @@ import { RenderArticleManagement } from '@/components/adminComponents/renderBaib
 import AdsManagement from '@/components/adminComponents/renderQuangcaoManagement';
 import { RenderUserManagement } from '@/components/adminComponents/renderUserManagement';
 import { RenderDashboard } from '@/components/adminComponents/thongke';
-import {
-    BarChart2,
-    Bell,
-    DollarSign,
-    FileText,
-    LogOut,
-    Menu,
-    Radio,
-    Settings,
-    Users,
-    X
-} from 'lucide-react';
+import { BarChart2, Bell, FileText, LogOut, Menu, Radio, Settings, Users, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -121,8 +110,6 @@ const AdminDashboard = () => {
         </select>
     );
 
- 
-
     const renderRevenueManagement = () => (
         <div className="p-6">
             <h2 className="text-2xl font-bold mb-6">Quản Lý Doanh Thu</h2>
@@ -163,11 +150,10 @@ const AdminDashboard = () => {
             case 'users':
                 return <RenderUserManagement />;
             case 'articles':
-                return <RenderArticleManagement token={token}/>;
+                return <RenderArticleManagement token={token} />;
             case 'ads':
                 return <AdsManagement />;
-            case 'revenue':
-                return renderRevenueManagement();
+
             default:
                 return null;
         }
@@ -197,7 +183,6 @@ const AdminDashboard = () => {
                         { id: 'users', icon: Users, label: 'Quản Lý Người Dùng' },
                         { id: 'articles', icon: FileText, label: 'Quản Lý Bài Báo' },
                         { id: 'ads', icon: Radio, label: 'Quản Lý Quảng Cáo' },
-                        { id: 'revenue', icon: DollarSign, label: 'Doanh Thu' },
                     ].map(({ id, icon: Icon, label }) => (
                         <button
                             key={id}

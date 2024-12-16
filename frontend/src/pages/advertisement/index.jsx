@@ -57,7 +57,7 @@ export default function Advertisement() {
 
             setQuangcao(transformedPlans);
 
-            // Set the first available plan as selected by default
+            // Set the first available plan as selected by default  
             const availablePlans = transformedPlans.filter(plan => plan.conqc);
             if (availablePlans.length > 0) {
                 setSelectedPlan(availablePlans[0].tengoi);
@@ -65,7 +65,7 @@ export default function Advertisement() {
         } catch (error) {
             console.error('Error loading advertisement plans:', error);
         } finally {
-            setIsLoading(true)
+            setIsLoading(false)
         }
     };
     const LoadingSpinner = () => {

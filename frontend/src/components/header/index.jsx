@@ -63,6 +63,9 @@ function Header() {
         if (roles.includes(ROLES.AUTHOR)) {
             return [{ label: 'Gửi bài Online', path: '/home/TacGiaDashboard/' }];
         }
+        if (roles.includes(ROLES.CUSTOMER)) {
+            return [{ label: 'Khác', path: '/home/option_advertisement' }];
+        }
     };
 
     const getMenuItems = (roles) => {
@@ -171,7 +174,7 @@ function Header() {
                                                 {item.label}
                                             </Link>
                                         ))}
-                                    <Link
+                                    {/* <Link
                                         to={user ? '/home/option_advertisement' : '#'}
                                         className={`${textNavbar}`}
                                         onClick={() => {
@@ -179,7 +182,7 @@ function Header() {
                                         }}
                                     >
                                         Khác
-                                    </Link>
+                                    </Link> */}
                                 </div>
                             </div>
                         ) : (
