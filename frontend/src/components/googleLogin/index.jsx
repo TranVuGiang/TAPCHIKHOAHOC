@@ -1,51 +1,85 @@
-import { useEffect } from 'react';
+import { authService } from '@/utils/authService';
+import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ErrorDialog, SuccessDialog } from '../modalDialog';
 
-const GoogleLoginButtons = () => {
+const GoogleLoginButton = () => {
+    const navigate = useNavigate();
+    const [error, setError] = useState(false);
+    const [successLogin, setSuccessLogin] = useState(false);
+    const [dialogMessage, setDialogMessage] = useState('');
+
+    const handleCredentialResponse = useCallback(async (response) => {
+        try {
+            const tokenInfo = await fetch(
+                `https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${response.credential}`,
+            );
+            if (!tokenInfo.ok) throw new Error('Network response was not ok');
+            await GoogleLogin(response.credential);
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+            setError(true);
+            setDialogMessage('Không thể xác thực thông tin đăng nhập Google');
+        }
+    }, []);
+
+    const GoogleLogin = async (credential) => {
+        try {
+            const loginResponse = await authService.googleLogin({ credential: credential });
+            const token = loginResponse.data.token;
+            const roles = loginResponse.data.roles;
+            const fullname = loginResponse.data.fullname;
+
+            localStorage.setItem(
+                'currentUser',
+                JSON.stringify({
+                    fullname: fullname,
+                    roles: roles,
+                    token: token,
+                }),
+            );
+
+            // Hiển thị thông báo thành công
+            setSuccessLogin(true);
+            setDialogMessage(`Xin chào ${fullname}! Đăng nhập thành công`);
+
+            // Delay navigation để người dùng có thể thấy thông báo
+            setTimeout(() => {
+                navigate('/');
+            }, 2000);
+        } catch (error) {
+            setError(true);
+            setDialogMessage('Đăng nhập thất bại. Vui lòng thử lại');
+            console.log(error);
+        }
+    };
+
     useEffect(() => {
-        const loadGoogleScript = () => {
-            const script = document.createElement('script');
-            script.src = 'https://accounts.google.com/gsi/client';
-            script.async = true;
-            script.defer = true;
-            document.head.appendChild(script);
+        const initializeGoogleSignIn = () => {
+            if (window.google) {
+                window.google.accounts.id.initialize({
+                    client_id: '269675276366-cgk7jb5qfo73k2dpjme0jbqlf91fv0h0.apps.googleusercontent.com',
+                    callback: handleCredentialResponse,
+                });
 
-            script.onload = () => {
-                if (window.google) {
-                    window.google.accounts.id.initialize({
-                        client_id: '269675276366-cgk7jb5qfo73k2dpjme0jbqlf91fv0h0.apps.googleusercontent.com',
-                        callback: handleCredentialResponse,
-                    });
-
-                    // Render different button styles
-                    window.google.accounts.id.renderButton(document.getElementById('standard-button'), {
-                        theme: 'outline',
-                        size: 'large',
-                        text: 'continue_with',
-                    });
-
-                    window.google.accounts.id.renderButton(document.getElementById('icon-button'), {
-                        theme: 'outline',
-                        size: 'large',
-                        type: 'icon',
-                    });
-
-                    window.google.accounts.id.renderButton(document.getElementById('dark-button'), {
-                        theme: 'filled_black',
-                        size: 'large',
-                        text: 'signin_with',
-                    });
-
-                    window.google.accounts.id.renderButton(document.getElementById('custom-button'), {
-                        theme: 'filled_blue',
-                        size: 'large',
-                        shape: 'rectangular',
-                        logo_alignment: 'left',
-                    });
-                }
-            };
+                window.google.accounts.id.renderButton(document.getElementById('google-login'), {
+                    type: 'standard',
+                    theme: 'outline',
+                    size: 'large',
+                    text: 'signin_with',
+                    shape: 'rectangular',
+                    logo_alignment: 'left',
+                    width: '100%',
+                });
+            }
         };
 
-        loadGoogleScript();
+        const script = document.createElement('script');
+        script.src = 'https://accounts.google.com/gsi/client';
+        script.async = true;
+        script.defer = true;
+        script.onload = initializeGoogleSignIn;
+        document.head.appendChild(script);
 
         return () => {
             const script = document.querySelector('script[src="https://accounts.google.com/gsi/client"]');
@@ -53,45 +87,28 @@ const GoogleLoginButtons = () => {
                 document.head.removeChild(script);
             }
         };
-    }, []);
+    }, [handleCredentialResponse]);
 
-    const data = (idToken) =>
-        fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${idToken}`)
-            .then((response) => response.json())
-            .then((data) => {
-                console.log('User Info:', data);
-                // data sẽ bao gồm các thông tin như email, name, picture, v.v.
-            })
-            .catch((error) => console.error('Error fetching user data:', error));
-    const handleCredentialResponse = (response) => {
-        console.log('Đăng nhập thành công!');
-        console.log('Token:', response.credential);
-        data(response.credential);
+    const handleCloseSuccess = () => {
+        setSuccessLogin(false);
+        navigate('/');
     };
 
     return (
-        <div className="space-y-4">
-            {/* <div className="p-4 border rounded-lg">
-        <h3 className="mb-2 text-lg font-medium">Nút đăng nhập chuẩn</h3>
-        <div id="standard-button"></div>
-      </div>
-
-      <div className="p-4 border rounded-lg">
-        <h3 className="mb-2 text-lg font-medium">Nút chỉ có icon</h3>
-        <div id="icon-button"></div>
-      </div>
-
-      <div className="p-4 border rounded-lg bg-gray-100">
-        <h3 className="mb-2 text-lg font-medium">Nút tối màu</h3>
-        <div id="dark-button"></div>
-      </div> */}
-
-            <div className="p-4 border rounded-lg">
-                <h3 className="mb-2 text-lg font-medium">Nút tùy chỉnh</h3>
-                <div id="custom-button"></div>
-            </div>
+        <div className="w-full">
+            <div
+                id="google-login"
+                className="my-5 rounded-xl [&>div]:!rounded-lg [&>div]:!w-full [&>div]:!h-10 [&>div]:!border [&>div]:hover:!bg-red-800 [&>div] text-amber-50 [&>div]:!transition [&>div]:!duration-300"
+            />
+            {error && <ErrorDialog title={dialogMessage || 'Đăng nhập thất bại'} />}
+            <SuccessDialog
+                isOpen={successLogin}
+                onClose={handleCloseSuccess}
+                title={dialogMessage || 'Đăng nhập thành công'}
+                titleButton={'Tiếp tục'}
+            />
         </div>
     );
 };
 
-export default GoogleLoginButtons;
+export default GoogleLoginButton;

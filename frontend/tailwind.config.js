@@ -24,6 +24,16 @@ export default {
         dmsan: ["DM Sans", "san-serif"],
         montserrat: ["Montserrat","san-serif"]
       },
+      animation: {
+        'spin-reverse': 'spin 1s linear infinite reverse',
+        'bounce': 'bounce 1s infinite',
+      },
+      keyframes: {
+        bounce: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-5px)' }
+        }
+      }
 
     },
     screens: {

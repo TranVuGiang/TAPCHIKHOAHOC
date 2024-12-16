@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import ReactQuill from 'react-quill';
 
-function WordForm({title}) {
+function WordForm({ title, setEditorData }) {
     const [editorContents, setEditorContents] = useState({
         summary: '',
         summaryEn: '',
@@ -11,41 +11,35 @@ function WordForm({title}) {
     });
 
     const handleEditorChange = (content, editor, name) => {
-        setEditorContents((prev) => ({ ...prev, [name]: content }));
+        setEditorContents((prev) => {
+            const newContent = { ...prev, [name]: content };
+            setEditorData(newContent); // Cập nhật dữ liệu trong component cha
+            return newContent;
+        });
     };
 
     const modules = {
         toolbar: [
-            // Header options
-            [{ header: [1, 2, false] }], // Cho phép chọn Header 1, Header 2 và không có header
-    
-            // Text formatting options
-            ['bold', 'italic', 'underline', 'strike'], // Định dạng chữ đậm, nghiêng, gạch chân, gạch ngang
-            [{ script: 'sub' }, { script: 'super' }], // Subscript và Superscript
-            [{ color: [] }, { background: [] }], // Màu chữ và màu nền
-            ['blockquote', 'code-block'], // Trích dẫn và khối mã
-    
-            // List options
-            [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }], // Danh sách có thứ tự, không thứ tự và điều chỉnh lề
-    
-            // Link and Image options
-            ['link', 'image'], // Chèn liên kết và hình ảnh
-            [{ align: [] }], // Căn chỉnh (trái, giữa, phải)
-    
-            // Clean option
-            ['clean'], // Xóa định dạng
+            [{ header: [1, 2, false] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ script: 'sub' }, { script: 'super' }],
+            [{ color: [] }, { background: [] }],
+            ['blockquote', 'code-block'],
+            [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
+            ['link', 'image'],
+            [{ align: [] }],
+            ['clean'],
         ],
     };
-    
+
     return (
         <div className="mb-4">
             <label className="block mb-2 font-bold">{title}</label>
             <ReactQuill
                 theme="snow"
                 value={editorContents.summaryEn}
-                onChange={(content, delta, source, editor) => handleEditorChange(content, editor, 'summaryEn')}
+                onChange={(content) => handleEditorChange(content)}
                 modules={modules}
-              
             />
         </div>
     );

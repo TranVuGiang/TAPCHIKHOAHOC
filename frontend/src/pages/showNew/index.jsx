@@ -1,178 +1,220 @@
+import SocialInteraction from '@/components/socialInteraction';
+import { authService } from '@/utils/authService';
+import { createUrlSlug } from '@/utils/urlUtils';
 import { Viewer, Worker } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 const App = () => {
-  const [pdfFile, setPdfFile] = useState(null);
-  
-  // Data mẫu bài viết hiện tại
-  const articleData = {
-    tieude: "Test1",
-    noidung: "XXXXX",
-    ngaydang: "2024-10-26",
-    hinhanh: "/path/to/image.jpg"
-  };
+    const { magazineSlug, articleSlug } = useParams();
+    const [pdfFile, setPdfFile] = useState(null);
+    const [articles, setArticles] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [categories, setCategories] = useState([]);
+    const [theloai, setTheloai] = useState('');
+    const [token, setToken] = useState('');
 
-  // Data mẫu các bài viết gợi ý
-  const suggestedArticles = [
-    {
-      id: 1,
-      tieude: "Bài viết liên quan 1",
-      tomtat: "Tóm tắt ngắn về nội dung bài viết này...",
-      ngaydang: "2024-10-25",
-      hinhanh: "https://via.placeholder.com/150",
-      luotxem: 156
-    },
-    {
-      id: 2,
-      tieude: "Bài viết liên quan 2",
-      tomtat: "Tóm tắt ngắn về nội dung bài viết này...",
-      ngaydang: "2024-10-24",
-      hinhanh: "https://via.placeholder.com/150",
-      luotxem: 98
-    },
-    {
-      id: 3,
-      tieude: "Bài viết liên quan 3",
-      tomtat: "Tóm tắt ngắn về nội dung bài viết này...",
-      ngaydang: "2024-10-23",
-      hinhanh: "https://via.placeholder.com/150",
-      luotxem: 234
+    // Fetch token
+    useEffect(() => {
+        const loadToken = async () => {
+            try {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                if (currentUser) {
+                    setToken(currentUser.token);
+                }
+            } catch (err) {
+                console.error('Lỗi khi lấy token:', err);
+            }
+        };
+        loadToken();
+        // handleLike()
+    }, []);
+
+    const handleLike = async () => {
+        if (!articles) return;
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (currentUser === null || undefined) {
+            return;
+        }
+
+        try {
+            const response = await authService.likeBaibao({
+                token: currentUser.token,
+                baibaoId: articles.baibaoId,
+                status: "",
+            });
+            console.log(response);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    // Fetch categories
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                let response = [];
+                setLoading(true);
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                if (!currentUser) {
+                    response = await authService.getAllDanhMuc({});
+                } else {
+                    response = await authService.getAllDanhMuc({ token: currentUser.token });
+                }
+                console.log(response);
+                setCategories(response.data.data || []);
+            } catch (err) {
+                console.error('Lỗi khi tải danh mục:', err);
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCategories();
+    }, []);
+
+    // Fetch articles and filter by category
+    useEffect(() => {
+        const fetchArticles = async () => {
+            try {
+                setLoading(true);
+
+                // Kiểm tra điều kiện
+                if (!magazineSlug || categories.length === 0) {
+                    console.log('Không thể fetch bài báo: Thiếu dữ liệu cần thiết.');
+                    return;
+                }
+
+                // Tìm danh mục
+                const selectedCategory = categories.find((category) => createUrlSlug(category.tieude) === magazineSlug);
+
+                if (!selectedCategory) {
+                    console.log('Không tìm thấy danh mục phù hợp.');
+                    return;
+                }
+
+                // Tìm bài báo
+                const dataBaiBao = selectedCategory?.baibao?.find((item) => createUrlSlug(item.tieude) === articleSlug);
+
+                if (dataBaiBao) {
+                    setArticles(dataBaiBao);
+                    setPdfFile(dataBaiBao.file);
+                    setTheloai(dataBaiBao.theloai?.ten || 'Chưa xác định');
+                } else {
+                    console.log('Không tìm thấy bài báo phù hợp.');
+                }
+            } catch (err) {
+                console.error('Lỗi khi fetch bài báo:', err);
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (categories.length > 0) {
+            fetchArticles();
+        }
+    }, [magazineSlug, articleSlug, categories]);
+
+    // Hiển thị trạng thái load
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <div className="text-xl text-gray-600">Đang tải dữ liệu...</div>
+            </div>
+        );
     }
-  ];
 
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-    if (file && file.type === 'application/pdf') {
-      const fileURL = URL.createObjectURL(file);
-      setPdfFile(fileURL);
-    } else {
-      alert('Vui lòng tải lên file PDF hợp lệ');
+    // Hiển thị lỗi
+    if (error) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <div className="text-xl text-red-600">Có lỗi xảy ra: {error}</div>
+            </div>
+        );
     }
-  };
 
-  return (
-    <div className="max-w-6xl mx-auto p-6">
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-        {/* Header với tiêu đề và ngày đăng */}
-        <div className="p-6 border-b border-gray-200">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            {articleData.tieude}
-          </h1>
-          <div className="flex items-center text-gray-600">
-            <span className="text-sm">
-              Ngày đăng: {new Date(articleData.ngaydang).toLocaleDateString('vi-VN')}
-            </span>
-          </div>
-        </div>
-
-        {/* Phần nội dung chính */}
-        <div className="p-6 space-y-6">
-          {/* Hình ảnh */}
-          {articleData.hinhanh && (
-            <div className="rounded-lg overflow-hidden shadow-md">
-              <img
-                src={articleData.hinhanh}
-                alt={articleData.tieude}
-                className="w-full h-auto object-cover"
-              />
+    // Kiểm tra dữ liệu
+    if (!articles) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <div className="text-xl text-gray-600">Không tìm thấy bài báo</div>
             </div>
-          )}
+        );
+    }
 
-          {/* Nội dung bài viết */}
-          <div className="prose max-w-none">
-            <p className="text-gray-700 leading-relaxed">
-              {articleData.noidung}
-            </p>
-          </div>
-
-          {/* PDF Viewer */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-gray-800">
-                Tài liệu đính kèm
-              </h2>
-              <input
-                type="file"
-                accept="application/pdf"
-                onChange={handleFileUpload}
-                className="hidden"
-                id="pdf-upload"
-              />
-              <label
-                htmlFor="pdf-upload"
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 cursor-pointer transition duration-200"
-              >
-                Chọn file PDF
-              </label>
-            </div>
-
-            {pdfFile ? (
-              <div className="border border-gray-200 rounded-lg overflow-hidden">
-                <div className="h-[800px] w-full">
-                  <Worker workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}>
-                    <Viewer fileUrl={pdfFile} />
-                  </Worker>
+    return (
+        <div className="max-w-6xl mx-auto">
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                {/* Header với tiêu đề và ngày đăng */}
+                <div className="p-6 border-b border-gray-200">
+                    <h1 className="text-3xl font-bold text-gray-900 mb-2">{articles.tieude}</h1>
+                    <div className="flex items-center text-gray-600">
+                        <span className="text-md">
+                            Ngày đăng: {new Date(articles.ngaydang).toLocaleDateString('vi-VN')}
+                        </span>
+                    </div>
+                    <span className="text-md">Thể loại: {theloai}</span>
                 </div>
-              </div>
-            ) : (
-              <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-                <p className="text-gray-600">
-                  Chưa có file PDF nào được chọn
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
 
-        {/* Phần bài viết gợi ý */}
-        <div className="p-6 bg-gray-50">
-          <h2 className="text-2xl font-bold mb-6">Bài viết liên quan</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {suggestedArticles.map((article) => (
-              <div 
-                key={article.id}
-                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
-              >
-                <img
-                  src={article.hinhanh}
-                  alt={article.tieude}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-4">
-                  <h3 className="font-semibold text-lg mb-2 text-gray-800 hover:text-blue-600">
-                    <a href={`/article/${article.id}`}>{article.tieude}</a>
-                  </h3>
-                  <p className="text-gray-600 text-sm mb-3">
-                    {article.tomtat}
-                  </p>
-                  <div className="flex items-center justify-between text-sm text-gray-500">
-                    <span>{new Date(article.ngaydang).toLocaleDateString('vi-VN')}</span>
-                    <span>{article.luotxem} lượt xem</span>
-                  </div>
+                {/* Phần nội dung chính */}
+                <div className="p-6 space-y-6">
+                    {/* Hình ảnh */}
+                    {articles.url && (
+                        <div className="rounded-lg overflow-hidden shadow-md">
+                            <img src={articles.url} alt={articles.tieude} className="w-80 object-cover" />
+                        </div>
+                    )}
+
+                    {/* Nội dung bài viết */}
+                    <div className="prose max-w-none">
+                        <p
+                            dangerouslySetInnerHTML={{ __html: articles.noidung }}
+                            className="text-gray-700 leading-relaxed"
+                        />
+                    </div>
+
+                    {/* PDF Viewer */}
+                    <div className="space-y-4">
+                        <h2 className="text-xl font-semibold text-gray-800">Tài liệu đính kèm</h2>
+                        {pdfFile ? (
+                            <div className="border border-gray-200 rounded-lg overflow-hidden">
+                                <div className="h-[800px] w-full">
+                                    <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
+                                        <Viewer fileUrl={pdfFile} className="w-full h-full" />
+                                    </Worker>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                                <p className="text-gray-600">Không có file PDF đính kèm</p>
+                            </div>
+                        )}
+                    </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
 
-        {/* Footer */}
-        <div className="p-6 border-t border-gray-200">
-          <div className="flex justify-between items-center">
-            <div className="text-sm text-gray-600">
-              Tags: <span className="text-blue-600">Example, Test</span>
+                {/* Thích và bình luận */}
+                <SocialInteraction articles={articles} />
+
+                {/* Footer */}
+                <div className="p-6 border-t border-gray-200">
+                    <div className="flex justify-between items-center">
+                        <div className="text-sm text-gray-600">
+                            Tags: <span className="text-blue-600">{articles.keyword}</span>
+                        </div>
+                        <button
+                            onClick={() => window.print()}
+                            className="px-4 py-2 text-gray-600 hover:text-gray-800 transition duration-200"
+                        >
+                            In bài viết
+                        </button>
+                    </div>
+                </div>
             </div>
-            <button
-              onClick={() => window.print()}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800 transition duration-200"
-            >
-              In bài viết
-            </button>
-          </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default App;

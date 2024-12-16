@@ -15,25 +15,25 @@ function Header() {
 
     // Role constants
     const ROLES = {
-        USER: "USER",
-        AUTHOR: "AUTHOR",
-        ADMIN: "ADMIN",
-        EDITOR: "EDITOR",
-        CENSOR: "CENSOR",
-        PARTNER: "PARTNER"
+        CUSTOMER: 'CUSTOMER',
+        AUTHOR: 'AUTHOR',
+        ADMIN: 'ADMIN',
+        EDITOR: 'EDITOR',
+        CENSOR: 'CENSOR',
+        PARTNER: 'PARTNER',
     };
 
     const getRoleName = (roles) => {
         if (!roles || !Array.isArray(roles)) return 'Không xác định';
-        
+
         // Ưu tiên hiển thị role cao nhất
         const roleNames = {
             ADMIN: 'Quản trị viên',
             EDITOR: 'Biên tập viên',
             CENSOR: 'Kiểm duyệt',
-            PARTNER: 'Đối tác quảng cáo', 
+            PARTNER: 'Đối tác quảng cáo',
             AUTHOR: 'Tác giả',
-            USER: 'Người dùng'
+            CUSTOMER: 'Người dùng',
         };
 
         // Tìm role cao nhất trong array roles
@@ -45,16 +45,36 @@ function Header() {
         return 'Khong xac dinh';
     };
 
+    const getMenuNavbar = (roles) => {
+        if (!roles || !Array.isArray(roles)) return [];
+
+        if (roles.includes(ROLES.PARTNER)) {
+            return [{ label: 'Quảng cáo', path: '/home/adver_dashboard' }];
+        }
+        if (roles.includes(ROLES.CENSOR)) {
+            return [{ label: 'Kiểm duyệt', path: '/home/censor_dashboard' }];
+        }
+        if (roles.includes(ROLES.ADMIN)) {
+            return [{ label: 'Quản trị viên', path: '/home/admin' }];
+        }
+        if (roles.includes(ROLES.EDITOR)) {
+            return [{ label: 'Biên tập viên', path: '/home/editor_dashboard' }];
+        }
+        if (roles.includes(ROLES.AUTHOR)) {
+            return [{ label: 'Gửi bài Online', path: '/home/TacGiaDashboard/' }];
+        }
+        if (roles.includes(ROLES.CUSTOMER)) {
+            return [{ label: 'Khác', path: '/home/option_advertisement' }];
+        }
+    };
+
     const getMenuItems = (roles) => {
         if (!roles || !Array.isArray(roles)) return [];
 
         // Kiểm tra role cao nhất
         if (roles.includes(ROLES.ADMIN)) {
             return [
-                { label: 'Quản lý người dùng', path: '/admin/users' },
-                { label: 'Quản lý bài viết', path: 'http://localhost:5174/dashboard/home' },
-                { label: 'Thống kê hệ thống', path: '/admin/statistics' },
-                { label: 'Cài đặt hệ thống', path: '/admin/settings' },
+                { label: 'Admin Dashboard', path: '/home/admin' },
                 { label: 'Hồ sơ của tôi', path: '/home/profile_user' },
                 { label: 'Bài viết đã lưu', path: '/saved-posts' },
                 { label: 'Lịch sử đọc', path: '/reading-history' },
@@ -80,6 +100,13 @@ function Header() {
                 { label: 'Lịch sử đọc', path: '/reading-history' },
             ];
         }
+        if (roles.includes(ROLES.CUSTOMER)) {
+            return [
+                { label: 'Hồ sơ của tôi', path: '/home/profile_user' },
+                { label: 'Bài viết đã lưu', path: '/saved-posts' },
+                { label: 'Lịch sử đọc', path: '/reading-history' },
+            ];
+        }
         // Default menu for USER role
         return [
             { label: 'Hồ sơ của tôi', path: '/home/profile_user' },
@@ -90,13 +117,14 @@ function Header() {
 
     useEffect(() => {
         const storedUser = localStorage.getItem('currentUser');
-        if (storedUser) {
+        if (storedUser !== null) {
             const parsedUser = JSON.parse(storedUser);
+
             // Chuyển đổi roles object thành array
             const rolesArray = Object.values(parsedUser.roles);
             setUser({
                 ...parsedUser,
-                roles: rolesArray // Lưu roles dưới dạng array
+                roles: rolesArray, // Lưu roles dưới dạng array
             });
         }
     }, [navigate]);
@@ -140,16 +168,13 @@ function Header() {
                                     <Link to="/home/danhmuc" className={`${textNavbar}`}>
                                         Danh mục
                                     </Link>
-                                    <Link
-                                        to={user ? '/home/TacGiaDashboard' : '#'}
-                                        className={`${textNavbar}`}
-                                        onClick={() => {
-                                            handleNavigation('/home/TacGiaDashboard/*');
-                                        }}
-                                    >
-                                        Gửi bài Online
-                                    </Link>
-                                    <Link
+                                    {user &&
+                                        getMenuNavbar(user.roles).map((item, index) => (
+                                            <Link key={index} to={item.path} className={`${textNavbar}`}>
+                                                {item.label}
+                                            </Link>
+                                        ))}
+                                    {/* <Link
                                         to={user ? '/home/option_advertisement' : '#'}
                                         className={`${textNavbar}`}
                                         onClick={() => {
@@ -157,7 +182,7 @@ function Header() {
                                         }}
                                     >
                                         Khác
-                                    </Link>
+                                    </Link> */}
                                 </div>
                             </div>
                         ) : (
@@ -166,7 +191,6 @@ function Header() {
                             </button>
                         )}
 
-                        {/* Search and Login */}
                         <div className="flex items-center space-x-3">
                             {/* Search Icon */}
                             <div className="relative flex justify-center items-center">
@@ -181,7 +205,6 @@ function Header() {
                                     )}
                                 </button>
 
-                                {/* Search Input */}
                                 {showSearch && (
                                     <div className="absolute right-0 w-48">
                                         <input
@@ -281,15 +304,12 @@ function Header() {
                         <Link to="/home/danhmuc" className="text-white hover:text-space-200 text-lg">
                             Danh mục
                         </Link>
-                        <Link
-                            to={user ? '/home/TacGiaDashboard' : '#'}
-                            className="text-white hover:text-space-200 text-lg"
-                            onClick={() => {
-                                handleNavigation('/submitForm');
-                            }}
-                        >
-                            Gửi bài Online
-                        </Link>
+                        {user &&
+                            getMenuNavbar(user.roles).map((item, index) => (
+                                <Link key={index} to={item.path} className={`${textNavbar}`}>
+                                    {item.label}
+                                </Link>
+                            ))}
                         <Link to="/advertisement" className="text-white hover:text-space-200 text-lg">
                             Khác
                         </Link>
