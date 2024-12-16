@@ -4,12 +4,13 @@ import { useEffect, useState } from "react";
 
 export const RenderDashboard = () => {
     const [thongke, setThongke] = useState([]);
-
+    const [isLoading, setIsLoading] = useState(false)
     useEffect(() => {
         loadThongke()
     }, [])
 
     const loadThongke = async() => {
+        setIsLoading(true)
         const current = JSON.parse(localStorage.getItem('currentUser'));
         if (!current) {
             return;
@@ -22,6 +23,8 @@ export const RenderDashboard = () => {
         } catch (error) {
             console.log(error)
             
+        } finally {
+            setIsLoading(false)
         }
     } 
     const StatCard = ({ title, value, icon }) => (
@@ -34,8 +37,17 @@ export const RenderDashboard = () => {
         </div>
     );
 
+    const LoadingSpinner = () => {
+        return (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-20">
+                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500" />
+            </div>
+        );
+    };
+
     return (
         <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {isLoading && <LoadingSpinner />}
             <StatCard title="Người dùng" value={thongke.sltaikhoan} icon={<Users className="text-blue-500" />} />
             <StatCard title="Bài báo" value={thongke.slbaibao} icon={<FileText className="text-green-500" />} />
             <StatCard

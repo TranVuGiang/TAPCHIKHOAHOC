@@ -18,17 +18,6 @@ const publicRoutes = [
     { path: '/home/introduce', component: Components.Introduce },
     { path: '/home/danhmuc', component: Components.Category },
     { path: '/home/otp', component: Components.ConfirmOTP, layout: NoneLayouts },
-    { path: '/home/dang-ky-quang-cao', component: Components.AdRegistrationForm, layout: HeaderOnly },
-    {
-        path: '/home/option_advertisement/:slug',
-        component: Components.ChiTietQuangCao,
-        layout: HeaderOnly,
-    },
-    {
-        path: '/home/payment',
-        component: Components.PaymentPage,
-        layout: HeaderOnly,
-    },
     {
         path: '/home/option_advertisement',
         component: Components.Advertisement,
@@ -44,7 +33,12 @@ const publicRoutes = [
         component: OrderSuccessPage,
         layout: HeaderOnly, // Chỉ admin và đối tác quảng cáo mới truy cập được
     },
-    // { path: '/home/test-voice', component: VoiceSearch, layout: NoneLayouts },
+    {
+        // { path: '/home/test-voice', component: VoiceSearch, layout: NoneLayouts },
+        path: '/home/option_advertisement/:slug',
+        component: Components.ChiTietQuangCao,
+        layout: HeaderOnly,
+    },
 ];
 
 // Routes được bảo vệ (cần xác thực)

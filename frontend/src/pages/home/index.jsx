@@ -34,9 +34,7 @@ function Home() {
                         page: response.pageSize,
                         size: response.totalPage,
                     });
-                    console.log(data);
                 }
-                console.log(response.data.data);
 
                 setDanhmucs(response.data.data); // Giả sử response có dạng { data: [...] }
             } catch (error) {

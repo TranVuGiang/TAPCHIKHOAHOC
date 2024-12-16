@@ -64,7 +64,7 @@ function Header() {
             return [{ label: 'Gửi bài Online', path: '/home/TacGiaDashboard/' }];
         }
         if (roles.includes(ROLES.CUSTOMER)) {
-            return [{ label: 'Khác', path: '/home/option_advertisment/' }];
+            return [{ label: 'Khác', path: '/home/option_advertisement' }];
         }
     };
 
@@ -174,7 +174,7 @@ function Header() {
                                                 {item.label}
                                             </Link>
                                         ))}
-                                    <Link
+                                    {/* <Link
                                         to={user ? '/home/option_advertisement' : '#'}
                                         className={`${textNavbar}`}
                                         onClick={() => {
@@ -182,7 +182,7 @@ function Header() {
                                         }}
                                     >
                                         Khác
-                                    </Link>
+                                    </Link> */}
                                 </div>
                             </div>
                         ) : (
