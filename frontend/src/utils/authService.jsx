@@ -692,4 +692,75 @@ export const authService = {
         }
         return response.json();
     },
+
+    quangcaoAdmin: async (token) => {
+        const response = await fetch(`${API_URL}/api/admin/get/quangcao`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token }),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Lỗi không thể load bài báo đã xem');
+        }
+        return response.json();
+    },
+    updateQuangcaoAdmin: async (token, quangcaoId, status) => {
+        const response = await fetch(`${API_URL}/api/admin/update/quangcao/status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token, quangcaoId, status }),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Lỗi không thể load bài báo đã xem');
+        }
+        return response.json();
+    },
+    dangQuangCao: async () => {
+        const response = await fetch(`${API_URL}/api/quangcao/get/quangcao`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Lỗi không thể load bài báo đã xem');
+        }
+        return response.json();
+    },
+
+    clickQuangCao: async (quangcaoId) => {
+        const response = await fetch(`${API_URL}/api/quangcao/add/click/quangcao`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ quangcaoId }),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Lỗi không thể');
+        }
+        return response.json();
+    },
+    xemQuangCao: async (quangcaoId) => {
+        const response = await fetch(`${API_URL}/api/quangcao/add/xem/quangcao`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ quangcaoId }),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Lỗi không thể');
+        }
+        return response.json();
+    },
 };

@@ -8,6 +8,7 @@ export default function Advertisement() {
     const [selectedPlan, setSelectedPlan] = useState('');
     const navigate = useNavigate();
     const [quangcao, setQuangcao] = useState([]);
+    const [isLoading, setIsLoading] = useState(false)
 
     // Updated features to match specific ad placements
     const adPlanFeatures = {
@@ -42,6 +43,7 @@ export default function Advertisement() {
     }, []);
 
     const loadQC = async () => {
+    setIsLoading(true)
         try {
             const resp = await authService.loadQC();
 
@@ -62,9 +64,17 @@ export default function Advertisement() {
             }
         } catch (error) {
             console.error('Error loading advertisement plans:', error);
+        } finally {
+            setIsLoading(true)
         }
     };
-
+    const LoadingSpinner = () => {
+        return (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-20">
+                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500" />
+            </div>
+        );
+    };
     const handleSlug = (plan) => {
         const selectedPlanData = quangcao.find((p) => p.tengoi === selectedPlan);
         if (selectedPlanData) {
@@ -75,6 +85,7 @@ export default function Advertisement() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-100 p-6">
+            {isLoading && <LoadingSpinner />}
             <h2 className="text-4xl font-bold mb-8 text-center text-indigo-800">Nâng cấp Quảng Cáo</h2>
 
             <div className="flex justify-center mb-8 space-x-4">

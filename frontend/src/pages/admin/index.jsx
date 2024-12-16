@@ -1,22 +1,18 @@
 import { RenderArticleManagement } from '@/components/adminComponents/renderBaibaoManagement';
+import AdsManagement from '@/components/adminComponents/renderQuangcaoManagement';
 import { RenderUserManagement } from '@/components/adminComponents/renderUserManagement';
 import { RenderDashboard } from '@/components/adminComponents/thongke';
 import {
     BarChart2,
     Bell,
-    CheckCircle,
-    Clock,
     DollarSign,
-    Edit,
-    Eye,
     FileText,
     LogOut,
     Menu,
     Radio,
     Settings,
     Users,
-    X,
-    XCircle,
+    X
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -124,69 +120,7 @@ const AdminDashboard = () => {
         </select>
     );
 
-    const AdsManagement = ({ ads }) => {
-        const [activeAdTab, setActiveAdTab] = useState('pending');
-
-        const adTabs = [
-            { id: 'pending', label: 'Chờ Duyệt', icon: <Clock className="mr-2" />, data: ads.pending },
-            { id: 'approved', label: 'Đã Duyệt', icon: <CheckCircle className="mr-2" />, data: ads.approved },
-            { id: 'published', label: 'Đã Đăng', icon: <Eye className="mr-2" />, data: ads.published },
-        ];
-
-        return (
-            <div className="p-6">
-                <h2 className="text-2xl font-bold mb-6">Quản Lý Quảng Cáo</h2>
-                <div className="mb-4 flex space-x-4">
-                    {adTabs.map((tab) => (
-                        <button
-                            key={tab.id}
-                            className={`
-              flex items-center px-4 py-2 rounded-lg 
-              ${activeAdTab === tab.id ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}
-            `}
-                            onClick={() => setActiveAdTab(tab.id)}
-                        >
-                            {tab.icon}
-                            {tab.label}
-                        </button>
-                    ))}
-                </div>
-                <div className="bg-white shadow-md rounded-lg overflow-x-auto">
-                    <table className="w-full">
-                        <thead className="bg-gray-100">
-                            <tr>
-                                <th className="p-3 text-left">Tiêu Đề</th>
-                                <th className="p-3 text-left">Mô Tả</th>
-                                <th className="p-3 text-left">Ngày</th>
-                                <th className="p-3 text-center">Thao Tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {adTabs
-                                .find((tab) => tab.id === activeAdTab)
-                                .data.map((ad) => (
-                                    <tr key={ad.id} className="border-b hover:bg-gray-50">
-                                        <td className="p-3">{ad.title}</td>
-                                        <td className="p-3">{ad.description}</td>
-                                        <td className="p-3">
-                                            {ad.submissionDate || ad.approvalDate || ad.publishDate}
-                                        </td>
-                                        <td className="p-3 flex justify-center space-x-2">
-                                            <button className="text-blue-500 hover:text-blue-700">
-                                                <Edit size={20} />
-                                            </button>
-                                            <button className="text-red-500 hover:text-red-700">
-                                                <XCircle size={20} />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        );
-    };
+ 
 
     const renderRevenueManagement = () => (
         <div className="p-6">
@@ -230,7 +164,7 @@ const AdminDashboard = () => {
             case 'articles':
                 return <RenderArticleManagement token={token}/>;
             case 'ads':
-                return <AdsManagement ads={ads} />;
+                return <AdsManagement />;
             case 'revenue':
                 return renderRevenueManagement();
             default:

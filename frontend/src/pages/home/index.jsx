@@ -8,7 +8,21 @@ function Home() {
     const [danhmucs, setDanhmucs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [quangcao, setQuangcao] = useState([]);
 
+    useEffect(() => {
+        loadQuangCao();
+    }, []);
+
+    const loadQuangCao = async () => {
+        try {
+            const resp = await authService.dangQuangCao();
+            const quangcao = resp.data.filter((item) => item.bgqcId === '3');
+            setQuangcao(quangcao);
+        } catch (error) {
+            console.log(error);
+        }
+    };
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -96,57 +110,34 @@ function Home() {
             {/* END SỐ MỚI NHẤT */}
 
             {/* SỰ KIỆN HOT TRONG TUẦN */}
-            <section className="container mx-auto px-4 py-8">
-                <div className="w-full h-[60px] bg-space-400 right-0 py-4 pl-8">
-                    <TitleText>CÓ THỂ BẠN QUAN TÂM</TitleText>
-                </div>
-                <div className="container mx-auto px-4 py-6">
-                    {/* Main news */}
-                    <div className="mb-6">
-                        <div className="group cursor-pointer">
-                            <div className="relative w-full h-[300px] md:h-[400px] mb-4">
-                                <img
-                                    src={mainNews.image}
-                                    alt={mainNews.title}
-                                    className="object-cover rounded-lg w-full h-full"
-                                />
-                            </div>
-                            <h1 className="text-xl md:text-2xl font-bold mb-2 group-hover:text-blue-600 transition-colors">
-                                {mainNews.title}
-                            </h1>
-                            {/* <div className="flex items-center text-sm text-gray-500 gap-4">
-                                <span className="font-medium">{mainNews.source}</span>
-                                <span>{mainNews.time}</span>
-                                <span className="text-gray-400">•</span>
-                                <span>{mainNews.engagement}</span>
-                            </div> */}
-                        </div>
-                    </div>
 
-                    {/* Related news */}
-                    {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                        {relatedNews.map((news) => (
-                            <div key={news.id} className="group cursor-pointer">
-                                <div className="relative w-full h-[200px] mb-3">
-                                    <img
-                                        src={news.image}
-                                        alt={news.title}
-                                        className="object-cover rounded-lg w-full h-full"
-                                    />
-                                </div>
-                                <h2 className="text-base sm:text-lg font-semibold mb-2 group-hover:text-blue-600 transition-colors line-clamp-2">
-                                    {news.title}
-                                </h2>
-                                <div className="flex items-center text-sm text-gray-500 gap-3">
-                                    <span className="font-medium">{news.source}</span>
-                                    <span className="text-gray-400">•</span>
-                                    <span>{news.time}</span>
-                                </div>
-                            </div>
-                        ))}
-                    </div> */}
-                </div>
-            </section>
+            {quangcao.length > 0
+                ? quangcao.map((item, index) => (
+                      <section key={index} className="container mx-auto px-4 py-8">
+                          <div className="w-full h-[60px] bg-space-400 right-0 py-4 pl-8">
+                              <TitleText>CÓ THỂ BẠN QUAN TÂM</TitleText>
+                          </div>
+                          <div className="container mx-auto px-4 py-6">
+                              {/* Main news */}
+                              <div className="mb-6">
+                                  <div className="group cursor-pointer">
+                                      <div className="relative w-full h-[300px] md:h-[400px] mb-4">
+                                          <img
+                                              src={mainNews.image}
+                                              alt={mainNews.title}
+                                              className="object-cover rounded-lg w-full h-full"
+                                          />
+                                      </div>
+                                      <h1 className="text-xl md:text-2xl font-bold mb-2 group-hover:text-blue-600 transition-colors">
+                                          {mainNews.title}
+                                      </h1>
+                                  </div>
+                              </div>
+
+                          </div>
+                      </section>
+                  ))
+                : ''}
         </>
     );
 }
