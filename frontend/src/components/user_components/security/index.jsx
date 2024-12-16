@@ -44,7 +44,7 @@ const FormBaoMatTaiKhoan = ({ userDetail }) => {
             <div className="p-6 sm:p-8">
                 {activeTab === 'profile' && <ProfileForm userDetail={formData} />}
                 {activeTab === 'copyright' && (
-                    <CopyrightForm formData={formData} handleInputChange={handleInputChange} />
+                    <CopyrightForm formData={formData}/>
                 )}
                 {activeTab === 'password' && <RenderPasswordForm username={formData.username} />}
             </div>

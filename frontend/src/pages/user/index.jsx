@@ -5,7 +5,7 @@ import FromBaoMatTaiKhoan from '@/components/user_components/security';
 import { authService } from '@/utils/authService';
 import { BookmarkPlus, History, Lock, Menu, User, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const url_avatar = import.meta.env.VITE_URL_AVATAR;
 
@@ -14,6 +14,7 @@ const UserDashboard = () => {
     const [userDetail, setUserDetail] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const navigate = useNavigate()
 
     useEffect(() => {
         loadDataUser();
@@ -22,6 +23,9 @@ const UserDashboard = () => {
     const loadDataUser = async () => {
         try {
             const current = JSON.parse(localStorage.getItem('currentUser'));
+            if(current === null || undefined ) {
+                navigate('/home/login')
+            }
             const token = current.token;
             const fetchData = await authService.getUserDetails(token);
             const informationUser = fetchData.data.user;
