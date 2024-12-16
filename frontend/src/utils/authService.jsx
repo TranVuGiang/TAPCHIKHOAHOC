@@ -763,4 +763,32 @@ export const authService = {
         }
         return response.json();
     },
+    xinquyenAuthor: async (token) => {
+        const response = await fetch(`${API_URL}/api/author/capquyen/author`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(token),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Lỗi không thể');
+        }
+        return response.json();
+    },
+    getquyenAuthor: async (token) => {
+        const response = await fetch(`${API_URL}/api/admin/get/user/capquyen`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(token),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Lỗi không thể');
+        }
+        return response.json();
+    },
 };

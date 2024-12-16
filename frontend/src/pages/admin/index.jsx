@@ -1,3 +1,4 @@
+import UserPermissionManagement from '@/components/adminComponents/capquyen';
 import { RenderArticleManagement } from '@/components/adminComponents/renderBaibaoManagement';
 import AdsManagement from '@/components/adminComponents/renderQuangcaoManagement';
 import { RenderUserManagement } from '@/components/adminComponents/renderUserManagement';
@@ -158,7 +159,7 @@ const AdminDashboard = () => {
             case 'dashboard':
                 return <RenderDashboard />;
             case 'capquyen':
-                return <RenderDashboard />;
+                return <UserPermissionManagement />;
             case 'users':
                 return <RenderUserManagement />;
             case 'articles':
