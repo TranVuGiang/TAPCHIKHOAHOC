@@ -37,12 +37,12 @@ const publicRoutes = [
     {
         path: '/order/cancel',
         component: CancelOrderPage,
-        roles: ['PARTNER'], // Chỉ admin và đối tác quảng cáo mới truy cập được
+        layout: HeaderOnly, // Chỉ admin và đối tác quảng cáo mới truy cập được
     },
     {
         path: '/order/success',
         component: OrderSuccessPage,
-        roles: ['PARTNER'], // Chỉ admin và đối tác quảng cáo mới truy cập được
+        layout: HeaderOnly, // Chỉ admin và đối tác quảng cáo mới truy cập được
     },
     // { path: '/home/test-voice', component: VoiceSearch, layout: NoneLayouts },
 ];

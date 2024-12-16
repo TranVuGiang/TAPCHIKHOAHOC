@@ -1,4 +1,4 @@
-import imgnull from '@/assets/quangcaonull.png';
+import imgnull from '@/assets/ads.png';
 import { authService } from '@/utils/authService';
 import { useEffect, useState } from 'react';
 

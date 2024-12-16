@@ -10,9 +10,6 @@ export default function Advertisement() {
     const [quangcao, setQuangcao] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    useEffect(() => {
-        loadQC();
-    }, []);
     // Updated features to match specific ad placements
     const adPlanFeatures = {
         1: {
@@ -37,6 +34,10 @@ export default function Advertisement() {
         },
     };
 
+    useEffect(() => {
+        loadQC();
+    }, []);
+
     const loadQC = async () => {
         setIsLoading(true);
         try {
@@ -45,8 +46,8 @@ export default function Advertisement() {
             // Transform the fetched data with additional details
             const transformedPlans = resp.data.map((plan) => ({
                 ...plan,
-                name: adPlanFeatures[plan.bgqcId]?.name || 'Unknown',
-                features: adPlanFeatures[plan.bgqcId]?.features || [],
+                name: adPlanFeatures[plan.bgqcId].name,
+                features: adPlanFeatures[plan.bgqcId].features,
                 period: plan.songay + ' ngày',
             }));
 
@@ -60,7 +61,7 @@ export default function Advertisement() {
         } catch (error) {
             console.error('Error loading advertisement plans:', error);
         } finally {
-            setIsLoading(true);
+            setIsLoading(false);
         }
     };
     const LoadingSpinner = () => {
@@ -70,7 +71,7 @@ export default function Advertisement() {
             </div>
         );
     };
-    const handleSlug = () => {
+    const handleSlug = (plan) => {
         const selectedPlanData = quangcao.find((p) => p.tengoi === selectedPlan);
         if (selectedPlanData) {
             const slug = createUrlSlug(selectedPlanData.name);
@@ -86,7 +87,7 @@ export default function Advertisement() {
             <div className="flex justify-center mb-8 space-x-4">
                 {quangcao.map((plan) => (
                     <button
-                        key={`${plan.bgqcId}-${plan.tengoi}`}
+                        key={plan.bgqcId}
                         className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 relative overflow-hidden ${
                             selectedPlan === plan.tengoi
                                 ? 'bg-indigo-600 text-white shadow-lg transform scale-105'
@@ -95,7 +96,7 @@ export default function Advertisement() {
                         onClick={() => plan.conqc && setSelectedPlan(plan.tengoi)}
                         disabled={!plan.conqc}
                     >
-                        {plan.tengoi}
+                        {plan.name}
                         {!plan.conqc && (
                             <div className="absolute inset-0 flex items-center justify-center">
                                 <div className="bg-red-500 text-white px-2 py-1 rounded-full text-xs absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">

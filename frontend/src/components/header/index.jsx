@@ -63,6 +63,9 @@ function Header() {
         if (roles.includes(ROLES.AUTHOR)) {
             return [{ label: 'Gửi bài Online', path: '/home/TacGiaDashboard/' }];
         }
+        if (roles.includes(ROLES.CUSTOMER)) {
+            return [{ label: 'Khác', path: '/home/option_advertisment/' }];
+        }
     };
 
     const getMenuItems = (roles) => {
